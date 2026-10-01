@@ -13,7 +13,7 @@ import {
 
 export const metadata: Metadata = {
   title: 'Homepage redesign mockup',
-  description: 'A design mockup for the Oberlin Engineering Club homepage.'
+  description: 'A design mockup for the Makers and Engineers @Oberlin homepage.'
 }
 
 const signals = [
@@ -93,8 +93,7 @@ export default function MockupPage() {
               <strong>Organizing now</strong>
             </div>
             <p>
-              Members will help choose the first projects and events. Nothing is overpromised; the homepage
-              should make the next step obvious.
+              Members will help choose the first projects and events.
             </p>
           </aside>
         </div>
@@ -104,7 +103,7 @@ export default function MockupPage() {
         <div className="oec-mockup-shell oec-mockup-next__grid">
           <div className="oec-mockup-next__intro">
             <p className="oec-mockup-kicker">What you can do now</p>
-            <h2>Join before the first build night is locked in.</h2>
+            <h2>Join the club now.</h2>
           </div>
           <div className="oec-mockup-step-row">
             {nextSteps.map(item => {
@@ -131,7 +130,7 @@ export default function MockupPage() {
         <div className="oec-mockup-shell oec-mockup-foundation__grid">
           <div>
             <p className="oec-mockup-kicker">Club foundation</p>
-            <h2>Make the site feel active without pretending the club is already huge.</h2>
+            <h2>What the club is starting with.</h2>
           </div>
           <div className="oec-mockup-track-list">
             {tracks.map(([title, body]) => (
@@ -152,10 +151,10 @@ export default function MockupPage() {
           <div>
             <CalendarClock aria-hidden="true" size={24} />
             <p>
-              Events should show up after date, room, organizer, and access details are confirmed.
+              Events are listed after the date, room, organizer, and access details are confirmed.
             </p>
           </div>
-          <Link href="mailto:oberlinengineeringclub@oberlin.edu">
+          <Link href="mailto:makers.engineers@oberlin.edu">
             <Mail aria-hidden="true" size={18} /> Questions or introductions
           </Link>
         </div>

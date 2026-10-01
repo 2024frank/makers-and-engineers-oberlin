@@ -11,6 +11,6 @@ export default async function UsersPage() {
   const [users, invites] = await Promise.all([listAdminUsers(), listStaffInvites()])
   return <main className="admin-panel">
     <div className="admin-page-heading"><div><p className="eyebrow">System</p><h1>Staff, roles &amp; invitations</h1><p>Only a Super Admin can invite or change staff access. Uninvited identities cannot enter the officer portal.</p></div></div>
-    <AdminUsersManager initialUsers={users} initialInvites={invites} />
+    <AdminUsersManager initialUsers={users} initialInvites={invites} currentUserId={admin.userId} />
   </main>
 }

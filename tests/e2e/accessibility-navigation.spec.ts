@@ -6,8 +6,8 @@ test('public navigation is keyboard operable with visible focus',async({page,bro
   await page.keyboard.press(nextFocus)
   await expect(page.getByRole('link',{name:'Skip to content'})).toBeFocused()
   await page.keyboard.press(nextFocus)
-  await expect(page.getByRole('link',{name:'Oberlin Engineering Club home'})).toBeFocused()
-  await expect(page.getByRole('link',{name:'Oberlin Engineering Club home'})).toHaveCSS('outline-style','solid')
+  await expect(page.getByRole('link',{name:'Makers and Engineers @Oberlin home'})).toBeFocused()
+  await expect(page.getByRole('link',{name:'Makers and Engineers @Oberlin home'})).toHaveCSS('outline-style','solid')
 })
 
 test('mobile public menu can be opened and closed without a mouse',async({page})=>{

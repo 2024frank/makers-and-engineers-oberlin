@@ -54,7 +54,7 @@ export function ApplicationReviewList({ applications }: { applications: ProjectA
     <ul className="pt-roster pt-roster--stacked">{applications.map(app => <li key={app.id} style={{ gridTemplateColumns: '36px minmax(0,1fr)' }}>
       <span className="pt-avatar" aria-hidden="true">{(app.applicantName ?? 'M').slice(0, 1).toUpperCase()}</span>
       <div className="pt-person">
-        <strong>{app.applicantName ?? 'OEC member'}</strong>
+        <strong>{app.applicantName ?? 'Member'}</strong>
         <p style={{ margin: '6px 0' }}>{app.motivation}</p>
         {app.skills.length > 0 && <div className="tag-row">{app.skills.map(skill => <span key={skill}>{skill}</span>)}</div>}
         <div className="pt-actions" style={{ marginTop: 8 }}><button className="button--cardinal" disabled={busy === app.id} onClick={() => void decide(app.id, 'ACCEPT')}>Add to team</button><button disabled={busy === app.id} onClick={() => void decide(app.id, 'REJECT')}>Decline</button></div>

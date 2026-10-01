@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Move valid public content from the previous Astro/Supabase site into the OEC Next.js schema without importing old identities as trusted staff or approved members.
+Move valid public content from the previous Astro/Supabase site into the MOE Next.js schema without importing old identities as trusted staff or approved members.
 
 ## Hard safety invariants
 

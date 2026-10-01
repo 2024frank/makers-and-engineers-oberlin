@@ -3,7 +3,7 @@ import type { PageSnapshot } from '@/lib/page-builder/types'
 import { metadataForCmsPage } from '@/lib/seo/metadata'
 
 const cms = vi.hoisted(() => ({
-  settings: { seo: { titlePattern: '%s - OEC', defaultOgMediaId: null as string | null } },
+  settings: { seo: { titlePattern: '%s - MOE', defaultOgMediaId: null as string | null } },
   media: {} as Record<string, { url: string; alt: string }>,
 }))
 vi.mock('@/lib/page-builder/publicPages', () => ({
@@ -14,7 +14,7 @@ vi.mock('@/lib/page-builder/publicPages', () => ({
 const base = 'https://oberlin32engineeringsociety.com'
 const shareImage = `${base}/brand/workbench/share-20260906.jpg`
 const retiredImage = 'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg'
-const home: PageSnapshot = { pageId: '00000000-0000-4000-8000-000000000101', slug: 'home', title: 'Home', seoTitle: 'Oberlin Engineering Club', seoDescription: 'Build projects together.', ogMediaId: null, sections: [] }
+const home: PageSnapshot = { pageId: '00000000-0000-4000-8000-000000000101', slug: 'home', title: 'Home', seoTitle: 'Makers and Engineers @Oberlin', seoDescription: 'Build projects together.', ogMediaId: null, sections: [] }
 
 beforeEach(() => {
   vi.stubEnv('NEXT_PUBLIC_SITE_URL', `${base}/`)
@@ -49,7 +49,7 @@ describe('public sharing metadata', () => {
     cms.media.custom = { url: 'https://cdn.example.com/project.jpg', alt: 'A club project' }
     const metadata = await metadataForCmsPage({ ...home, slug: 'projects', seoTitle: 'Projects', ogMediaId: 'custom' })
     expect(metadata).toMatchObject({
-      title: { absolute: 'Projects - OEC' },
+      title: { absolute: 'Projects - MOE' },
       alternates: { canonical: `${base}/projects` },
       openGraph: { images: [{ url: cms.media.custom.url, alt: 'A club project' }] },
       twitter: { images: [{ url: cms.media.custom.url }] },

@@ -96,13 +96,13 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
       {status === 'success' ? <div className="join-success" role="status">
         <CheckCheck size={32}/><p className="eyebrow">Request received</p>
         <h1 ref={heading} tabIndex={-1}>Thanks, {fields.fullName.trim().split(' ')[0]}.</h1>
-        <p>Your message is with the OEC team. We will use the email you provided to follow up.</p>
+        <p>Your message is with the MOE team. We will use the email you provided to follow up.</p>
         <div className="button-row"><button className="button button--primary" onClick={async () => { try { await navigator.clipboard.writeText('https://oberlin32engineeringsociety.com/get-involved'); setCopied(true) } catch { setError('Copy this link: https://oberlin32engineeringsociety.com/get-involved') } }}><Copy size={16}/>{copied ? 'Link copied' : 'Copy club link'}</button><Link className="text-link" href="/projects">Explore projects<ArrowRight size={17}/></Link></div>
         {error && <p role="alert">{error}</p>}
       </div> : <form onSubmit={submit} noValidate className="join-form">
         <nav aria-label="Join progress" className="join-progress">{steps.map((label, index) => <button type="button" key={label} disabled={index > step || status === 'busy'} aria-current={index === step ? 'step' : undefined} onClick={() => { setStep(index); setError('') }}><span>{index < step ? <Check size={12}/> : '0' + (index + 1)}</span>{label}</button>)}</nav>
         <div className="join-step" key={step}>
-          <p className="eyebrow">Oberlin Engineering Club</p>
+          <p className="eyebrow">Makers and Engineers @Oberlin</p>
           <h1 ref={heading} tabIndex={-1}>{step === 0 ? capstoneRequest ? 'Discuss a capstone' : title : step === 1 ? 'Your details' : 'Review your request'}</h1>
           <p className="join-intro">{step === 0 ? proposal ? 'Tell us what you want to work on and what help you need.' : 'All majors are welcome. No previous engineering experience required.' : step === 1 ? 'We will follow up at the email you provide.' : 'Your request will go to the club officers.'}</p>
           {step === 0 && <>
@@ -111,7 +111,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
             {proposal && <>
               <label>What would you like to build?<textarea aria-label="What would you like to build?" name="projectIdea" value={fields.projectIdea} onChange={event => update('projectIdea', event.target.value)} rows={5} maxLength={5000} required aria-invalid={Boolean(fieldErrors.projectIdea)} aria-describedby={fieldErrors.projectIdea ? 'project-idea-error' : undefined}/>{fieldErrors.projectIdea && <small id="project-idea-error" role="alert">{fieldErrors.projectIdea[0]}</small>}</label>
               <label className="capstone-choice"><input type="checkbox" checked={capstone} onChange={event => setCapstone(event.target.checked)}/><span>Explore this as a capstone</span></label>
-              {capstoneRequest && <p className="capstone-notice">OEC can help you explore directions and find teammates. Confirm course requirements and academic credit with your adviser.</p>}
+              {capstoneRequest && <p className="capstone-notice">MOE can help you explore directions and find teammates. Confirm course requirements and academic credit with your adviser.</p>}
               <p className="proposal-member-link">Already a member? <Link href="/member/proposals">Submit in your workspace.</Link></p>
             </>}
             {type === 'partnership_inquiry' && input('organization', 'Organization or group', true)}
@@ -125,7 +125,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
         </div>
         <div className="honeypot" aria-hidden="true"><input name="honeypot" tabIndex={-1} autoComplete="off" value={fields.honeypot} onChange={event => update('honeypot', event.target.value)}/></div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <div className="join-actions">{step > 0 && <button type="button" className="join-back" aria-label="Previous step" onClick={() => setStep(value => value - 1)} disabled={status === 'busy'}><ArrowLeft size={18}/></button>}<button type="submit" className="button button--primary" disabled={status === 'busy'}>{status === 'busy' ? 'Sending...' : step === 2 ? 'Send to OEC' : 'Continue'}<ArrowRight size={17}/></button></div>
+        <div className="join-actions">{step > 0 && <button type="button" className="join-back" aria-label="Previous step" onClick={() => setStep(value => value - 1)} disabled={status === 'busy'}><ArrowLeft size={18}/></button>}<button type="submit" className="button button--primary" disabled={status === 'busy'}>{status === 'busy' ? 'Sending...' : step === 2 ? 'Send to MOE' : 'Continue'}<ArrowRight size={17}/></button></div>
       </form>}
     </div>
   </section>

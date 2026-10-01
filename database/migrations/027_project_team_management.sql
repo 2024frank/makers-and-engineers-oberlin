@@ -471,7 +471,7 @@ declare v_user uuid := (select auth.uid());v_member boolean;v_name text;v_title 
   if v_member then select display_name into v_name from public.member_profiles where user_id=v_user;
   else select coalesce(nullif(display_name,''),'Club officer') into v_name from public.admin_profiles where user_id=v_user; end if;
   insert into public.project_team_posts(project_id,author_user_id,author_name,officer,kind,body)
-    values(p_project_id,v_user,coalesce(v_name,'OEC member'),not v_member,p_kind,trim(p_body)) returning id into v_id;
+    values(p_project_id,v_user,coalesce(v_name,'Member'),not v_member,p_kind,trim(p_body)) returning id into v_id;
   insert into public.member_notifications(user_id,kind,title,body,action_url)
     select r.user_id,'PROJECT_TEAM_POST',
       case p_kind when 'BLOCKER' then 'Your team hit a blocker' when 'WIN' then 'Team win' when 'QUESTION' then 'Question for your team' else 'New team update' end,

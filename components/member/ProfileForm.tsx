@@ -44,7 +44,7 @@ export function ProfileForm({ initial }: { initial: MemberProfileSettings }) {
       <div className="member-form-grid"><label>Portfolio URL<input name="portfolioUrl" type="url" defaultValue={initial.portfolioUrl}/></label><label>GitHub URL<input name="githubUrl" type="url" defaultValue={initial.githubUrl}/></label></div>
       <label>LinkedIn URL<input name="linkedinUrl" type="url" defaultValue={initial.linkedinUrl}/></label>
     </section>
-    <section className="content-card"><h2>Directory privacy</h2><label className="member-toggle"><input name="directoryVisible" type="checkbox" defaultChecked={initial.directoryVisible}/><span>Show me in the private member directory</span></label><p>Choose exactly what approved members can see.</p>
+    <section className="content-card"><h2>Directory privacy</h2><label className="member-toggle"><input name="directoryVisible" type="checkbox" defaultChecked={initial.directoryVisible}/><span>Show me in the private member directory</span></label><p>Choose what approved members can see.</p>
       <div className="member-privacy-grid">{privacyFields.map(([key,label])=><label key={key}><input name={`visible:${key}`} type="checkbox" defaultChecked={initial.visibleFields.includes(key)}/><span>{label}</span></label>)}</div>
       <label className="member-toggle member-toggle--contact"><input name="shareContact" type="checkbox" defaultChecked={initial.shareContact}/><span>Allow approved members to see my Oberlin email</span></label>
     </section>

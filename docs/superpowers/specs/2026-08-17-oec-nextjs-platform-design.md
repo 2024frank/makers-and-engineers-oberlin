@@ -1,11 +1,11 @@
-# Oberlin Engineering Club — Next.js Platform Design
+# Makers and Engineers @Oberlin — Next.js Platform Design
 
 Date: 2026-08-17
 Status: Approved design, revised for staff invitations, approved Oberlin member accounts, project teams, and production media standards
 
 ## 1. Goal
 
-Rebuild the current Oberlin 3-2 Engineering Society website as the **Oberlin Engineering Club (OEC)** using Next.js, React, TypeScript, Supabase, and Vercel.
+Rebuild the current Oberlin 3-2 Engineering Society website as the **Makers and Engineers @Oberlin (MOE)** using Next.js, React, TypeScript, Supabase, and Vercel.
 
 The platform has three connected surfaces:
 
@@ -807,7 +807,7 @@ Migration stages:
 2. Define new migrations and compatibility mapping.
 3. Transform valid content into the new schema.
 4. Preserve useful projects, leadership, resources, events, submissions, media, and source/reference data.
-5. Rename/reframe public identity to Oberlin Engineering Club.
+5. Rename/reframe public identity to Makers and Engineers @Oberlin.
 6. Keep 3-2 content as a dedicated resource section.
 7. Validate migrated records and media.
 8. Do not auto-convert old public submissions into approved member accounts.

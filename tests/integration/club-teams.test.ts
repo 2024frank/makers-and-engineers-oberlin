@@ -27,7 +27,7 @@ beforeAll(async () => {
     create schema auth; create table auth.users(id uuid primary key,email text);
     create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
     create function auth.role() returns text language sql stable as $$ select 'authenticated'::text $$;`)
-  for (const name of ['001_core','002_content','003_cms','010_staff_invites','011_members','012_project_collaboration','013_member_staff_rls','015_project_proposal_review','016_project_team_workflows','017_project_workspace','021_submission_membership_approval','023_admin_project_lead_approval','024_club_teams']) {
+  for (const name of ['001_core','002_content','003_cms','010_staff_invites','011_members','012_project_collaboration','013_member_staff_rls','015_project_proposal_review','016_project_team_workflows','017_project_workspace','021_submission_membership_approval','023_admin_project_lead_approval','024_club_teams','029_admin_delete_actions']) {
     const path = `database/migrations/${name}.sql`
     if (existsSync(path)) await db.exec(readFileSync(path,'utf8'))
   }
@@ -157,7 +157,7 @@ it('masks hidden directory members outside their team, but shows the roster to t
   await asUser(11)
   const roster=(await list())[0].roster
   expect(roster.some(m=>m.userId===id(12))).toBe(false)
-  expect(roster.some(m=>m.displayName==='OEC member')).toBe(true)
+  expect(roster.some(m=>m.displayName==='Member')).toBe(true)
 })
 it('limits pending requests to leads and admins', async () => {
   const team=await create()
@@ -242,4 +242,23 @@ it.each(['direct','team'])('removes suspended %s project members before they are
   await db.query("update public.member_profiles set status='ACTIVE' where user_id=$1",[id(11)])
   await asUser(11)
   expect(await allowed()).toBe(false)
+})
+
+it('refuses team deletion for non-admins and for a wrong typed name', async () => {
+  const team = await create()
+  await db.exec('savepoint a')
+  await expect(db.query('select public.admin_delete_club_team($1,$2)',[team,'x'])).rejects.toThrow('CLUB_TEAM_ADMIN_REQUIRED')
+  await db.exec('rollback to savepoint a')
+  await asUser(1)
+  await expect(db.query('select public.admin_delete_club_team($1,$2)',[team,'wrong name'])).rejects.toThrow('TEAM_DELETE_CONFIRMATION_MISMATCH')
+})
+it('lets an admin delete a team that has a proposal, keeping the proposal and notifying members', async () => {
+  const team = await create()
+  await db.query("insert into public.project_proposals(proposer_user_id,title,problem,goal,team_id) values($1,'Sensor idea','A long enough problem statement for the check constraint to accept.','A long enough goal statement for the check constraint to accept.',$2)",[id(10),team])
+  await asUser(1)
+  const name = (await db.query<{ name: string }>('select name from public.club_teams where id=$1',[team])).rows[0].name
+  await db.query('select public.admin_delete_club_team($1,$2)',[team,name])
+  expect((await db.query('select 1 from public.club_teams where id=$1',[team])).rows).toHaveLength(0)
+  expect((await db.query('select team_id from public.project_proposals where proposer_user_id=$1',[id(10)])).rows[0]).toEqual({ team_id: null })
+  expect((await db.query("select 1 from public.member_notifications where user_id=$1 and kind='CLUB_TEAM_DELETED'",[id(10)])).rows).toHaveLength(1)
 })

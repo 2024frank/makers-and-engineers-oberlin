@@ -6,7 +6,7 @@ Final video: 1 minute 39 seconds, including the closing frame.
 
 ## Narration
 
-Let's get your Engineering Club account set up.
+Let's get your MOE account set up.
 
 If an officer invited you, start with the welcome email sent to your Oberlin address. Open its setup link. On the page that opens, select Continue securely.
 

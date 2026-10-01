@@ -45,9 +45,9 @@ export function createMachineWorld(scene: THREE.Scene, logo: THREE.Texture, font
   ]
   gears.forEach(g => g.traverse(o => { o.userData.action = 'activate' }))
   const title = new THREE.Group(); housing.add(title)
-  lettering(title, 'OBERLIN', font, 7.6, red, [0, .88, .8], .19)
-  lettering(title, 'ENGINEERING', font, 10.1, white, [0, -.54, .8], .2)
-  lettering(title, 'CLUB', font, 4.4, white, [0, -2.07, .8], .2)
+  lettering(title, 'MAKERS AND', font, 9.4, red, [0, .88, .8], .19)
+  lettering(title, 'ENGINEERS', font, 10.1, white, [0, -.54, .8], .2)
+  lettering(title, '@OBERLIN', font, 7.2, white, [0, -2.07, .8], .2)
   const logoPlate = box(housing, [2.05, 2.05, .2], steel, [-6.1, 2.7, .82])
   badge(housing, logo, .86, [-6.1, 2.7, .94]); logoPlate.userData.action = 'about'
 

@@ -22,7 +22,7 @@ export function HeroSection({
       <section className="photo-hero">
         <Image className="photo-hero__image" src={image} alt={section.imageAlt || media?.alt || ""} fill priority sizes="100vw"/>
         <div className="shell photo-hero__inner">
-          <h1>Oberlin<br/>Engineering Club<span aria-hidden="true">.</span></h1>
+          <h1>Makers and Engineers<br/>@Oberlin<span aria-hidden="true">.</span></h1>
           <div className="photo-hero__aside">
             <p>{publicCopy(section.body) || homeIntroduction}</p>
             <Link className="button button--light" href="/projects">Explore projects <ArrowRight size={18} aria-hidden="true"/></Link>
@@ -36,7 +36,7 @@ export function HeroSection({
       <NextMeeting events={context?.events ?? []}/>
       <section className="home-statement" aria-label="About the club">
         <div className="shell">
-          <p className="home-statement__lead">A student club at Oberlin College. We repair, design, and build real hardware together, one team project at a time.</p>
+          <p className="home-statement__lead">A student club at Oberlin College. We repair and build hardware in project teams.</p>
           <div className="home-statement__aside">
             <p>No engineering experience needed, and you don’t have to be in the 3-2 program.</p>
             <Link className="text-link" href="/about">About the club <ArrowUpRight size={17} aria-hidden="true"/></Link>

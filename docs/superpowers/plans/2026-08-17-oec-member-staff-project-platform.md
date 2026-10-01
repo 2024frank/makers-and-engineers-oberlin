@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Public brand is **Oberlin Engineering Club (OEC)**.
+- Public brand is **Makers and Engineers @Oberlin (MOE)**.
 - Staff access is invite-only; only `SUPER_ADMIN` may invite, revoke, promote, demote, suspend, or re-role staff.
 - `ADMIN` and `SUPER_ADMIN` may approve/reject verified Oberlin member applications.
 - Member activation requires a verified **`@oberlin.edu`** address and explicit approval.

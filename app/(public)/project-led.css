@@ -206,10 +206,10 @@
   .professional-site .shell { width: calc(100% - 40px); }
   .professional-site .public-header__inner { height: 78px; min-height: 78px; gap: 10px; }
   .professional-site .public-header__brand .brand-logo { width: 44px; height: 44px; }
-  .professional-site .public-header__brand > span { font-size: 16px; }
+  .professional-site .public-header__brand > span { font-size: 14px; line-height: 1.15; white-space: normal; min-width: 0; }
   .professional-site .public-header__brand small { font-size: 10px; }
   .professional-site .header-actions { gap: 8px; }
-  .professional-site .header-join { font-size: 12px; min-height: 44px; padding: 10px 12px; }
+  .professional-site .header-join { font-size: 12px; min-height: 44px; padding: 10px 12px; white-space: nowrap; }
   .professional-site .public-menu { width: 38px; height: 44px; }
   .professional-site .expanded-navigation { max-height: calc(100svh - 78px); }
   .professional-site .hero-member-links { flex-direction: row; gap: 0 16px; }

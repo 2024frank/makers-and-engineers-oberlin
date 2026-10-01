@@ -4,7 +4,7 @@ import { afterEach,describe,expect,it,vi } from 'vitest'
 import { PageEditor } from '@/components/page-builder/admin/PageEditor'
 import { ToastProvider } from '@/components/ui/Toast'
 
-const page={pageId:'00000000-0000-4000-8000-000000000001',slug:'home',title:'Home',seoTitle:'OEC',seoDescription:'',ogMediaId:null,sections:[{stableKey:'hero',isVisible:true,type:'hero' as const,layout:'minimal' as const,eyebrow:'',headline:'Build together',body:'',imageId:null,imageAlt:''}]}
+const page={pageId:'00000000-0000-4000-8000-000000000001',slug:'home',title:'Home',seoTitle:'MOE',seoDescription:'',ogMediaId:null,sections:[{stableKey:'hero',isVisible:true,type:'hero' as const,layout:'minimal' as const,eyebrow:'',headline:'Build together',body:'',imageId:null,imageAlt:''}]}
 const versions=[{id:'00000000-0000-4000-8000-000000000010',version_number:3,published_at:'2026-08-17T00:00:00Z',published_by:null,restored_from:null}]
 
 afterEach(()=>{cleanup();vi.unstubAllGlobals()})

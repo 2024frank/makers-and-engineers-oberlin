@@ -5,7 +5,7 @@ import { heroSchema } from '@/lib/page-builder/schemas/hero'
 import { AnnouncementBanner } from '@/components/public/AnnouncementBanner'
 
 afterEach(cleanup)
-const section = heroSchema.parse({ stableKey: 'hero', type: 'hero', isVisible: true, layout: 'split', eyebrow: 'Oberlin Engineering Club', headline: 'Build things. Learn together.', body: 'Projects and engineering at Oberlin.', primaryCta: { label: 'Get involved', href: '/get-involved' }, secondaryCta: { label: 'Explore projects', href: '/projects' } })
+const section = heroSchema.parse({ stableKey: 'hero', type: 'hero', isVisible: true, layout: 'split', eyebrow: 'Makers and Engineers @Oberlin', headline: 'Build things. Learn together.', body: 'Projects and engineering at Oberlin.', primaryCta: { label: 'Get involved', href: '/get-involved' }, secondaryCta: { label: 'Explore projects', href: '/projects' } })
 
 it('places project discovery and the next published meeting in the homepage opening', () => {
   const future = new Date(Date.now() + 86400000).toISOString()

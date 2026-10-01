@@ -8,5 +8,5 @@ export default async function SubmissionsPage({ searchParams }: { searchParams: 
   if (admin.role === 'EDITOR') return <AccessDenied title="Admin access required" body="Only Admins and Super Admins can review requests and add people to project teams."/>
   const params = await searchParams
   const status = typeof params.status === 'string' && ['new', 'reviewed', 'approved', 'archived'].includes(params.status) ? params.status : ''
-  return <main className="admin-panel"><div className="admin-page-heading"><div><h1>Inbox</h1><p>Messages and requests from the club website.</p></div></div><SubmissionInbox initialRows={await listSubmissions()} initialStatus={status} projects={await listProjectChoices()}/></main>
+  return <main className="admin-panel"><div className="admin-page-heading"><div><h1>Inbox</h1><p>Messages and requests from the club website.</p></div></div><SubmissionInbox initialRows={await listSubmissions()} initialStatus={status} projects={await listProjectChoices()} canDelete/></main>
 }

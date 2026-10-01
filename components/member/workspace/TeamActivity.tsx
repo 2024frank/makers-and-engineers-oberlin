@@ -7,7 +7,7 @@ import { useWorkspaceAction, WorkspaceNotice } from './useWorkspaceAction'
 
 const kindHints: Record<TeamPostKind, string> = {
   UPDATE: 'What did you work on, and what is next?',
-  WIN: 'Something worked! Share it with the team.',
+  WIN: 'What worked, and what did it unblock?',
   BLOCKER: 'What is stuck, and what would unblock it?',
   QUESTION: 'What do you need to know from the team?',
 }

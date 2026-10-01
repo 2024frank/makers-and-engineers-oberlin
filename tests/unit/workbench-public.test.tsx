@@ -30,10 +30,10 @@ it('uses public URLs for the drawer, navigation and join lever, without preview 
 })
 
 it('renders real signup content on direct links and syncs machine progress without a demo form', () => {
-  render(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/get-involved', navigate: vi.fn() }}><h1>Live registration</h1><button>Send to OEC</button></WorkbenchPreview>)
+  render(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/get-involved', navigate: vi.fn() }}><h1>Live registration</h1><button>Send to MOE</button></WorkbenchPreview>)
   expect(screen.getByRole('heading', { name: 'Live registration' })).toBeVisible()
   expect(screen.getByText('Membership', { selector: '.wb-label' })).toBeVisible()
-  expect(screen.getByRole('button', { name: 'Send to OEC' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Send to MOE' })).toBeVisible()
   expect(screen.queryByText(/Local preview only/)).not.toBeInTheDocument()
   act(() => window.dispatchEvent(new CustomEvent('oec-join-progress', { detail: { phase: 2 } })))
   expect(scene.progress).toBe(3)
@@ -47,7 +47,7 @@ it('keeps server-rendered project details and changes views when browser history
   result.rerender(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/projects', navigate }}/>)
   expect(screen.getByRole('heading', { name: /Project catalog/ })).toBeVisible()
   result.rerender(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/', navigate }}/>)
-  expect(screen.getByRole('heading', { name: 'Oberlin Engineering Club' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Makers and Engineers @Oberlin' })).toBeVisible()
 })
 
 it.each(['/about', '/resources', '/pathway', '/opportunities', '/news', '/events/workshop'])('keeps published content accessible at %s', pathname => {

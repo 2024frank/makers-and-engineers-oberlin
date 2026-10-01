@@ -14,8 +14,8 @@ export const publicNavigation = [
   ["Resources", "/resources"],
   ["Opportunities", "/opportunities"],
   ["News", "/news"],
-  ["Member Sign In", "/member/login"],
-  ["Get Involved", "/get-involved"],
+  ["Member sign in", "/member/login"],
+  ["Get involved", "/get-involved"],
 ] as const;
 export function PublicHeader({
   items,
@@ -85,12 +85,12 @@ export function PublicHeader({
         <Link
           href="/"
           className="public-header__brand"
-          aria-label="Oberlin Engineering Club home"
+          aria-label="Makers and Engineers @Oberlin home"
           onClick={() => setOpen(false)}
         >
           <BrandLogo variant="badge" src={logoSrc} />
           <span>
-            Oberlin<small>Engineering Club</small>
+            Makers and Engineers<small>@Oberlin</small>
           </span>
         </Link>
         <nav className="desktop-primary" aria-label="Primary navigation">

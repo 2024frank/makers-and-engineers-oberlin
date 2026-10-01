@@ -1,8 +1,8 @@
-# Oberlin Engineering Club Next.js Platform Implementation Plan
+# Makers and Engineers @Oberlin Next.js Platform Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rebuild the Oberlin Engineering Club public website and officer/admin portal as a single Next.js App Router application backed by Supabase, with a structured CMS, Draft → Preview → Publish workflow, version history, protected roles, and migration of valid content from the existing Astro/Supabase site.
+**Goal:** Rebuild the Makers and Engineers @Oberlin public website and officer/admin portal as a single Next.js App Router application backed by Supabase, with a structured CMS, Draft → Preview → Publish workflow, version history, protected roles, and migration of valid content from the existing Astro/Supabase site.
 
 **Architecture:** One Next.js application contains the public site, `/admin`, authenticated draft preview routes, and route handlers. Public structured content remains normalized in PostgreSQL; admin edits are staged in generic draft records and transactionally published into canonical tables with immutable revision snapshots. Page-builder content uses typed section schemas, editable draft sections, and immutable page-version snapshots so preview and production share the same renderer without leaking drafts.
 
@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- The public brand is **Oberlin Engineering Club (OEC)**, not Oberlin 3-2 Engineering Society.
+- The public brand is **Makers and Engineers @Oberlin (MOE)**, not Oberlin 3-2 Engineering Society.
 - The **3-2 Pathway** remains a dedicated top-level destination, but it is one resource within the broader club.
 - Launch includes invite-only staff accounts and approved `@oberlin.edu` member accounts. Member/community implementation is specified in `docs/superpowers/plans/2026-08-17-oec-member-staff-project-platform.md`.
 - Global staff roles are `SUPER_ADMIN`, `ADMIN`, and `EDITOR`; approved students use member lifecycle states, and `PROJECT_LEAD` is project-scoped rather than a global staff role.
@@ -209,7 +209,7 @@ export function BrandLogo({ variant = 'horizontal' }: { variant?: 'horizontal' |
   return (
     <Image
       src={badge ? '/brand/oec-badge.png' : '/brand/oec-horizontal.jpg'}
-      alt="Oberlin Engineering Club"
+      alt="Makers and Engineers @Oberlin"
       width={badge ? 96 : 360}
       height={badge ? 96 : 120}
       priority

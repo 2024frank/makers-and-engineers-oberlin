@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Archive, Check, Mail, Search } from 'lucide-react'
 import { useToast } from '@/components/ui/Toast'
 import Link from 'next/link'
+import { DeleteConfirm } from '@/components/admin/DeleteConfirm'
 import { ProjectInterestDecision } from '@/components/admin/projects/ProjectInterestDecision'
 export type SubmissionRow = { id: string; type: string; full_name: string; email: string; payload: Record<string, unknown>; status: string; created_at: string }
 function approveErrorMessage(code: string) {
@@ -12,7 +13,7 @@ function approveErrorMessage(code: string) {
   if (code.startsWith('MEMBERSHIP_REQUEST_BLOCKED')) return 'This person has a rejected or suspended request. Check Member requests.'
   return 'Could not start membership. Please try again.'
 }
-export function SubmissionInbox({ initialRows, initialStatus = '', projects = [] }: { initialRows: SubmissionRow[]; initialStatus?: string; projects?: { id: string; title: string }[] }) {
+export function SubmissionInbox({ initialRows, initialStatus = '', projects = [], canDelete = false }: { initialRows: SubmissionRow[]; initialStatus?: string; projects?: { id: string; title: string }[]; canDelete?: boolean }) {
   const [rows, setRows] = useState(initialRows), [busyId, setBusyId] = useState('')
   const [query, setQuery] = useState(''), [status, setFilter] = useState(initialStatus), [error, setError] = useState('')
   const toast = useToast()
@@ -42,6 +43,15 @@ export function SubmissionInbox({ initialRows, initialStatus = '', projects = []
       setError(message); toast(message, 'error')
     } finally { setBusyId('') }
   }
+  async function remove(row: SubmissionRow): Promise<string | null> {
+    const response = await fetch(`/api/admin/submissions?id=${encodeURIComponent(row.id)}`, { method: 'DELETE' })
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}))
+      return body.error === 'SUBMISSION_NOT_ARCHIVED' ? 'Archive this request before deleting it.' : body.error === 'FORBIDDEN' || body.error === 'SUBMISSION_DELETE_FORBIDDEN' ? 'Only an Admin or Super Admin can delete requests.' : 'Could not delete this request. Nothing was removed; refresh and try again.'
+    }
+    setRows(previous => previous.filter(item => item.id !== row.id)); toast('Request deleted.')
+    return null
+  }
   return <>
     <div className="portal-inbox-filters"><div className="content-search"><label><Search size={18}/><input type="search" aria-label="Search requests" placeholder="Search by name or email" value={query} onChange={event => setQuery(event.target.value)}/></label><select aria-label="Request status" value={status} onChange={event => setFilter(event.target.value)}><option value="">All requests</option>{['new', 'reviewed', 'approved', 'archived'].map(value => <option value={value} key={value}>{value[0].toUpperCase() + value.slice(1)}</option>)}</select><span role="status">{visible.length} shown</span></div></div>
     {error && <p className="portal-form-error" role="alert">{error}</p>}
@@ -52,6 +62,7 @@ export function SubmissionInbox({ initialRows, initialStatus = '', projects = []
       {row.type === 'join_project' && row.status !== 'archived' && <ProjectInterestDecision source="submission" requestId={row.id} memberName={row.full_name} memberEmail={row.email} projectTitle={String(row.payload?.project ?? '')} projects={projects} initialApproved={row.status === 'approved'} onDone={() => setRows(previous => previous.map(item => item.id === row.id ? { ...item, status: 'approved' } : item))}/>}
       {row.status === 'new' && <button disabled={Boolean(busyId)} onClick={() => void update(row.id, 'reviewed')}><Check size={16}/>Mark reviewed</button>}
       {row.status !== 'archived' && <button disabled={Boolean(busyId)} onClick={() => void update(row.id, 'archived')}><Archive size={16}/>Archive</button>}
+      {row.status === 'archived' && canDelete && <DeleteConfirm compact label="Delete request" itemName={`${row.full_name}'s request`} consequence="This permanently removes the request and the details they submitted. A record that it was deleted is kept in the audit log, without their details." onConfirm={() => remove(row)}/>}
     </footer></article>)}</div>
     {!visible.length && <div className="portal-empty"><div><h2>{rows.length ? 'No matching requests' : 'No requests yet'}</h2>{(query || status) && <button className="button button--ghost" onClick={() => { setQuery(''); setFilter('') }}>Clear filters</button>}</div></div>}
   </>

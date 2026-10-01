@@ -15,7 +15,7 @@ export const siteSettingsSchema=z.object({
   brand:z.object({badgeMediaId:nullableUuid,horizontalMediaId:nullableUuid}).strict()
 }).strict()
 export type SiteSettings=z.infer<typeof siteSettingsSchema>
-export const defaultSiteSettings:SiteSettings={contactEmail:'engineering@oberlin.edu',footerText:'Build • Learn • Engineer Together',socialLinks:{instagram:'',linkedin:'',github:''},defaultOgMediaId:null,seoTitlePattern:'%s · Oberlin Engineering Club',announcement:{enabled:false,text:'',href:''},brand:{badgeMediaId:null,horizontalMediaId:null}}
+export const defaultSiteSettings:SiteSettings={contactEmail:'engineering@oberlin.edu',footerText:'Build • Learn • Engineer Together',socialLinks:{instagram:'',linkedin:'',github:''},defaultOgMediaId:null,seoTitlePattern:'%s · Makers and Engineers @Oberlin',announcement:{enabled:false,text:'',href:''},brand:{badgeMediaId:null,horizontalMediaId:null}}
 export function parseSiteSettings(input:unknown):SiteSettings{return siteSettingsSchema.parse(input)}
 
 export async function getAdminSiteSettings():Promise<SiteSettings>{

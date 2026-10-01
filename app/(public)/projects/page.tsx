@@ -18,7 +18,7 @@ export default async function ProjectsPage({searchParams}:{searchParams:Promise<
   const [projects,allProjects]=await Promise.all([listPublishedProjects(filters),listPublishedProjects({skills:[]})])
   const [media,teamStats]=await Promise.all([publicMedia(projects.map(p=>p.cover_media_id).filter(Boolean)),getProjectTeamStats(projects.map(p=>p.id))])
   const advanced=allProjects.length>=4?filters:undefined
-  return <><DirectoryHero slug="projects" eyebrow="Projects" title="Projects" description="Explore project teams, the work involved, and how to take part."/><section className="directory"><div className="shell">
+  return <><DirectoryHero slug="projects" eyebrow="Projects" title="Projects" description="Project teams, what each one is building, and how to join."/><section className="directory"><div className="shell">
   {projects.length?<ProjectCards projects={projectCards(projects,media,teamStats)} searchable filters={advanced}/>:<>{advanced&&<AdvancedProjectFilters defaults={advanced}/>}<div className="empty-state"><h2>{allProjects.length?'No projects match these filters.':'Project teams are forming.'}</h2><p>{allProjects.length?'Try clearing your filters to see all projects.':'Contact the club to join a team or propose a project.'}</p><Link className="button button--primary" href={allProjects.length?'/projects':'/get-involved?type=propose_project'}>{allProjects.length?'Clear filters':'Propose a project'}</Link></div></>}
   </div></section></>
 }

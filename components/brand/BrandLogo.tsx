@@ -8,6 +8,6 @@ export function BrandLogo({ variant = 'horizontal', className, src }: { variant?
   const fallback=badge?'/brand/oec-badge-circle.png':'/brand/oec-horizontal.png'
   const width=badge?96:360
   const height=badge?96:153
-  if(src)return <img className={clsx('brand-logo',className)} src={src} alt="Oberlin Engineering Club" width={width} height={height}/>
-  return <Image className={clsx('brand-logo', className)} src={fallback} alt="Oberlin Engineering Club" width={width} height={height} priority />
+  if(src)return <img className={clsx('brand-logo',className)} src={src} alt="Makers and Engineers @Oberlin" width={width} height={height}/>
+  return <Image className={clsx('brand-logo', className)} src={fallback} alt="Makers and Engineers @Oberlin" width={width} height={height} priority />
 }

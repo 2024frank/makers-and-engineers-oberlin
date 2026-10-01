@@ -32,6 +32,8 @@ const errors: Record<string, string> = {
   TRANSFER_TEAM_LEAD_FIRST: 'Choose another team lead before leaving.',
   PROJECT_NOT_ACCEPTING_TEAMS: 'This project is not accepting teams right now.',
   PROJECT_REVIEW_FORBIDDEN: 'Only a project lead or admin can review this request.',
+  CLUB_TEAM_ADMIN_REQUIRED: 'Only an Admin or Super Admin can delete a team.',
+  TEAM_DELETE_CONFIRMATION_MISMATCH: 'The name you typed does not match this team. Nothing was deleted.',
   TEAM_PROJECT_NOT_PENDING: 'This project request has already been handled.',
 }
 export function teamError(error: unknown) {

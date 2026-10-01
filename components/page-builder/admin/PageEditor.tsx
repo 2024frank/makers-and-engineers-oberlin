@@ -137,7 +137,7 @@ export function PageEditor({
     <EditorDrawer open={Boolean(current)} title={current ? `Edit ${current.type.replaceAll('_', ' ')}` : 'Edit section'} description="Only fields allowed by this block’s design schema are editable." onClose={() => setEditing(null)}>
       {current && <SectionEditor key={current.stableKey} section={current} mediaAssets={mediaAssets} onApply={next => { setPage(currentPage => ({ ...currentPage, sections: currentPage.sections.map(section => section.stableKey === next.stableKey ? next : section) })); setEditing(null) }} />}
     </EditorDrawer>
-    <EditorDrawer open={adding} title="Add a section" description="Choose from approved OEC layouts." onClose={() => setAdding(false)}>
+    <EditorDrawer open={adding} title="Add a section" description="Choose from approved layouts." onClose={() => setAdding(false)}>
       <SectionPicker onPick={section => { setPage(currentPage => ({ ...currentPage, sections: [...currentPage.sections, section] })); setAdding(false); setEditing(section.stableKey) }} />
     </EditorDrawer>
   </main>

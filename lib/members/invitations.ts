@@ -19,6 +19,10 @@ export function memberStatusLabel(row: { status: MembershipStatus; preapprovedAt
 }
 
 export function membershipErrorMessage(code: string) {
+  if (code.includes('MEMBER_IS_STAFF')) return 'This person is also an officer. Change their access from Staff, roles & invitations first.'
+  if (code.includes('MEMBER_ALREADY_REMOVED')) return 'This member was already removed. Refresh the list.'
+  if (code.includes('MEMBERSHIP_REQUEST_NOT_FOUND')) return 'This member no longer exists. Refresh the list.'
+  if (code.includes('MEMBER_REVIEW_FORBIDDEN')) return 'Only an Admin or Super Admin can remove members.'
   if (code.startsWith('MEMBERSHIP_REQUEST_BLOCKED')) return 'This account is rejected or suspended. Its access has not changed.'
   if (code.includes('EMAIL_CONFIG_MISSING')) return 'Email is not configured. The record is saved; contact the site administrator before retrying.'
   if (code.includes('EMAIL_SEND_FAILED') || code.includes('MEMBER_AUTH_LINK_FAILED')) return 'The record is saved, but the email could not be sent. Try Resend email.'

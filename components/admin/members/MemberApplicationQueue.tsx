@@ -5,6 +5,7 @@ import { Check, Mail, Plus, RefreshCw, Search, X } from 'lucide-react'
 import type { MembershipRequestSummary } from '@/lib/auth/memberServer'
 import { memberStatusLabel, membershipErrorMessage, parseMemberEmails } from '@/lib/members/invitations'
 import { formatPortalDate } from '@/lib/format/portalDate'
+import { DeleteConfirm } from '@/components/admin/DeleteConfirm'
 import { useFormReady } from '@/components/member/useFormReady'
 
 type Filter = 'all' | 'review' | 'setup' | 'active' | 'inactive'
@@ -56,6 +57,16 @@ export function MemberApplicationQueue({ initial, initialFilter = 'review' }: { 
     finally { setBusy('') }
   }
 
+  async function remove(row: MembershipRequestSummary): Promise<string | null> {
+    setError(''); setNotice('')
+    const response = await fetch(`/api/admin/members?requestId=${encodeURIComponent(row.id)}`, { method: 'DELETE' })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) return membershipErrorMessage(body.error ?? '')
+    setRows(body.requests)
+    setNotice(body.result?.outcome === 'SUSPENDED' ? `${row.displayName} was removed from the club and can no longer sign in.` : `${row.displayName}'s request was deleted.`)
+    return null
+  }
+
   async function sendInvitations() {
     if (busy) return
     setBusy('batch'); setError(''); setNotice('')
@@ -83,12 +94,12 @@ export function MemberApplicationQueue({ initial, initialFilter = 'review' }: { 
     {error && <p className="portal-form-error" role="alert">{error}</p>}
     {notice && <p className="portal-form-success" role="status">{notice}</p>}
     <div className="member-list-search"><label><Search size={18}/><input type="search" aria-label="Search members" placeholder="Search name or email" value={query} onChange={event => setQuery(event.target.value)}/></label><span>{visible.length} shown</span><button disabled={Boolean(busy)} onClick={() => void refresh()} aria-label="Refresh members" title="Refresh members"><RefreshCw size={17}/></button></div>
-    <div className="member-review-list">{visible.map(row => <MemberReviewRow key={row.id} row={row} busy={Boolean(busy)} onAction={act}/>)}</div>
+    <div className="member-review-list">{visible.map(row => <MemberReviewRow key={row.id} row={row} busy={Boolean(busy)} onAction={act} onRemove={remove}/>)}</div>
     {!visible.length && <div className="portal-empty"><div><h2>{filter === 'review' ? 'No members need approval' : 'No members in this view'}</h2>{(filter !== 'all' || query) && <button onClick={() => { setFilter('all'); setQuery('') }}>Show everyone</button>}</div></div>}
   </>
 }
 
-function MemberReviewRow({ row, busy, onAction }: { row: MembershipRequestSummary; busy: boolean; onAction: (row: MembershipRequestSummary, action: 'APPROVE' | 'REJECT' | 'resend', note?: string) => Promise<void> }) {
+function MemberReviewRow({ row, busy, onAction, onRemove }: { row: MembershipRequestSummary; busy: boolean; onRemove: (row: MembershipRequestSummary) => Promise<string | null>; onAction: (row: MembershipRequestSummary, action: 'APPROVE' | 'REJECT' | 'resend', note?: string) => Promise<void> }) {
   const [declining, setDeclining] = useState(false)
   const [note, setNote] = useState('')
   const blocked = ['REJECTED', 'SUSPENDED'].includes(row.status)
@@ -101,5 +112,8 @@ function MemberReviewRow({ row, busy, onAction }: { row: MembershipRequestSummar
       {row.status === 'PENDING_APPROVAL' && <button disabled={busy} onClick={() => setDeclining(!declining)}>Decline</button>}
     </div>
     {declining && <div className="member-decline"><label>Reason (optional)<textarea value={note} onChange={event => setNote(event.target.value)} rows={2}/></label><div className="system-actions"><button disabled={busy} onClick={() => void onAction(row, 'REJECT', note)}>Decline & email member</button><button onClick={() => setDeclining(false)}>Cancel</button></div></div>}
+    {row.status !== 'SUSPENDED' && <div className="member-remove">{row.status === 'ACTIVE'
+      ? <DeleteConfirm compact label="Remove member" confirmLabel="Remove member" itemName={row.displayName} consequence="They are signed out of the member portal and can no longer sign in. Their past activity stays on record for the officers; officer accounts cannot be removed here." onConfirm={() => onRemove(row)}/>
+      : <DeleteConfirm compact label="Delete request" itemName={`${row.displayName}'s request`} consequence="This removes the request from the list, and anything they have not yet finished setting up is lost." onConfirm={() => onRemove(row)}/>}</div>}
   </article>
 }

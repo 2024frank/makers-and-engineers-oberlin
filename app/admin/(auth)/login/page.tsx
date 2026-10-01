@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
     try {
       const response = await fetch('/api/auth/staff/password-reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: String(form.get('email') ?? '') }) })
       if (!response.ok) throw new Error('Could not send a password reset right now.')
-      setNotice('If that address belongs to an active OEC officer, a password reset link was sent.')
+      setNotice('If that address belongs to an active officer, a password reset link was sent.')
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not send password reset.') }
     finally { setRecoveryBusy(false) }
   }

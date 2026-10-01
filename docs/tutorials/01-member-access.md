@@ -6,7 +6,7 @@ Final video: 1 minute 20 seconds, including the closing frame.
 
 ## Narration
 
-Hey everyone. Here's how to get into your Engineering Club account and find what you need.
+Hey everyone. Here's how to get into your MOE account and find what you need.
 
 Open the member sign-in page at the address on screen. Use the Oberlin email you signed up with and the password you chose when you activated your account. Then select Sign in.
 

@@ -28,8 +28,8 @@ describe('system administration boundaries',()=>{
   })
 
   it('accepts structured site settings but not raw HTML or CSS controls',()=>{
-    const parsed=parseSiteSettings({contactEmail:'engineering@oberlin.edu',footerText:'Build together',socialLinks:{instagram:'https://instagram.com/oec'},defaultOgMediaId:null,seoTitlePattern:'%s · OEC',announcement:{enabled:false,text:'',href:''},brand:{badgeMediaId:null,horizontalMediaId:null}})
-    expect(parsed.seoTitlePattern).toBe('%s · OEC')
+    const parsed=parseSiteSettings({contactEmail:'engineering@oberlin.edu',footerText:'Build together',socialLinks:{instagram:'https://instagram.com/oec'},defaultOgMediaId:null,seoTitlePattern:'%s · MOE',announcement:{enabled:false,text:'',href:''},brand:{badgeMediaId:null,horizontalMediaId:null}})
+    expect(parsed.seoTitlePattern).toBe('%s · MOE')
     expect(Object.keys(parsed)).not.toContain('customCss')
     expect(()=>parseSiteSettings({...parsed,customHtml:'<script>alert(1)</script>'})).toThrow()
   })

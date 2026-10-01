@@ -63,7 +63,7 @@ export default function SpatialWorkshop({ children }: { children: React.ReactNod
     renderer.toneMappingExposure = 1.35
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
-    renderer.domElement.setAttribute('aria-label', 'Oberlin Engineering Club interactive workshop')
+    renderer.domElement.setAttribute('aria-label', 'Makers and Engineers @Oberlin interactive workshop')
     host.appendChild(renderer.domElement)
     const scene = new THREE.Scene()
     scene.fog = new THREE.Fog(0x161b19, 38, 70)
@@ -244,13 +244,13 @@ export default function SpatialWorkshop({ children }: { children: React.ReactNod
 
   return <div className={`spatial-workshop ${home ? 'is-home' : 'is-station'}`}>
     <div ref={world} className="spatial-world"/>
-    <header className="spatial-header"><Link className="spatial-brand" href="/"><Image src="/brand/oec-badge-circle.png" alt="Oberlin Engineering Club" width={44} height={44} priority/><span>OBERLIN<small>ENGINEERING CLUB</small></span></Link><div><Link className="spatial-join" href="/get-involved" onClick={() => setMenu(false)}>Join the club <ArrowUpRight size={16}/></Link><button ref={menuTrigger} type="button" aria-label={menu ? 'Close navigation' : 'Open navigation'} aria-expanded={menu} onClick={() => setMenu(value => !value)}>{menu ? <X size={21}/> : <Menu size={21}/>}</button></div></header>
+    <header className="spatial-header"><Link className="spatial-brand" href="/"><Image src="/brand/oec-badge-circle.png" alt="Makers and Engineers @Oberlin" width={44} height={44} priority/><span>OBERLIN<small>ENGINEERING CLUB</small></span></Link><div><Link className="spatial-join" href="/get-involved" onClick={() => setMenu(false)}>Join the club <ArrowUpRight size={16}/></Link><button ref={menuTrigger} type="button" aria-label={menu ? 'Close navigation' : 'Open navigation'} aria-expanded={menu} onClick={() => setMenu(value => !value)}>{menu ? <X size={21}/> : <Menu size={21}/>}</button></div></header>
     {home && <div className="spatial-intro"><p>Oberlin College</p><h1>Oberlin<br/>Engineering<br/>Club.</h1></div>}
     <nav className="station-labels" aria-label="Workshop stations" aria-hidden={!home}>{stations.map((station, index) => <Link key={station.href} href={station.href} tabIndex={home ? 0 : -1} ref={element => { labelRefs.current[index] = element }}><span>{String(index + 1).padStart(2, '0')}</span>{station.name}<ArrowUpRight size={13}/></Link>)}</nav>
     {!home && <Link className="spatial-back" href="/"><ArrowLeft size={16}/>Workshop</Link>}
     {menu && <nav ref={menuPanel} className="spatial-menu" aria-label="All pages">{[...stations.map(station => [station.name, station.href]), ...extraLinks].map(([name, href]) => <Link href={href} key={href} onClick={() => setMenu(false)}>{name}<ArrowUpRight size={16}/></Link>)}</nav>}
     <div className="spatial-tools"><button type="button" aria-label="Reset workshop view" title="Reset workshop view" onClick={() => controlsRef.current.reset()}><RotateCcw size={16}/></button><button type="button" aria-label={fullScreen ? 'Exit full screen' : 'Enter full screen'} title={fullScreen ? 'Exit full screen' : 'Enter full screen'} onClick={async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else await world.current?.parentElement?.requestFullscreen() } catch { /* Fullscreen is optional in embedded browsers. */ } }}>{fullScreen ? <Minimize size={16}/> : <Maximize size={16}/>}</button></div>
     {screen && !home && createPortal(children, screen)}
-    {failed && <div className="spatial-fallback"><h1>Oberlin Engineering Club</h1><p>The 3D workshop could not start on this device.</p><nav>{stations.map(station => <Link href={station.href} key={station.href}>{station.name}<ArrowUpRight size={16}/></Link>)}</nav>{!home && children}</div>}
+    {failed && <div className="spatial-fallback"><h1>Makers and Engineers @Oberlin</h1><p>The 3D workshop could not start on this device.</p><nav>{stations.map(station => <Link href={station.href} key={station.href}>{station.name}<ArrowUpRight size={16}/></Link>)}</nav>{!home && children}</div>}
   </div>
 }

@@ -49,7 +49,7 @@ export function StaffActivationForm({ token }: { token: string }) {
   }
 
   return <form onSubmit={submit} className="settings-form">
-    <p>If you already have an OEC member account, this sets the password for that same account. You can enter your current password.</p>
+    <p>If you already have a MOE member account, this sets the password for that same account. You can enter your current password.</p>
     <label>Choose password<input name="password" type="password" minLength={10} autoComplete="new-password" required /></label>
     <label>Confirm password<input name="confirmation" type="password" minLength={10} autoComplete="new-password" required /></label>
     <button className="button--cardinal" type="submit" disabled={busy}>{busy ? 'Activating…' : 'Activate officer account'}</button>

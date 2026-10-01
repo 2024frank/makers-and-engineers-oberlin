@@ -15,7 +15,7 @@ function headline(work: MemberWork, hasProjects: boolean) {
   const overdue = work.mine.filter(m => isOverdue(m.dueDate, m.status)).length
   if (work.mine.length) return `You own ${work.mine.length} open milestone${work.mine.length === 1 ? '' : 's'}${overdue ? `, and ${overdue === 1 ? 'one is' : `${overdue} are`} overdue` : ''}.`
   if (work.unclaimed.length) return 'Your teams have milestones nobody has taken yet.'
-  if (hasProjects) return 'Here is where your projects stand.'
+  if (hasProjects) return 'Your projects are listed below.'
   return 'Join a project team, or bring an idea of your own.'
 }
 
@@ -58,7 +58,7 @@ export function MemberDashboard({ displayName, summary, teams, clubTeams = [], p
           <QuickMilestoneAction projectId={m.projectId} milestoneId={m.id} title={m.title} mode="done"/>
         </li>)}</ul> : <p className="pt-hint">You have no milestones of your own right now.</p>}
         {work.unclaimed.length > 0 && <>
-          <h3 className="dash-subhead">Up for grabs</h3>
+          <h3 className="dash-subhead">Unclaimed milestones</h3>
           <ul className="dash-list">{work.unclaimed.map(m => <li key={m.id}>
             <div><strong>{m.title}</strong><small><Link href={`/member/teams/${m.projectId}`}>{m.projectTitle}</Link>{m.dueDate && <span>Due {formatDueDate(m.dueDate)}</span>}</small></div>
             <QuickMilestoneAction projectId={m.projectId} milestoneId={m.id} title={m.title} mode="claim"/>

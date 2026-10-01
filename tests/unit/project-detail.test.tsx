@@ -42,7 +42,7 @@ it('shows the published project photograph with the brief and working interest l
   expect(screen.getByRole('heading', { name: 'Skills you can contribute' })).toBeVisible()
   expect(screen.getByRole('list', { name: 'Project skills' })).toHaveTextContent('Firmware')
   expect(screen.getByRole('link', { name: 'Sign in to apply' })).toHaveAttribute('href', '/member/login?next=%2Fmember%2Fapplications%3Fproject%3Dprinter')
-  expect(screen.getByRole('link', { name: 'Join OEC first' })).toHaveAttribute('href', '/get-involved')
+  expect(screen.getByRole('link', { name: 'Join MOE first' })).toHaveAttribute('href', '/get-involved')
   expect(screen.getByRole('link', { name: 'Sign in to save' })).toHaveAttribute('href', '/member/login')
 })
 

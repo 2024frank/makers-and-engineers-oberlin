@@ -7,7 +7,7 @@ import '../concepts.css'
 import '../machine.css'
 
 const directions = ['robot', 'machine', 'hall']
-export const metadata: Metadata = { title: 'Design concepts | Oberlin Engineering Club', robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: 'Design concepts | Makers and Engineers @Oberlin', robots: { index: false, follow: false } }
 export default async function ConceptPage({ params }: { params: Promise<{ direction: string }> }) {
   const { direction } = await params
   if (!directions.includes(direction)) notFound()

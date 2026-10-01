@@ -19,7 +19,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.clearAllMocks() })
 const future = '2099-01-01T00:00:00.000Z'
 const invite = { id: 'invite-1', email: 'ada@oberlin.edu', displayName: 'Ada', role: 'EDITOR' as const, scopes: [], canPublish: false, status: 'INVITED' as const, expiresAt: future, createdAt: '2026-09-20T00:00:00.000Z' }
 const json = (body: unknown, ok = true) => ({ ok, json: async () => body })
-const settings = { contactEmail: 'engineering@oberlin.edu', footerText: '', socialLinks: { instagram: '', linkedin: '', github: '' }, defaultOgMediaId: null, seoTitlePattern: '%s · OEC', announcement: { enabled: false, text: '', href: '' }, brand: { badgeMediaId: null, horizontalMediaId: null } }
+const settings = { contactEmail: 'engineering@oberlin.edu', footerText: '', socialLinks: { instagram: '', linkedin: '', github: '' }, defaultOgMediaId: null, seoTitlePattern: '%s · MOE', announcement: { enabled: false, text: '', href: '' }, brand: { badgeMediaId: null, horizontalMediaId: null } }
 
 async function sendInvitation() {
   const user = userEvent.setup()

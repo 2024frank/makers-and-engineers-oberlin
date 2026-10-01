@@ -10,7 +10,7 @@ export function MemberLoginPanel({ authError, status, next }: { authError?: stri
   const [mode,setMode] = useState<'password'|'magic'|'reset'|'request'>('password')
   const [error, setError] = useState(authError === 'auth_link' ? 'This email link has expired or has already been used. Request a new setup email below and open the newest message.' : '')
   const [notice, setNotice] = useState(status === 'approval_required'
-    ? 'Your OEC member account must be approved and active before you can enter the member portal.'
+    ? 'Your member account must be approved and active before you can enter the member portal.'
     : status === 'password_reset' ? 'Password updated. Sign in with your new password.' : '')
   const [busy, setBusy] = useState('')
 
@@ -41,7 +41,7 @@ export function MemberLoginPanel({ authError, status, next }: { authError?: stri
         body: JSON.stringify({ email: String(form.get('email') ?? ''), next: officerLoginNext(next) }),
       })
       const body = await response.json()
-      if (!response.ok) throw new Error(body.error === 'ACTIVE_MEMBER_REQUIRED' ? 'That email does not have an active approved OEC member account.' : body.error ?? 'Could not send sign-in link.')
+      if (!response.ok) throw new Error(body.error === 'ACTIVE_MEMBER_REQUIRED' ? 'That email does not have an active approved MOE member account.' : body.error ?? 'Could not send sign-in link.')
       setNotice('Sign-in link sent to your approved Oberlin email.')
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not send sign-in link.') }
     finally { setBusy('') }
@@ -59,7 +59,7 @@ export function MemberLoginPanel({ authError, status, next }: { authError?: stri
         body: JSON.stringify({ email: String(form.get('email') ?? '') }),
       })
       if (!response.ok) throw new Error('Could not send a password reset right now.')
-      setNotice('If that address belongs to an active OEC member, a password reset link was sent to the Oberlin email.')
+      setNotice('If that address belongs to an active member, a password reset link was sent to the Oberlin email.')
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not send password reset.') }
     finally { setBusy('') }
   }

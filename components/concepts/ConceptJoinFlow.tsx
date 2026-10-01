@@ -25,8 +25,8 @@ export function ConceptJoinFlow({ project, onProgress, onDone }: { project: stri
   return <form className="concept-join" onSubmit={advance}>
     <p className="concept-kicker">Join the club <span>0{step + 1} / 03</span></p>
     <div className="concept-progress" aria-label={`Step ${step + 1} of 3`}><span style={{ width: `${(step + 1) / 3 * 100}%` }}/></div>
-    <h2>{step === 0 ? 'What pulls you in?' : step === 1 ? 'Make yourself at home.' : 'Looking good.'}</h2>
-    <p>{step === 0 ? 'Pick your interests. No experience required.' : step === 1 ? 'Every major and every experience level is welcome.' : 'Take one last look at your details.'}</p>
+    <h2>{step === 0 ? 'Your interests' : step === 1 ? 'Your details' : 'Review'}</h2>
+    <p>{step === 0 ? 'Pick your interests. No experience required.' : step === 1 ? 'All majors and experience levels are welcome.' : 'Take one last look at your details.'}</p>
     {project && <p className="concept-project-choice">Project: <strong>{project}</strong></p>}
     {step === 0 && <fieldset className="concept-interests"><legend className="concept-sr">Your interests</legend>{interests.map(({ name: label, icon: Icon }) => <label key={label} className={selected.includes(label) ? 'selected' : ''}>
       <input type="checkbox" checked={selected.includes(label)} onChange={() => setSelected(s => s.includes(label) ? s.filter(v => v !== label) : [...s, label])}/>

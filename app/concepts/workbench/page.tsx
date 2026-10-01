@@ -4,7 +4,7 @@ import { WorkbenchPreview } from '@/components/concepts/workbench/WorkbenchPrevi
 import '../concepts.css'
 import './workbench.css'
 
-export const metadata: Metadata = { title: 'Workshop design preview | Oberlin Engineering Club', robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: 'Workshop design preview | Makers and Engineers @Oberlin', robots: { index: false, follow: false } }
 
 export default async function WorkbenchPage() {
   const content = await getCmsRenderContext()

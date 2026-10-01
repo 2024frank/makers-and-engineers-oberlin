@@ -8,6 +8,8 @@ import type { MediaAsset } from '@/lib/cms/media'
 import { EditorDrawer } from '@/components/admin/EditorDrawer'
 import { formRegistry, defaultsByType } from './formRegistry'
 import { useToast } from '@/components/ui/Toast'
+import { DeleteConfirm } from '@/components/admin/DeleteConfirm'
+import { contentDeleteMessage, deletableContentTypes } from '@/lib/cms/contentDeleteMessages'
 import { ProjectDeleteForm } from '@/components/admin/projects/ProjectDeleteForm'
 import { projectPublishSchema } from '@/lib/validation/projects'
 import { eventPublishSchema } from '@/lib/validation/events'
@@ -32,6 +34,13 @@ export function ContentManager({ entityType, title, rows: initial, canPublish, c
   const dirty = Boolean(current && JSON.stringify(current.payload) !== savedPayload)
   const visibleRows = rows.filter(row => row.title.toLowerCase().includes(query.trim().toLowerCase()) && (!stateFilter || (stateFilter === 'draft' ? row.hasDraft || row.status === 'draft' : row.status === stateFilter)))
   function open(draft: Draft) { setSavedPayload(JSON.stringify(draft.payload)); setCurrent(draft); setFeedback(''); setError(''); setConfirmClose(false) }
+  async function deleteRow(id: string): Promise<string | null> {
+    const response = await fetch(`/api/admin/content?entityType=${encodeURIComponent(entityType)}&id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    if (!response.ok) { const body = await response.json().catch(() => ({})); return contentDeleteMessage(body.error) }
+    setRows(list => list.filter(row => row.id !== id)); setCurrent(null); toast(`${singular} deleted.`)
+    return null
+  }
+  const deleteConsequence = entityType === 'leaders' ? 'This removes the officer position from the website and its saved drafts.' : entityType === 'opportunities' || entityType === 'resources' ? 'This removes it from the website, its drafts and version history, and from every member\'s saved list.' : 'This removes it from the website along with its drafts and version history.'
   function close() { if (busy) return; if (dirty) setConfirmClose(true); else setCurrent(null) }
   function change(name: string, value: unknown) {
     setCurrent(draft => draft ? { ...draft, payload: { ...draft.payload, [name]: value }, title: name === 'title' || name === 'name' ? String(value) : draft.title } : draft)
@@ -101,6 +110,7 @@ export function ContentManager({ entityType, title, rows: initial, canPublish, c
         {entityType === 'leaders' && Boolean(current.payload.openSeat) && <p className="portal-save-feedback">Publishing a new opening queues an email to {notificationAudienceCount ?? 'all'} active members. Edits to an already announced opening do not send another email.</p>}
         {entityType === 'projects' && !rows.some(row => row.id === current.id && row.status === 'published') && <p className="portal-save-feedback">Publishing a project for the first time emails every active member and adds a notice to their portal.</p>}
         {entityType === 'projects' && canDelete && rows.some(row => row.id === current.id) && <ProjectDeleteForm projectId={current.id} title={rows.find(row => row.id === current.id)?.title ?? current.title} members={teamSizes?.[current.id] ?? 0} onDeleted={() => { setRows(list => list.filter(row => row.id !== current.id)); setCurrent(null); toast('Project deleted.') }}/>}
+        {canDelete && (deletableContentTypes as readonly string[]).includes(entityType) && rows.some(row => row.id === current.id) && <section className="project-delete" aria-label={`Delete ${singular.toLowerCase()}`}><DeleteConfirm label={`Delete ${singular.toLowerCase()}`} itemName={rows.find(row => row.id === current.id)?.title ?? current.title} consequence={deleteConsequence} onConfirm={() => deleteRow(current.id)}/></section>}
         {error && <p className="portal-form-error" role="alert">{error}</p>}{feedback && <p className="portal-save-feedback" role="status"><Check size={17}/>{feedback}</p>}
         <footer className="editor-actions"><span className="portal-save-state">{dirty ? 'Unsaved changes' : feedback ? 'Saved' : 'Draft editor'}</span><button type="button" disabled={Boolean(busy)} onClick={close}>Close</button><button type="button" disabled={Boolean(busy)} onClick={() => void save(false)}><Save size={16}/>{busy === 'save' ? 'Saving...' : 'Save draft'}</button>{canPublish && <button className="button--cardinal" type="button" disabled={Boolean(busy)} onClick={() => void save(true)}><Upload size={16}/>{busy === 'publish' ? 'Publishing...' : 'Publish'}</button>}</footer>
       </>}

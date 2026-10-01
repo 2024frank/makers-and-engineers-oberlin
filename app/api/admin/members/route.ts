@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth/requireRole'
-import { inviteMembers, listMembershipRequests, reviewMembershipRequest, sendMembershipSetupEmail } from '@/lib/auth/memberServer'
+import { inviteMembers, listMembershipRequests, removeMember, reviewMembershipRequest, sendMembershipSetupEmail } from '@/lib/auth/memberServer'
 import type { MembershipStatus } from '@/lib/auth/memberLifecycle'
 import { parseMemberEmails } from '@/lib/members/invitations'
 
@@ -42,5 +42,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, results, requests: await listMembershipRequests('ALL') })
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'MEMBER_INVITATIONS_FAILED' }, { status: 400 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  const admin = await requireAdmin()
+  if (admin.role === 'EDITOR') return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 })
+  const requestId = new URL(request.url).searchParams.get('requestId')
+  if (!requestId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestId)) return NextResponse.json({ error: 'REQUEST_ID_REQUIRED' }, { status: 400 })
+  try {
+    const result = await removeMember(requestId, admin.userId)
+    return NextResponse.json({ ok: true, result, requests: await listMembershipRequests('ALL') })
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'MEMBER_REMOVE_FAILED' }, { status: 400 })
   }
 }

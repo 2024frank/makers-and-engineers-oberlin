@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import DesignPreview from './preview'
 
 export const metadata: Metadata = {
-  title: 'OEC | Design preview',
+  title: 'MOE | Design preview',
   robots: { index: false, follow: false }
 }
 

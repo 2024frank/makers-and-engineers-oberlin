@@ -16,7 +16,7 @@ describe('Workbench join preview', () => {
     render(<WorkbenchJoinForm onProgress={onProgress} onDone={vi.fn()}/>)
 
     expect(screen.getByRole('heading', { level: 2, name: 'Join the club' })).toBeInTheDocument()
-    expect(screen.getByText('Oberlin Engineering Club')).toBeInTheDocument()
+    expect(screen.getByText('Makers and Engineers @Oberlin')).toBeInTheDocument()
     expect(onProgress).toHaveBeenCalledExactlyOnceWith(1)
     const steps = within(screen.getByRole('list', { name: 'Registration steps' })).getAllByRole('listitem')
     expect(steps).toHaveLength(3)

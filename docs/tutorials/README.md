@@ -1,4 +1,4 @@
-# OEC Walkthrough Videos
+# MOE Walkthrough Videos
 
 Prepared September 5, 2026 from the current website source.
 
@@ -30,7 +30,7 @@ The two member videos may be shared with students. Keep the admin walkthrough se
 
 After confirming the clone belongs to Kwaku, synthesize only this short sample first:
 
-> Hey everyone, here's a quick look at the Oberlin Engineering Club website. I'll show you how to get into your account, find a project, and see what your team is working on.
+> Hey everyone, here's a quick look at the Makers and Engineers @Oberlin website. I'll show you how to get into your account, find a project, and see what your team is working on.
 
 Audition draft: https://app.heygen.com/create-v4/e46107cfc4ca4f8b8f6cca7dc2c3acd1
 

@@ -1,4 +1,4 @@
-# OEC Deployment Runbook
+# MOE Deployment Runbook
 
 ## Launch rule
 
@@ -21,7 +21,8 @@ Required production values:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `RESEND_API_KEY`
-- `RESEND_FROM_EMAIL`
+- `RESEND_FROM_EMAIL` (an address on the domain verified in Resend, for example `Makers and Engineers @Oberlin <club@your-domain>`)
+- `RESEND_REPLY_TO` (optional; defaults to makers.engineers@oberlin.edu)
 - `CRON_SECRET`
 - `SUBMISSION_SALT`
 
@@ -66,7 +67,7 @@ npm ci
 npm run verify:release
 ```
 
-`verify:release` runs lint, TypeScript, unit/integration tests, a production build, and Playwright. The staging E2E suite additionally requires the accounts and mailbox variables from `.env.example`.
+`verify:release` runs lint, TypeScript, unit/integration tests, a production build, and Playwright. The staging E2E suite also requires the accounts and mailbox variables from `.env.example`.
 
 The external E2E mailbox service must be staging-only. Its GET endpoint receives `recipient`, `kind`, and `after` query values plus the optional bearer token, and returns `{ "url": "..." }`. Do not add a production API route that exposes authentication links for tests.
 

@@ -22,7 +22,7 @@ export async function deliverOfficerEmails({ rpc, send = fetch, wait = ms => new
       const response = await send('https://api.resend.com/emails', {
         method: 'POST', signal: AbortSignal.timeout(8000),
         headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', 'Idempotency-Key': `officer-opening/${job.id}` },
-        body: JSON.stringify({ from, to: [job.recipient], ...officerOpeningEmail(job) }),
+        body: JSON.stringify({ from, reply_to: process.env.RESEND_REPLY_TO?.trim() || 'makers.engineers@oberlin.edu', to: [job.recipient], ...officerOpeningEmail(job) }),
       })
       status = response.ok ? 'SENT' : response.status >= 400 && response.status < 500 && response.status !== 409 && response.status !== 408 ? 'FAILED' : 'UNCERTAIN'
       if (!response.ok) error = `EMAIL_HTTP_${response.status}`

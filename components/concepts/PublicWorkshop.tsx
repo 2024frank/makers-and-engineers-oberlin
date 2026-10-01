@@ -27,7 +27,7 @@ export function PublicWorkshop({ projects, events, paused }: { projects: Concept
 
   return <div className="public-workshop">
     <section className="workshop-introduction" aria-labelledby="workshop-intro-title">
-      <div><p className="workshop-label">Oberlin Engineering Club</p><h2 id="workshop-intro-title">Projects, workshops, and club events</h2></div>
+      <div><p className="workshop-label">Makers and Engineers @Oberlin</p><h2 id="workshop-intro-title">Projects, workshops, and club events</h2></div>
       <div className="workshop-intro-bottom"><p>We work on engineering projects at Oberlin, from printer repairs to electronics. You can join a team or propose a project. All majors are welcome.</p><a href="#workshop" className="workshop-round-link" aria-label="Explore the project workshop" title="Explore the project workshop"><ArrowDown size={20}/></a></div>
     </section>
 
@@ -66,9 +66,9 @@ export function PublicWorkshop({ projects, events, paused }: { projects: Concept
         <details open><summary>Do I need engineering experience?<Plus size={19}/></summary><p>No. Beginners can join a project team and learn alongside other members.</p></details>
         <details><summary>Do I need to be in the 3-2 program?<Plus size={19}/></summary><p>No. Students from any major can take part. The club also shares resources for students exploring the 3-2 pathway.</p></details>
         <details><summary>Can I start my own project?<Plus size={19}/></summary><p>Yes. Submit your idea to start a conversation. Active members can submit a proposal in their workspace for review by the club team.</p></details>
-        <details><summary>What happens after I get in touch?<Plus size={19}/></summary><p>Your request goes to the OEC team. They can follow up at the email you provide about your interests, a project, or your proposal.</p></details>
+        <details><summary>What happens after I get in touch?<Plus size={19}/></summary><p>Your request goes to the MOE team. They can follow up at the email you provide about your interests, a project, or your proposal.</p></details>
       </div>
     </section>
-    <footer className="workshop-footer"><Link href="/">Oberlin<br/>Engineering Club</Link><p>Oberlin, Ohio</p><nav aria-label="More club information"><Link href="/about">About</Link><Link href="/pathway">3-2 pathway</Link><Link href="/resources">Resources</Link><Link href="/member/login">Member sign in</Link></nav><a href="#top" aria-label="Back to top"><ArrowUpRight size={28}/></a></footer>
+    <footer className="workshop-footer"><Link href="/">Makers and Engineers<br/>@Oberlin</Link><p>Oberlin, Ohio</p><nav aria-label="More club information"><Link href="/about">About</Link><Link href="/pathway">3-2 pathway</Link><Link href="/resources">Resources</Link><Link href="/member/login">Member sign in</Link></nav><a href="#top" aria-label="Back to top"><ArrowUpRight size={28}/></a></footer>
   </div>
 }

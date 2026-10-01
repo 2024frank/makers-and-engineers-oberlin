@@ -248,7 +248,7 @@ declare v_admin boolean:=coalesce(private.is_admin_or_super(),false);begin
       'myRequest',(select jsonb_build_object('direction',direction,'status',case when status='PENDING' and expires_at<=now() then 'EXPIRED' else status end) from public.club_team_requests where team_id=t.id and user_id=(select auth.uid())),
       'roster',coalesce((select jsonb_agg(jsonb_build_object(
         'userId',case when v_admin or private.is_club_team_member(t.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.user_id end,
-        'displayName',case when v_admin or private.is_club_team_member(t.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.display_name else 'OEC member' end,
+        'displayName',case when v_admin or private.is_club_team_member(t.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.display_name else 'Member' end,
         'role',tm.role) order by tm.role,mp.display_name)
         from public.club_team_memberships tm join public.member_profiles mp on mp.user_id=tm.user_id and mp.status='ACTIVE'
         left join public.member_privacy_settings ps on ps.user_id=mp.user_id where tm.team_id=t.id),'[]'::jsonb),
@@ -276,7 +276,7 @@ declare v_admin boolean:=coalesce(private.is_admin_or_super(),false);begin
   if not (private.is_active_member() or v_admin) then raise exception 'ACTIVE_MEMBER_REQUIRED';end if;
   return coalesce((select jsonb_agg(jsonb_build_object('projectId',p.id,'title',p.title,'members',coalesce((select jsonb_agg(jsonb_build_object(
       'userId',case when v_admin or private.is_project_member(p.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.user_id end,
-      'displayName',case when v_admin or private.is_project_member(p.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.display_name else 'OEC member' end,'role',r.role))
+      'displayName',case when v_admin or private.is_project_member(p.id) or (ps.directory_visible and 'display_name'=any(ps.visible_fields)) then mp.display_name else 'Member' end,'role',r.role))
     from private.effective_project_roster(p.id) r join public.member_profiles mp on mp.user_id=r.user_id left join public.member_privacy_settings ps on ps.user_id=mp.user_id),'[]'::jsonb)) order by p.title)
     from public.projects p where p.publication_state='published' or v_admin or private.is_project_member(p.id)),'[]'::jsonb);
 end $$;

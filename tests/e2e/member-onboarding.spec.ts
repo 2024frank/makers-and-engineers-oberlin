@@ -48,7 +48,7 @@ test('verified Oberlin request requires approval, supports password and magic li
   const resetForm=member.locator('form').filter({has:member.getByRole('button',{name:'Email me a password reset'})})
   await resetForm.getByLabel('Oberlin email').fill(email)
   await resetForm.getByRole('button',{name:'Email me a password reset'}).click()
-  await expect(member.getByText(/If that address belongs to an active OEC member/i)).toBeVisible()
+  await expect(member.getByText(/If that address belongs to an active member/i)).toBeVisible()
   const resetUrl=await waitForMailboxLink(request,{recipient:email,kind:'member_password_reset',after:resetStarted})
   await completeEmailAction(member,resetUrl)
   await member.waitForURL(/\/member-reset-password/)

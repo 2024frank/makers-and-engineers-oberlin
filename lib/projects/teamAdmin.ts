@@ -65,7 +65,7 @@ export async function performProjectTeamAction(input: ProjectTeamAction) {
   switch (input.action) {
     case 'decline-application': {
       const result = await rpc<{ applicantEmail?: string; applicantName?: string; projectTitle?: string }>('review_project_application', { p_application_id: input.applicationId, p_decision: 'REJECT', p_note: input.note || null })
-      const emailSent = result.applicantEmail ? await tryEmail(result.applicantEmail, projectApplicationDecisionEmail({ memberName: result.applicantName ?? 'there', projectTitle: result.projectTitle ?? 'OEC project', decision: 'REJECTED', note: input.note, actionUrl: `${memberSiteOrigin()}/member/applications` })) : false
+      const emailSent = result.applicantEmail ? await tryEmail(result.applicantEmail, projectApplicationDecisionEmail({ memberName: result.applicantName ?? 'there', projectTitle: result.projectTitle ?? 'MOE project', decision: 'REJECTED', note: input.note, actionUrl: `${memberSiteOrigin()}/member/applications` })) : false
       return { result, emailSent }
     }
     case 'set-member': {

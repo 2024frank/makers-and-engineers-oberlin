@@ -12,12 +12,12 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
       {
         '@type': 'Organization',
         '@id': `${base}/#organization`,
-        name: 'Oberlin Engineering Club',
-        alternateName: 'OEC',
+        name: 'Makers and Engineers @Oberlin',
+        alternateName: 'MOE',
         url: base,
         email: contactEmail,
         logo: { '@type': 'ImageObject', url: `${base}/brand/oec-badge-circle.png` },
-        description: 'A student group at Oberlin College for students who build things, and for anyone considering the 3-2 engineering pathway.',
+        description: 'A student engineering club at Oberlin College. Projects, events, and information about the 3-2 pathway.',
         ...(sameAs.length ? { sameAs } : {}),
         memberOf: { '@type': 'CollegeOrUniversity', name: 'Oberlin College', url: 'https://www.oberlin.edu' }
       },
@@ -25,7 +25,7 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
         '@type': 'WebSite',
         '@id': `${base}/#website`,
         url: base,
-        name: 'Oberlin Engineering Club',
+        name: 'Makers and Engineers @Oberlin',
         publisher: { '@id': `${base}/#organization` },
         inLanguage: 'en-US'
       }

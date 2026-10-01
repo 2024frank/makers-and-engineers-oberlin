@@ -32,7 +32,7 @@ function sanitizeScopes(scopes: unknown) {
 export async function listAdminUsers(): Promise<AdminUserRow[]> {
   const supabase = createSupabaseAdminClient()
   const [{ data: profiles, error }, { data: authPage }] = await Promise.all([
-    supabase.from('admin_profiles').select('user_id,display_name,active,status,created_at,role_assignments(role,scopes,can_publish)').order('created_at'),
+    supabase.from('admin_profiles').select('user_id,display_name,active,status,created_at,role_assignments(role,scopes,can_publish)').neq('status', 'REVOKED').order('created_at'),
     supabase.auth.admin.listUsers({ page: 1, perPage: 200 }),
   ])
   if (error) throw new Error(`ADMIN_USERS_LOAD_FAILED:${error.message}`)
@@ -94,4 +94,13 @@ export async function updateAdminUser(
     before_snapshot: profile,
     after_snapshot: { displayName: input.displayName, role: input.role, scopes, canPublish: input.canPublish, active: input.active },
   })
+}
+
+// Revokes an officer's portal access. The profile row is kept (reviews and invitations point at it),
+// so the person can only return through a new staff invitation. The database function refuses
+// self-removal and removing the last Super Admin or Admin.
+export async function removeAdminUser(userId: string, actorId: string) {
+  if (userId === actorId) throw new Error('CANNOT_REMOVE_SELF')
+  const { error } = await createSupabaseAdminClient().rpc('remove_staff_access', { p_user_id: userId, p_actor_id: actorId })
+  if (error) throw new Error(error.message)
 }

@@ -137,7 +137,7 @@ export default function ConceptScene(props: Props) {
     return () => { disposed = true; cancelAnimationFrame(animation); cleanup(); disposeScene(); environment?.dispose(); renderer?.dispose(); renderer?.domElement.remove(); tablet?.dispose() }
   }, [props.direction])
   return <div className="concept-scene" ref={host} data-status={status}>
-    {status === 'loading' && <div className="concept-loading" role="status">Oberlin Engineering Club<span>Loading scene</span></div>}
-    {status === 'failed' && <div className="concept-loading" role="status">Oberlin Engineering Club<span>3D is unavailable on this device. Projects and joining are still available.</span></div>}
+    {status === 'loading' && <div className="concept-loading" role="status">Makers and Engineers @Oberlin<span>Loading scene</span></div>}
+    {status === 'failed' && <div className="concept-loading" role="status">Makers and Engineers @Oberlin<span>3D is unavailable on this device. Projects and joining are still available.</span></div>}
   </div>
 }

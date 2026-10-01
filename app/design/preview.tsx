@@ -29,7 +29,7 @@ export default function DesignPreview() {
     <div className={s.page}>
       <a className={s.skip} href="#content">Skip to content</a>
       <header className={s.header}>
-        <a className={s.brand} href="#" aria-label="Oberlin Engineering Club home"><Image src="/brand/oec-badge-circle.png" alt="" width={45} height={45} /><span>OBERLIN<span>ENGINEERING CLUB</span></span></a>
+        <a className={s.brand} href="#" aria-label="Makers and Engineers @Oberlin home"><Image src="/brand/oec-badge-circle.png" alt="" width={45} height={45} /><span>MAKERS AND ENGINEERS<span>@OBERLIN</span></span></a>
         <nav className={s.desktopNav} aria-label="Main navigation"><a href="#projects">Projects</a><a href="#community">Community</a><a href="#pathway">3-2 pathway</a><a href={`${live}/about`}>About</a></nav>
         <a className={s.joinHeader} href={`${live}/get-involved`}>Join the club <ArrowUpRight size={17} /></a>
         <button className={s.menuButton} aria-label={menuOpen ? 'Close navigation' : 'Open navigation'} aria-expanded={menuOpen} aria-controls="mobile-nav" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
@@ -39,7 +39,7 @@ export default function DesignPreview() {
         <section className={s.hero} aria-labelledby="hero-title">
           <Image className={s.heroImage} src="https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg" alt="Students working together at an electronics workbench" fill priority sizes="100vw" />
           <div className={s.heroShade} />
-          <div className={s.heroContent}><h1 id="hero-title">Oberlin<br />Engineering<br /><em>Club.</em></h1><h2>Build things. Learn together.</h2><p className={s.heroDescription}>Engineering projects, technical workshops, and support for students exploring the 3-2 pathway at Oberlin College.</p><a className={s.primary} href="#projects">Explore projects <ArrowRight size={19} /></a></div>
+          <div className={s.heroContent}><h1 id="hero-title">Makers and<br />Engineers<br /><em>@Oberlin.</em></h1><h2>Build things. Learn together.</h2><p className={s.heroDescription}>Engineering projects, technical workshops, and support for students exploring the 3-2 pathway at Oberlin College.</p><a className={s.primary} href="#projects">Explore projects <ArrowRight size={19} /></a></div>
         </section>
         <div className={s.welcome}><span><Check size={16} /> Open to all majors</span><span><Check size={16} /> No experience required</span></div>
 
@@ -56,7 +56,7 @@ export default function DesignPreview() {
 
         <section className={s.faq}><div><h2>Joining the club</h2><a className={s.primary} href={`${live}/get-involved`}>Join the club <ArrowUpRight size={19} /></a></div><div className={s.questions}>{faqs.map(([q, a]) => <details key={q}><summary>{q}<ChevronDown size={19} /></summary><p>{a}</p></details>)}</div></section>
       </main>
-      <footer className={s.footer}><a className={s.brand} href="#"><Image src="/brand/oec-badge-circle.png" alt="" width={45} height={45} /><span>OBERLIN<span>ENGINEERING CLUB</span></span></a><p>Build things. Learn together.</p><div><a href="mailto:oberlinengineeringclub@oberlin.edu">Get in touch <ArrowUpRight size={15} /></a><a href="https://www.instagram.com/oberlinengineeringclub/">Instagram <ArrowUpRight size={15} /></a></div><small>A student organization at Oberlin College</small></footer>
+      <footer className={s.footer}><a className={s.brand} href="#"><Image src="/brand/oec-badge-circle.png" alt="" width={45} height={45} /><span>MAKERS AND ENGINEERS<span>@OBERLIN</span></span></a><p>Build things. Learn together.</p><div><a href="mailto:makers.engineers@oberlin.edu">Get in touch <ArrowUpRight size={15} /></a><a href="https://www.instagram.com/oberlinengineeringclub/">Instagram <ArrowUpRight size={15} /></a></div><small>A student organization at Oberlin College</small></footer>
     </div>
   )
 }

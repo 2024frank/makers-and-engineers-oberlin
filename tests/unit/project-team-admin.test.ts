@@ -49,7 +49,7 @@ it('starts a project, emails every team member once, and records how many were s
   const batch = sendBatch.mock.calls[0][0]
   expect(batch.idempotencyKey).toBe('project-kickoff/kick-1')
   expect(batch.messages.map((m: { to: string }) => m.to)).toEqual(['ada@oberlin.edu', 'ben@oberlin.edu'])
-  expect(batch.messages[1].message.subject).toBe('Time to start: Printer repair')
+  expect(batch.messages[1].message.subject).toBe('Project kickoff: Printer repair')
   expect(batch.messages[1].message.text).toContain('First meeting Friday.')
   expect(batch.messages[1].message.text).toContain('Where: Science Center B25')
   expect(batch.messages[0].message.text).toContain('as a project lead')

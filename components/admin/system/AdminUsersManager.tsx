@@ -5,6 +5,7 @@ import type { AdminUserRow } from '@/lib/auth/adminUsers'
 import type { AdminRole } from '@/lib/permissions/types'
 import { staffAccessErrorMessage } from '@/lib/auth/staffInviteMessages'
 import { EditorDrawer } from '@/components/admin/EditorDrawer'
+import { DeleteConfirm } from '@/components/admin/DeleteConfirm'
 import { useToast } from '@/components/ui/Toast'
 
 const scopes = ['pages','projects','project_updates','events','opportunities','news_posts','leaders','resources','documents','sponsors','partner_schools','media']
@@ -47,7 +48,7 @@ function expiredInvitesToShow(invites: StaffInviteSummary[]) {
   return [...latest.values()].filter((invite) => invite.status === 'EXPIRED')
 }
 
-export function AdminUsersManager({ initialUsers, initialInvites }: { initialUsers: AdminUserRow[]; initialInvites: StaffInviteSummary[] }) {
+export function AdminUsersManager({ initialUsers, initialInvites, currentUserId }: { initialUsers: AdminUserRow[]; initialInvites: StaffInviteSummary[]; currentUserId?: string }) {
   const [rows, setRows] = useState(initialUsers)
   const [invites, setInvites] = useState(initialInvites)
   const [draft, setDraft] = useState<Draft | null>(null)
@@ -112,6 +113,16 @@ export function AdminUsersManager({ initialUsers, initialInvites }: { initialUse
     }
   }
 
+  async function removeAccess(row: AdminUserRow): Promise<string | null> {
+    const response = await fetch(`/api/admin/system/users?userId=${encodeURIComponent(row.userId)}`, { method: 'DELETE' })
+    const body = await response.json().catch(() => ({}))
+    if (!response.ok) return staffAccessErrorMessage(body.error, 'remove')
+    toast(`${row.displayName || row.email} no longer has officer access.`)
+    setDraft(null)
+    await reload()
+    return null
+  }
+
   function toggleScope(scope: string) {
     if (!draft) return
     setDraft({ ...draft, scopes: draft.scopes.includes(scope) ? draft.scopes.filter((item) => item !== scope) : [...draft.scopes, scope] })
@@ -174,6 +185,7 @@ export function AdminUsersManager({ initialUsers, initialInvites }: { initialUse
           <fieldset><legend>Editor scopes</legend><div className="scope-grid">{scopes.map((scope) => <label className="inline-check" key={scope}><input type="checkbox" checked={draft.scopes.includes(scope)} onChange={() => toggleScope(scope)} />{scope.replaceAll('_', ' ')}</label>)}</div></fieldset>
           <label className="inline-check"><input type="checkbox" checked={draft.canPublish} onChange={(event) => setDraft({ ...draft, canPublish: event.target.checked })} />Allow this Editor to publish assigned sections</label>
         </>}
+        {draft.userId && draft.userId !== currentUserId && <section className="project-delete" aria-label="Remove officer access"><DeleteConfirm label="Remove officer access" confirmLabel="Remove access" itemName={draft.displayName || draft.email} consequence="They lose all officer access immediately and can only return through a new staff invitation. Their past edits and reviews stay in the audit log." onConfirm={() => removeAccess(rows.find(item => item.userId === draft.userId)!)}/></section>}
         {draft.userId && <label className="inline-check"><input type="checkbox" checked={draft.active} onChange={(event) => setDraft({ ...draft, active: event.target.checked })} />Account active</label>}
         <div className="system-actions"><button className="button--cardinal" disabled={busy} onClick={() => void submit()}>{draft.userId ? 'Save access' : 'Send invitation email'}</button></div>
       </div>}

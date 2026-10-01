@@ -15,7 +15,7 @@ export function MilestoneBoard({ projectId, milestones, roster, me, isLead }: { 
   const done = milestones.filter(m => m.status === 'DONE').length
   const mine = milestones.filter(m => m.assigneeUserId === me && m.status !== 'DONE').length
   function setStatus(milestone: Milestone, status: MilestoneStatus) {
-    void action.run({ action: 'milestone-status', milestoneId: milestone.id, status }, status === 'DONE' ? `Nice work. "${milestone.title}" is done and your team was notified.` : `"${milestone.title}" moved to ${milestoneStatusLabels[status].toLowerCase()}.`)
+    void action.run({ action: 'milestone-status', milestoneId: milestone.id, status }, status === 'DONE' ? `"${milestone.title}" is done and your team was notified.` : `"${milestone.title}" moved to ${milestoneStatusLabels[status].toLowerCase()}.`)
   }
   function remove(milestone: Milestone) {
     if (window.confirm(`Delete the milestone "${milestone.title}"?`)) void action.run({ action: 'milestone-delete', milestoneId: milestone.id }, 'Milestone deleted.')

@@ -1,6 +1,6 @@
-# Oberlin Engineering Club Platform
+# Makers and Engineers @Oberlin Platform
 
-A Next.js + Supabase platform for the public Oberlin Engineering Club website, officer CMS, approved-member community portal, and engineering project teams.
+A Next.js + Supabase platform for the public Makers and Engineers @Oberlin website, officer CMS, approved-member community portal, and engineering project teams.
 
 ## Product surfaces
 

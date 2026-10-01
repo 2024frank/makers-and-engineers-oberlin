@@ -1,7 +1,7 @@
 // Plain-language messages for staff access errors. Server routes return codes such as
 // `STAFF_AUTH_LINK_FAILED:<provider detail>`; only the code before the colon is shown.
 
-export type StaffAccessAction = 'invite' | 'resend' | 'revoke' | 'update'
+export type StaffAccessAction = 'invite' | 'resend' | 'revoke' | 'update' | 'remove'
 
 const deliveryCodes = new Set(['STAFF_AUTH_LINK_FAILED', 'EMAIL_SEND_FAILED'])
 
@@ -18,6 +18,8 @@ const sharedMessages: Record<string, string> = {
   STAFF_INVITE_NOT_REVOCABLE: 'This invitation was already accepted or revoked. Refresh the page.',
   STAFF_INVITE_CHANGED: 'This invitation changed while you were working. Refresh the page and try again.',
   FINAL_SUPER_ADMIN_REQUIRED: 'The site needs at least one active Super Admin. Make someone else a Super Admin first.',
+  CANNOT_REMOVE_SELF: 'You cannot remove your own access. Ask another Super Admin to do it.',
+  FINAL_ADMIN_REQUIRED: 'The site needs at least one active Admin or Super Admin. Give someone else that role first.',
   ADMIN_USER_NOT_FOUND: 'This officer account could not be found. Refresh the page.',
   INVALID_ROLE: 'Choose Super Admin, Admin, or Editor.',
 }

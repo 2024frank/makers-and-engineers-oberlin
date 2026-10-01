@@ -61,7 +61,7 @@ export function WorkbenchJoinForm({ project, onProgress, onDone }: WorkbenchJoin
 
   return <section className={finished ? 'wb-paper wb-receipt' : 'wb-paper'} aria-labelledby={`${id}-heading`}>
     <header className="wb-paper-head">
-      <p>Oberlin Engineering Club</p>
+      <p>Makers and Engineers @Oberlin</p>
       <span className="wb-step-number" aria-hidden="true">{finished ? <Check size={42}/> : `0${step}`}</span>
       <p className="wb-small">{finished ? '3 of 3 steps complete' : `Step ${step} of 3`}</p>
       <h2 id={`${id}-heading`} ref={heading} tabIndex={-1}>

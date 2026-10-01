@@ -72,7 +72,7 @@ export function createWorkbenchWorld(scene: THREE.Scene, logo: THREE.Texture, fo
   })
   const controlPanel = box(root, [1, 1, .24], paint, [0, 0, .15], .045)
   const title = new THREE.Group(); root.add(title); title.name = 'workbench-title'
-  const titleLines = ['OBERLIN', 'ENGINEERING', 'CLUB'].map((text, index) => {
+  const titleLines = ['MAKERS AND', 'ENGINEERS', '@OBERLIN'].map((text, index) => {
     const geometry = new TextGeometry(text, { font, size: 1, depth: .04, curveSegments: 8, bevelEnabled: true, bevelThickness: .006, bevelSize: .006, bevelSegments: 2 })
     geometry.computeBoundingBox()
     const bounds = geometry.boundingBox!, size = bounds.getSize(new THREE.Vector3())
@@ -189,7 +189,7 @@ export function createWorkbenchWorld(scene: THREE.Scene, logo: THREE.Texture, fo
   const vents = new THREE.Group(); root.add(vents)
   for (let i = 0; i < 11; i++) box(vents, [.07, .27, .015], dark, [i * .16, 0, 0], .01)
   const label = new THREE.Group(); root.add(label)
-  lettering(label, 'OEC', font, .55, dark, [0, 0, .1], .002)
+  lettering(label, 'MOE', font, .55, dark, [0, 0, .1], .002)
   const indicator = cylinder(root, .045, .02, cyan); indicator.rotation.x = Math.PI / 2
   const screen = new THREE.Object3D(); root.add(screen); screen.position.set(0, .08, 1.72)
   screen.userData = { width: 1100, height: 700, cssScale: .01, visible: true }

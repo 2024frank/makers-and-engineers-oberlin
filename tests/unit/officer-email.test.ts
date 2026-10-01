@@ -4,7 +4,7 @@ import { deliverOfficerEmails } from '@/lib/leadership/emailDelivery'
 const job={id:'mail-1',claimToken:'claim-1',recipient:'test@oberlin.edu',displayName:'Test',positionId:'role-1',roleTitle:'Secretary',term:'Fall',bio:'Keep meeting records.',closesAt:null}
 afterEach(()=>{vi.unstubAllEnvs()})
 function fixture(status=200) {
-  vi.stubEnv('RESEND_API_KEY','test');vi.stubEnv('RESEND_FROM_EMAIL','OEC <test@example.com>')
+  vi.stubEnv('RESEND_API_KEY','test');vi.stubEnv('RESEND_FROM_EMAIL','MOE <test@example.com>')
   let claimed=false
   const rpc=vi.fn(async(name:string)=>name==='claim_officer_email'?{data:claimed?[]:(claimed=true,[job]),error:null}:{data:true,error:null})
   const send=vi.fn<typeof fetch>(async()=>new Response('{}',{status}))

@@ -171,6 +171,13 @@ export async function reviewMembershipRequest(
   return startMembershipFromSubmission({ email: row.email, displayName: row.display_name }, origin, reviewerId)
 }
 
+// Suspends a member with an account, or deletes a request that never became an account.
+export async function removeMember(requestId: string, actorId: string) {
+  const { data, error } = await createSupabaseAdminClient().rpc('remove_member', { p_request_id: requestId, p_actor_id: actorId })
+  if (error) throw new Error(error.message)
+  return data as { request_id: string; email: string; display_name: string; outcome: 'SUSPENDED' | 'DELETED' }
+}
+
 export async function activateServerMember(currentUser: { id: string; email: string }) {
   if (!isOberlinEmail(currentUser.email)) throw new Error('OBERLIN_EMAIL_REQUIRED')
   const supabase = createSupabaseAdminClient()

@@ -29,3 +29,9 @@ export async function performTeamAction(input: TeamAction): Promise<{ teamId: st
   if (error) throw new Error(error.message)
   return data
 }
+export async function deleteClubTeam(teamId: string, confirmName: string): Promise<{ teamId: string; name: string; notifiedMembers: number }> {
+  const s = await createSupabaseServerClient()
+  const { data, error } = await s.rpc('admin_delete_club_team', { p_team_id: teamId, p_confirm_name: confirmName })
+  if (error) throw new Error(error.message)
+  return data
+}

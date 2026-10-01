@@ -32,7 +32,7 @@ describe('Concept-only joining', () => {
     render(<ConceptJoinFlow project="" onProgress={vi.fn()} onDone={vi.fn()}/>)
     await user.click(screen.getByRole('button', { name: 'Continue' }))
     await user.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(screen.getByRole('heading', { name: 'Make yourself at home.' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Your details' })).toBeInTheDocument()
     await user.type(screen.getByRole('textbox', { name: 'Full name' }), '   ')
     await user.type(screen.getByRole('textbox', { name: 'Email' }), 'preview@example.com')
     await user.click(screen.getByRole('button', { name: 'Continue' }))

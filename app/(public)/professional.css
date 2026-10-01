@@ -243,8 +243,8 @@
   isolation: isolate;
   display: flex;
   align-items: center;
-  height: min(650px, calc(100svh - 175px));
-  min-height: 490px;
+  height: auto;
+  min-height: max(490px, min(650px, calc(100svh - 175px)));
   background: var(--oec-charcoal);
   padding: 0;
   overflow: hidden;
@@ -1239,8 +1239,8 @@
     min-height: 48px;
   }
   .professional-site .home-hero {
-    height: min(610px, calc(100svh - 180px));
-    min-height: 480px;
+    height: auto;
+    min-height: max(480px, min(610px, calc(100svh - 180px)));
     align-items: center;
   }
   .professional-site .hero-copy {

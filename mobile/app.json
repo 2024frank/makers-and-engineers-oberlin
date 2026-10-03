@@ -43,12 +43,20 @@
         "expo-image-picker",
         {
           "cameraPermission": "Take photos of your project work to add to your team workspace.",
-          "photosPermission": "Choose photos of your project work to add to your team workspace."
+          "photosPermission": "Choose photos of your project work to add to your team workspace.",
+          "microphonePermission": false
         }
       ]
     ],
     "experiments": {
       "typedRoutes": false
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "73998745-abb4-4c36-88a8-7bbdff7f9f9b"
+      }
+    },
+    "owner": "2024frank"
   }
 }

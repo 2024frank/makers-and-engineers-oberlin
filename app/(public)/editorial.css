@@ -43,7 +43,7 @@
 .professional-site .club-opening__photograph img{object-fit:cover;object-position:50% 50%}
 .professional-site .club-opening__media figcaption{display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid var(--oec-border);padding-block:15px;font-size:12px;color:var(--oec-muted)}
 .professional-site .club-opening__media figcaption a{display:inline-flex;align-items:center;gap:8px;color:var(--oec-charcoal);font-size:13px;font-weight:600;min-height:28px;white-space:nowrap}
-.professional-site .club-opening__paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding-block:0 30px}
+.professional-site .club-opening__paths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding-block:0 30px}
 .professional-site .club-opening__paths a{display:grid;grid-template-columns:1fr auto;gap:5px 20px;border-top:1px solid var(--oec-border);padding:23px 28px 14px;min-width:0}
 .professional-site .club-opening__paths a:first-child{padding-left:0}.professional-site .club-opening__paths a+a{border-left:1px solid var(--oec-border)}
 .professional-site .club-opening__paths a>span{color:var(--oec-muted);font-size:12px}.professional-site .club-opening__paths strong{font-weight:600;font-size:18px;letter-spacing:-.025em}
@@ -138,3 +138,7 @@
 
 /* Site rule: no eyebrow labels above headings on the public site. */
 .professional-site .eyebrow{display:none}
+
+/* Get the app link stays visible in the header at every width. */
+.professional-site .header-app{font-size:13px;font-weight:600;color:var(--oec-cardinal);white-space:nowrap}
+.professional-site .header-app:hover{text-decoration:underline}

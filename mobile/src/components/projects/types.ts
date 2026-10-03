@@ -1,0 +1,11 @@
+export type Person = { userId: string | null; displayName: string; role: 'LEAD' | 'MEMBER' }
+export type TeamStats = { memberCount: number; milestonesTotal: number; milestonesDone: number; startedAt: string | null }
+export type Project = { id: string; slug: string; title: string; summary: string; status: string; difficulty: string; disciplines: string[]; skills: string[]; recruiting: boolean; problem: string; goal: string; image: { url: string; alt: string } | null }
+export type ApplicationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'WITHDRAWN'
+export type Application = { id: string; projectId: string; projectTitle: string; motivation: string; skills: string[]; status: ApplicationStatus; decisionNote?: string | null; createdAt: string }
+export type ProjectsResponse = { projects: Project[]; applications: { projectId: string; status: ApplicationStatus }[]; teamIds: string[]; rosters: { projectId: string; title: string; members: Person[] }[]; stats: Record<string, TeamStats> }
+export type ProjectResponse = { project: Project; stats: TeamStats | null; roster: Person[]; application: { id: string; status: ApplicationStatus } | null; onTeam: boolean; canApply: boolean; saved: boolean }
+export type SavedItem = { itemType: 'PROJECT' | 'OPPORTUNITY' | 'RESOURCE'; itemId: string; createdAt: string; title: string; subtitle?: string; href: string }
+export type TeamInvite = { id: string; projectId: string; projectTitle: string; inviterName?: string; message: string; status: string; expiresAt: string }
+export type ClubInvitation = { teamId: string; teamName: string; message: string; status: string; expiresAt: string }
+export type Proposal = { id: string; title: string; problem: string; goal: string; summary: string; status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN'; adminFeedback: string | null; approvedProjectId: string | null }

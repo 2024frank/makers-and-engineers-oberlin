@@ -1,0 +1,23 @@
+{
+  "name": "moe-member-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "iOS and Android shell for the Makers and Engineers @Oberlin member portal",
+  "scripts": {
+    "sync": "cap sync",
+    "ios": "cap open ios",
+    "android": "cap open android",
+    "icons": "capacitor-assets generate --iconBackgroundColor '#fffdf6' --iconBackgroundColorDark '#fffdf6' --splashBackgroundColor '#fffdf6' --splashBackgroundColorDark '#fffdf6'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.2"
+  }
+}

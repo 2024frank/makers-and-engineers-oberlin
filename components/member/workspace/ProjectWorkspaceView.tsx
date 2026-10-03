@@ -7,10 +7,12 @@ import type { ProjectWorkspace } from '@/lib/projects/workspace'
 import { stageLabel } from '@/lib/projects/labels'
 import { TeamProjectRequests } from '@/components/member/teams/TeamWorkspace'
 import { ApplicationReviewList, RosterManager, TeamInviteForm, TeamUpdateForm } from '@/components/member/ProjectWorkspaceActions'
+import type { WorkLog } from '@/lib/projects/workLogs'
 import { MilestoneBoard } from './MilestoneBoard'
+import { MemberWorkspaces } from './MemberWorkspaces'
 import { KickoffBanner, LeaveProject, TeamFeed, TeamLinks, UpdateHistory } from './TeamActivity'
 
-export function ProjectWorkspaceView({ projectId, workspace, applications = [], directory = [], clubTeams = [] }: { projectId: string; workspace: ProjectWorkspace; applications?: ProjectApplication[]; directory?: DirectoryMember[]; clubTeams?: ClubTeam[] }) {
+export function ProjectWorkspaceView({ projectId, workspace, applications = [], directory = [], clubTeams = [], workLogs = [] }: { projectId: string; workspace: ProjectWorkspace; applications?: ProjectApplication[]; directory?: DirectoryMember[]; clubTeams?: ClubTeam[]; workLogs?: WorkLog[] }) {
   const isLead = workspace.myRole === 'LEAD'
   const { project, roster, milestones } = workspace
   const done = milestones.filter(m => m.status === 'DONE').length
@@ -37,6 +39,7 @@ export function ProjectWorkspaceView({ projectId, workspace, applications = [], 
       <div className="pt-grid">
         <div className="pt-stack">
           <TeamFeed projectId={projectId} posts={workspace.posts} me={workspace.me} isLead={isLead}/>
+          <MemberWorkspaces projectId={projectId} logs={workLogs} roster={roster} me={workspace.me} isLead={isLead} started={Boolean(project.startedAt)}/>
           <MilestoneBoard projectId={projectId} milestones={milestones} roster={roster} me={workspace.me} isLead={isLead}/>
         </div>
         <div className="pt-stack">

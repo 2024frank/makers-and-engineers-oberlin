@@ -40,6 +40,15 @@ const messages: Record<string, string> = {
   ALREADY_PROJECT_MEMBER: 'This member is already on the team.',
   MEMBER_NOT_INVITABLE: 'This member cannot be invited right now.',
   APPLICANT_NOT_ACTIVE: 'This applicant no longer has an active membership.',
+  PROJECT_NOT_STARTED: 'Workspaces open once a club officer starts the project.',
+  WORK_LOG_REQUIRED: 'Write a short note or add at least one photo.',
+  WORK_LOG_TOO_LONG: 'Keep the note under 4,000 characters.',
+  WORK_LOG_TOO_MANY_PHOTOS: 'You can add up to 6 photos to one entry.',
+  WORK_LOG_PHOTO_INVALID: 'One of the photos could not be read. Try a different photo.',
+  WORK_LOG_PHOTO_TOO_LARGE: 'One of the photos is too large. Try a smaller photo.',
+  WORK_LOG_UPLOAD_FAILED: 'The photos could not be uploaded. Nothing was saved; please try again.',
+  WORK_LOG_FORBIDDEN: 'You can only delete your own entries.',
+  WORK_LOG_NOT_FOUND: 'This entry was already removed. Refresh the page.',
   PROJECT_APPLICATION_ALREADY_REVIEWED: 'This application was already handled. Refresh the page.',
 }
 export function workspaceErrorMessage(code: string) {

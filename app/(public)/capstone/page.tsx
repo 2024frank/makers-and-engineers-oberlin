@@ -5,9 +5,9 @@ export const metadata: Metadata = { title: 'Capstone projects', description: 'Ap
 
 export default function CapstonePage() {
   return <>
-    <section className="directory-hero"><div className="shell"><h1>Capstone projects with CED</h1><p>We plan to work with Career Exploration and Development (CED) to connect students with companies on longer projects shaped by student interests.</p></div></section>
+    <section className="directory-hero"><div className="shell"><h1>Capstone projects with CED</h1><p>We work with Career Exploration and Development (CED) to connect students with companies on longer projects shaped by student interests.</p></div></section>
     <section className="detail-body"><div className="shell prose">
-      <p>Teams would tackle real problems, develop designs, and present work they can discuss in applications, internships, and interviews.</p>
+      <p>Teams tackle real problems, develop designs, and present work they can discuss in applications, internships, and interviews.</p>
       <h2>Apply</h2>
       <p>The application asks for:</p>
       <ul>

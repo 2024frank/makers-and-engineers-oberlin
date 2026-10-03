@@ -11,7 +11,8 @@
       "policy": "appVersion"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
+      "buildNumber": "1",
       "bundleIdentifier": "com.oberlin32engineeringsociety.members",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false

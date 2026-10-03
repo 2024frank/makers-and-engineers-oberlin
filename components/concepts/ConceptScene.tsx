@@ -57,7 +57,7 @@ export default function ConceptScene(props: Props) {
           Object.assign(key.shadow.camera, { left: -11, right: 11, top: 7, bottom: -7 })
           key.shadow.normalBias = .012; key.shadow.bias = -.00015
         }
-        logo = await new THREE.TextureLoader().loadAsync('/brand/oec-badge-circle.png'); logo.colorSpace = THREE.SRGBColorSpace
+        logo = await new THREE.TextureLoader().loadAsync('/brand/moe-badge-circle.png'); logo.colorSpace = THREE.SRGBColorSpace
         const font = props.direction === 'robot' ? undefined : props.direction === 'workbench' ? await new FontLoader().loadAsync('/brand/workbench/barlow-heading.typeface.json') : await loadFont()
         if (disposed) { logo.dispose(); return }
         const world = createWorld(props.direction, scene, logo, font)

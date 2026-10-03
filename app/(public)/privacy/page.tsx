@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = { title: 'Privacy', description: 'What the Makers and Engineers @Oberlin website and MOE Members app collect, and how to have it removed.' }
+export const metadata: Metadata = { title: 'Privacy', description: 'What the Makers and Engineers @Oberlin website and MEO Members app collect, and how to have it removed.' }
 
 const CONTACT = 'makers.engineers@oberlin.edu'
 
 export default function PrivacyPage() {
   return <>
-    <section className="directory-hero"><div className="shell"><h1>Privacy</h1><p>This covers the club website and the MOE Members phone app. Last updated October 3, 2026.</p></div></section>
+    <section className="directory-hero"><div className="shell"><h1>Privacy</h1><p>This covers the club website and the MEO Members phone app. Last updated October 3, 2026.</p></div></section>
     <section className="detail-body"><div className="shell prose">
       <h2>What we collect</h2>
       <p>If you have a member account, we store your name, your email address, and whatever you add to your profile. We also store what you do in the member portal: project ideas, applications, invitations, saved projects, and the notes and photos you post to a team workspace.</p>

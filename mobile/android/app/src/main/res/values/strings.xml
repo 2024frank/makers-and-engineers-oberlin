@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">MOE Members</string>
-    <string name="title_activity_main">MOE Members</string>
-    <string name="package_name">com.oberlin32engineeringsociety.members</string>
-    <string name="custom_url_scheme">com.oberlin32engineeringsociety.members</string>
-</resources>

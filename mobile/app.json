@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "MOE Members",
+    "slug": "moe-members",
+    "scheme": "moemembers",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon-only.png",
+    "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.oberlin32engineeringsociety.members",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.oberlin32engineeringsociety.members",
+      "adaptiveIcon": {
+        "backgroundColor": "#fffdf6",
+        "foregroundImage": "./assets/icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-image",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/icon-only.png",
+          "imageWidth": 180,
+          "backgroundColor": "#fffdf6"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Take photos of your project work to add to your team workspace.",
+          "photosPermission": "Choose photos of your project work to add to your team workspace."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

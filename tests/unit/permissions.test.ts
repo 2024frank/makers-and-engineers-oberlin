@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { can } from '@/lib/permissions/can'
 
-describe('MOE admin permissions', () => {
+describe('MEO admin permissions', () => {
   it('gives SUPER_ADMIN full system authority', () => {
     expect(can('SUPER_ADMIN', 'MANAGE_USERS')).toBe(true)
     expect(can('SUPER_ADMIN', 'PUBLISH_CONTENT')).toBe(true)

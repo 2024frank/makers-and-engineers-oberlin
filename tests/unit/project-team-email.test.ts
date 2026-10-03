@@ -6,7 +6,7 @@ import { projectKickoffEmail } from '@/lib/email/templates'
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals() })
 
 it('sends kickoff email in batches of 100 and counts accepted messages', async () => {
-  vi.stubEnv('RESEND_API_KEY', 'key'); vi.stubEnv('RESEND_FROM_EMAIL', 'MOE <club@example.com>')
+  vi.stubEnv('RESEND_API_KEY', 'key'); vi.stubEnv('RESEND_FROM_EMAIL', 'MEO <club@example.com>')
   const fetchMock = vi.fn().mockResolvedValueOnce({ ok: true }).mockResolvedValueOnce({ ok: false })
   vi.stubGlobal('fetch', fetchMock)
   const messages = Array.from({ length: 101 }, (_, n) => ({ to: `M${n}@Oberlin.edu `, message: { subject: 'Hi', text: 'Body' } }))
@@ -15,7 +15,7 @@ it('sends kickoff email in batches of 100 and counts accepted messages', async (
   const [url, init] = fetchMock.mock.calls[0]
   expect(url).toBe('https://api.resend.com/emails/batch')
   expect(init.headers['Idempotency-Key']).toBe('project-kickoff/k/0')
-  expect(JSON.parse(init.body)[0]).toEqual({ from: 'MOE <club@example.com>', reply_to: 'makers.engineers@oberlin.edu', to: ['m0@oberlin.edu'], subject: 'Hi', text: 'Body' })
+  expect(JSON.parse(init.body)[0]).toEqual({ from: 'MEO <club@example.com>', reply_to: 'makers.engineers@oberlin.edu', to: ['m0@oberlin.edu'], subject: 'Hi', text: 'Body' })
 })
 it('does nothing without email configuration', async () => {
   vi.stubEnv('RESEND_API_KEY', '')

@@ -17,7 +17,7 @@ test('builds a server-verifiable auth link without exposing an access-token frag
   assert.equal(url.hash, '')
 })
 
-test('allows only email verification types used by MOE flows', () => {
+test('allows only email verification types used by MEO flows', () => {
   assert.equal(normalizeEmailOtpType('invite'), 'invite')
   assert.equal(normalizeEmailOtpType('signup'), 'signup')
   assert.equal(normalizeEmailOtpType('magiclink'), 'magiclink')

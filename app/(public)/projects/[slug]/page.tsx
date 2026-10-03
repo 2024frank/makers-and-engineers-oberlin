@@ -91,7 +91,7 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
         : viewer === 'applied' ? <><p className="project-join__note">Your application is waiting for a decision.</p><Link className="button button--secondary" href="/member/applications">View your application</Link></>
         : p.recruiting ? viewer === 'member'
           ? <Link className="button button--primary" href={applyPath}>Apply to join <ArrowRight size={17}/></Link>
-          : <><Link className="button button--primary" href={`/member/login?next=${encodeURIComponent(applyPath)}`}>Sign in to apply <ArrowRight size={17}/></Link><p className="project-join__note">New to the club? <Link href="/get-involved">Join MOE first</Link>. No engineering experience needed.</p></>
+          : <><Link className="button button--primary" href={`/member/login?next=${encodeURIComponent(applyPath)}`}>Sign in to apply <ArrowRight size={17}/></Link><p className="project-join__note">New to the club? <Link href="/get-involved">Join MEO first</Link>. No engineering experience needed.</p></>
         : <><p className="project-join__note">This team is not taking new members right now.</p>{viewer === 'visitor' && <Link className="text-link" href={'/get-involved?type=join_project&project='+encodeURIComponent(p.title)}>Ask the club about this project <ArrowUpRight size={16}/></Link>}</>}
       {!snapshot && <SaveButton itemType="PROJECT" itemId={p.id} canSave={Boolean(member)} initialSaved={saved}/>}
     </div>

@@ -3,7 +3,7 @@ import type { PageSnapshot } from '@/lib/page-builder/types'
 import { metadataForCmsPage } from '@/lib/seo/metadata'
 
 const cms = vi.hoisted(() => ({
-  settings: { seo: { titlePattern: '%s - MOE', defaultOgMediaId: null as string | null } },
+  settings: { seo: { titlePattern: '%s - MEO', defaultOgMediaId: null as string | null } },
   media: {} as Record<string, { url: string; alt: string }>,
 }))
 vi.mock('@/lib/page-builder/publicPages', () => ({
@@ -49,7 +49,7 @@ describe('public sharing metadata', () => {
     cms.media.custom = { url: 'https://cdn.example.com/project.jpg', alt: 'A club project' }
     const metadata = await metadataForCmsPage({ ...home, slug: 'projects', seoTitle: 'Projects', ogMediaId: 'custom' })
     expect(metadata).toMatchObject({
-      title: { absolute: 'Projects - MOE' },
+      title: { absolute: 'Projects - MEO' },
       alternates: { canonical: `${base}/projects` },
       openGraph: { images: [{ url: cms.media.custom.url, alt: 'A club project' }] },
       twitter: { images: [{ url: cms.media.custom.url }] },

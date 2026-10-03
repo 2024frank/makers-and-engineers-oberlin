@@ -12,7 +12,7 @@ vi.mock('@/lib/page-builder/publicPages', () => ({
 }))
 
 const base = 'https://makeoberlin.site'
-const shareImage = `${base}/brand/workbench/share-20260906.jpg`
+const shareImage = `${base}/brand/share-meo-20261003.jpg`
 const retiredImage = 'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg'
 const home: PageSnapshot = { pageId: '00000000-0000-4000-8000-000000000101', slug: 'home', title: 'Home', seoTitle: 'Makers and Engineers @Oberlin', seoDescription: 'Build projects together.', ogMediaId: null, sections: [] }
 
@@ -25,12 +25,12 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs())
 
 describe('public sharing metadata', () => {
-  it('uses the workbench with dimensions for Open Graph and Twitter by default', async () => {
+  it('uses the club logo with dimensions for Open Graph and Twitter by default', async () => {
     const metadata = await metadataForCmsPage(home)
     expect(metadata).toMatchObject({
       title: { absolute: home.seoTitle },
       alternates: { canonical: base },
-      openGraph: { images: [{ url: shareImage, width: 1200, height: 660, alt: expect.stringContaining('workbench') }] },
+      openGraph: { images: [{ url: shareImage, width: 1200, height: 630, alt: expect.stringContaining('logo') }] },
       twitter: { card: 'summary_large_image', images: [{ url: shareImage }] },
     })
   })

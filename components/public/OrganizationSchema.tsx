@@ -17,7 +17,7 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
         url: base,
         email: contactEmail,
         logo: { '@type': 'ImageObject', url: `${base}/brand/moe-badge-circle.png` },
-        description: 'A student engineering club at Oberlin College. Projects, events, and information about the 3-2 pathway.',
+        description: 'A student club at Oberlin College for makers and engineers. Build projects, come to events, and get help with the 3-2 engineering pathway.',
         ...(sameAs.length ? { sameAs } : {}),
         memberOf: { '@type': 'CollegeOrUniversity', name: 'Oberlin College', url: 'https://www.oberlin.edu' }
       },

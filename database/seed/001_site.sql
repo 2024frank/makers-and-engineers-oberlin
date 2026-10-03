@@ -21,7 +21,7 @@ insert into public.pages(id,slug) values
 on conflict(id) do nothing;
 
 insert into public.page_drafts(page_id,title,seo_title,seo_description) values
-('00000000-0000-4000-8000-000000000101','Home','Makers and Engineers @Oberlin | Oberlin College 3-2 Engineering','A student engineering group at Oberlin College. Projects, events, and guidance on the 3-2 dual-degree pathway with Caltech, Case Western, Columbia and WashU.'),
+('00000000-0000-4000-8000-000000000101','Home','Makers and Engineers @Oberlin','A student club at Oberlin College for makers and engineers. Build projects, come to events, and get help with the 3-2 engineering pathway.'),
 ('00000000-0000-4000-8000-000000000102','About','About the club','Students interested in engineering at Oberlin are spread across departments. MEO is where they meet, build projects, and share resources. Meet the founding members.'),
 ('00000000-0000-4000-8000-000000000103','3-2 Pathway','3-2 Engineering Pathway','How the 3-2 pathway works: three years at Oberlin, two at Caltech, Case Western, Columbia or WashU, a BA from Oberlin, plus the courses and official sources.'),
 ('00000000-0000-4000-8000-000000000104','Get Involved','Get Involved','Join Makers and Engineers @Oberlin.')

@@ -27,3 +27,8 @@ describe('public copy', () => {
     expect(refreshSeedEvent(unrelated)).toEqual(unrelated)
   })
 })
+
+it('decodes visible entity text before applying legacy-copy replacements', () => {
+  expect(publicCopy('Design &amp; robotics &#8212; everyone&#39;s welcome')).toBe('Design & robotics — everyone\'s welcome')
+  expect(publicCopy('Custom &lt;strong&gt;content&lt;/strong&gt;')).toBe('Custom <strong>content</strong>')
+})

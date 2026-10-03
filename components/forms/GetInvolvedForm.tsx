@@ -24,7 +24,7 @@ function LeadershipRedirect() {
   return null
 }
 
-export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = '', defaultFocus = '' }: { defaultType?: string; defaultProject?: string; defaultFocus?: string }) {
+export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = '', defaultFocus = '', previewMode = false }: { defaultType?: string; defaultProject?: string; defaultFocus?: string; previewMode?: boolean }) {
   const [started] = useState(() => Date.now())
   const [type, setType] = useState(options.some(([value]) => value === defaultType) ? defaultType : 'join_club')
   const [fields, setFields] = useState<Fields>({ ...initialFields, project: defaultProject })
@@ -66,6 +66,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
     event.preventDefault()
     if (type === 'leadership_interest') return
     if (step < 2) { advance(); return }
+    if (previewMode) return
     const parsed = submissionSchema.safeParse(payload())
     if (!parsed.success) { setFieldErrors(parsed.error.flatten().fieldErrors); setStep(1); return }
     if (status === 'busy') return
@@ -100,11 +101,12 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
         <div className="button-row"><button className="button button--primary" onClick={async () => { try { await navigator.clipboard.writeText('https://oberlin32engineeringsociety.com/get-involved'); setCopied(true) } catch { setError('Copy this link: https://oberlin32engineeringsociety.com/get-involved') } }}><Copy size={16}/>{copied ? 'Link copied' : 'Copy club link'}</button><Link className="text-link" href="/projects">Explore projects<ArrowRight size={17}/></Link></div>
         {error && <p role="alert">{error}</p>}
       </div> : <form onSubmit={submit} noValidate className="join-form">
+        {previewMode && <p className="join-intro" role="status">Submissions unavailable in this preview</p>}
         <nav aria-label="Join progress" className="join-progress">{steps.map((label, index) => <button type="button" key={label} disabled={index > step || status === 'busy'} aria-current={index === step ? 'step' : undefined} onClick={() => { setStep(index); setError('') }}><span>{index < step ? <Check size={12}/> : '0' + (index + 1)}</span>{label}</button>)}</nav>
         <div className="join-step" key={step}>
           <p className="eyebrow">Makers and Engineers @Oberlin</p>
           <h1 ref={heading} tabIndex={-1}>{step === 0 ? capstoneRequest ? 'Discuss a capstone' : title : step === 1 ? 'Your details' : 'Review your request'}</h1>
-          <p className="join-intro">{step === 0 ? proposal ? 'Tell us what you want to work on and what help you need.' : 'All majors are welcome. No previous engineering experience required.' : step === 1 ? 'We will follow up at the email you provide.' : 'Your request will go to the club officers.'}</p>
+          <p className="join-intro">{previewMode && step > 0 ? 'Use sample details to explore this form. Nothing will be sent.' : step === 0 ? proposal ? 'Tell us what you want to work on and what help you need.' : 'All majors are welcome. No previous engineering experience required.' : step === 1 ? 'We will follow up at the email you provide.' : 'Your request will go to the club officers.'}</p>
           {step === 0 && <>
             <label>I would like to<span className="join-select"><select name="type" value={type} onChange={event => { setType(event.target.value); setFieldErrors({}) }}>{options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><ChevronDown size={18} aria-hidden="true"/></span></label>
             {type === 'join_project' && input('project', 'Project', true)}
@@ -112,7 +114,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
               <label>What would you like to build?<textarea aria-label="What would you like to build?" name="projectIdea" value={fields.projectIdea} onChange={event => update('projectIdea', event.target.value)} rows={5} maxLength={5000} required aria-invalid={Boolean(fieldErrors.projectIdea)} aria-describedby={fieldErrors.projectIdea ? 'project-idea-error' : undefined}/>{fieldErrors.projectIdea && <small id="project-idea-error" role="alert">{fieldErrors.projectIdea[0]}</small>}</label>
               <label className="capstone-choice"><input type="checkbox" checked={capstone} onChange={event => setCapstone(event.target.checked)}/><span>Explore this as a capstone</span></label>
               {capstoneRequest && <p className="capstone-notice">MOE can help you explore directions and find teammates. Confirm course requirements and academic credit with your adviser.</p>}
-              <p className="proposal-member-link">Already a member? <Link href="/member/proposals">Submit in your workspace.</Link></p>
+              <p className="proposal-member-link">{previewMode ? 'The member workspace is unavailable in this preview.' : <>Already a member? <Link href="/member/proposals">Submit in your workspace.</Link></>}</p>
             </>}
             {type === 'partnership_inquiry' && input('organization', 'Organization or group', true)}
             {!proposal && type !== 'partnership_inquiry' && <fieldset className="interest-choices"><legend className="sr-only">Your interests</legend>{interests.map(({ label, icon: Icon }, index) => <label key={label} className={selected.includes(index) ? 'is-selected' : ''}><input type="checkbox" checked={selected.includes(index)} onChange={() => setSelected(previous => previous.includes(index) ? previous.filter(item => item !== index) : [...previous, index])}/><Icon size={22} strokeWidth={1.5}/><span>{label}</span><Check size={14} className="interest-check"/></label>)}</fieldset>}
@@ -125,7 +127,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
         </div>
         <div className="honeypot" aria-hidden="true"><input name="honeypot" tabIndex={-1} autoComplete="off" value={fields.honeypot} onChange={event => update('honeypot', event.target.value)}/></div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <div className="join-actions">{step > 0 && <button type="button" className="join-back" aria-label="Previous step" onClick={() => setStep(value => value - 1)} disabled={status === 'busy'}><ArrowLeft size={18}/></button>}<button type="submit" className="button button--primary" disabled={status === 'busy'}>{status === 'busy' ? 'Sending...' : step === 2 ? 'Send to MOE' : 'Continue'}<ArrowRight size={17}/></button></div>
+        <div className="join-actions">{step > 0 && <button type="button" className="join-back" aria-label="Previous step" onClick={() => setStep(value => value - 1)} disabled={status === 'busy'}><ArrowLeft size={18}/></button>}<button type="submit" className="button button--primary" disabled={status === 'busy' || (previewMode && step === 2)}>{status === 'busy' ? 'Sending...' : step === 2 ? 'Send to MOE' : 'Continue'}<ArrowRight size={17}/></button></div>
       </form>}
     </div>
   </section>

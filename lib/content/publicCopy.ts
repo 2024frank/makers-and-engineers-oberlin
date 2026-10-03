@@ -1,9 +1,12 @@
+import { decodeHtmlEntities } from './htmlEntities'
 import type { PageSection } from '@/lib/page-builder/types'
 
-export const homeIntroduction = 'We bring Oberlin students together to work on engineering projects. Browse the proposals, find people to work with, or suggest an idea of your own.'
+export const homeIntroduction = 'An interdisciplinary club for engineering, technology, design, and robotics at Oberlin. Learn practical skills, meet students and alumni, build with others, and explore where your interests can take you.'
 
 // Retire exact starter copy without replacing later edits made in the officer portal.
 const replacements: Record<string, string> = {
+  'We bring Oberlin students together to work on engineering projects. Browse the proposals, find people to work with, or suggest an idea of your own.': homeIntroduction,
+  'Members come from physics, computer science, chemistry, mathematics, environmental studies, and other departments.': 'We bring students from every major together around engineering, technology, design, robotics, and related fields. Join to learn, make things, find community, and explore engineering pathways.',
   'A student engineering club at Oberlin for projects, workshops, technical opportunities, and students exploring the 3-2 pathway.': homeIntroduction,
   'Build things. Learn together.': 'Student engineering projects at Oberlin College.',
   'Build something with us.': 'Projects',
@@ -11,7 +14,6 @@ const replacements: Record<string, string> = {
   'These roles are open now. They are how the club actually gets built this year.': 'Interested in organizing events or helping with projects? Choose an option in the form above and tell us what you would like to do.',
   'MOE projects give students a chance to work on engineering problems outside class. That can mean hardware, software, CAD, electronics, robotics, or testing.': 'These projects are open to MOE members. Read a proposal to see what is involved, then express interest through your membership account.',
   'A club for students who build things.': 'About the club',
-  'Members come from physics, computer science, chemistry, mathematics, environmental studies, and other departments.': 'We are an Oberlin student club focused on hands-on engineering projects. Membership is open to all majors and experience levels.',
   'Oberlin’s 3-2 program combines three years of liberal arts study at Oberlin with two years at a partner engineering school. Students interested in engineering are also spread across physics, computer science, chemistry, mathematics, environmental studies, and other departments. MOE gives those students a place to meet, build projects, share resources, and learn from each other.': 'Students interested in engineering are spread across departments at Oberlin. We started MOE so they can find one another and work on projects outside class. You can join whether you are considering the 3-2 program or simply want to try a project.',
   'Engineering at Oberlin works differently.': 'Why we started MOE',
   'Engineering disciplines': 'Areas of interest',
@@ -37,7 +39,8 @@ const replacements: Record<string, string> = {
 }
 
 export function publicCopy(text: string) {
-  return replacements[text] ?? text
+  const decoded = decodeHtmlEntities(text)
+  return replacements[decoded] ?? decoded
 }
 
 export function refreshSectionCopy(section: PageSection): PageSection {
@@ -45,6 +48,10 @@ export function refreshSectionCopy(section: PageSection): PageSection {
   if ('headline' in next) next.headline = publicCopy(next.headline)
   if ('heading' in next) next.heading = publicCopy(next.heading)
   if ('body' in next) next.body = publicCopy(next.body)
+  if ('eyebrow' in next) next.eyebrow = publicCopy(next.eyebrow)
+  if ('primaryCta' in next && next.primaryCta) next.primaryCta = { ...next.primaryCta, label: publicCopy(next.primaryCta.label) }
+  if ('secondaryCta' in next && next.secondaryCta) next.secondaryCta = { ...next.secondaryCta, label: publicCopy(next.secondaryCta.label) }
+  if ('cta' in next && next.cta) next.cta = { ...next.cta, label: publicCopy(next.cta.label) }
   if (next.type === 'features_grid') next.items = next.items.map(item => ({ ...item, title: publicCopy(item.title), body: publicCopy(item.body) }))
   return next
 }

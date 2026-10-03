@@ -11,12 +11,20 @@ export const publicNavigation = [
   ["Events", "/events"],
   ["3-2 Pathway", "/pathway"],
   ["About", "/about"],
+  ["Leadership", "/leadership"],
   ["Resources", "/resources"],
   ["Opportunities", "/opportunities"],
   ["News", "/news"],
   ["Member sign in", "/member/login"],
-  ["Get involved", "/get-involved"],
+  ["Join the club", "/get-involved"],
 ] as const;
+const primaryDestinations = ["/projects", "/events", "/pathway", "/about"];
+const essentialNavigation: PublicNavigationItem[] = [
+  { label: "Join the club", destination: "/get-involved" },
+  { label: "Leadership", destination: "/leadership" },
+  { label: "Member sign in", destination: "/member/login" },
+];
+
 export function PublicHeader({
   items,
   logoSrc,
@@ -24,58 +32,89 @@ export function PublicHeader({
   items?: PublicNavigationItem[];
   logoSrc?: string | null;
 }) {
-  const nav = items?.length
+  const nav: PublicNavigationItem[] = items?.length
     ? items
     : publicNavigation.map(([label, destination]) => ({ label, destination }));
   const pathname = usePathname();
   const ready = useFormReady();
-  const [open, setOpen] = useState(false);
+  const [menu, setMenu] = useState({ pathname, open: false });
+  // Discard the open state on a route change, including before returning here.
+  if (menu.pathname !== pathname) {
+    setMenu({ pathname, open: false });
+  }
+  const open = menu.pathname === pathname && menu.open;
+  const closeNavigation = () => setMenu({ pathname, open: false });
   const trigger = useRef<HTMLButtonElement>(null);
   const navigation = useRef<HTMLElement>(null);
-  const primary = nav.filter((i) =>
-    ["/projects", "/events", "/pathway", "/about"].includes(i.destination),
+  const completeNavigation = [
+    ...nav,
+    ...essentialNavigation.filter(
+      (essential) =>
+        !nav.some(
+          (item) => !item.external && item.destination === essential.destination,
+        ),
+    ),
+  ];
+  const primary = completeNavigation.filter(
+    (item) => !item.external && primaryDestinations.includes(item.destination),
   );
-  const other = nav.filter(
-    (i) =>
-      ![
-        "/",
-        "/projects",
-        "/events",
-        "/pathway",
-        "/about",
-        "/get-involved",
-      ].includes(i.destination),
+  const other = completeNavigation.filter(
+    (item) => item.external || !primaryDestinations.includes(item.destination),
   );
   useEffect(() => {
     if (!open) return;
     navigation.current?.querySelector<HTMLAnchorElement>("a")?.focus();
-    function key(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setOpen(false);
+    const dismiss = () => setMenu({ pathname, open: false });
+    function key(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        dismiss();
         trigger.current?.focus();
       }
     }
-    document.addEventListener("keydown", key);
-    return () => document.removeEventListener("keydown", key);
-  }, [open]);
-  const itemLink = (item: PublicNavigationItem) => (
-    <Link
-      key={item.destination}
-      href={item.destination}
-      target={item.external ? "_blank" : undefined}
-      rel={item.external ? "noreferrer" : undefined}
-      aria-current={
-        pathname === item.destination ||
-        pathname?.startsWith(item.destination + "/")
-          ? "page"
-          : undefined
+    function outside(event: PointerEvent | FocusEvent) {
+      const target = event.target;
+      if (
+        target instanceof Node &&
+        !navigation.current?.contains(target) &&
+        !trigger.current?.contains(target)
+      ) {
+        dismiss();
       }
-      onClick={() => setOpen(false)}
-    >
-      {item.label}
-      <ArrowUpRight size={15} aria-hidden="true" />
-    </Link>
-  );
+    }
+    document.addEventListener("keydown", key);
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("focusin", outside);
+    window.addEventListener("popstate", dismiss);
+    return () => {
+      document.removeEventListener("keydown", key);
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("focusin", outside);
+      window.removeEventListener("popstate", dismiss);
+    };
+  }, [open, pathname]);
+  const itemLink = (item: PublicNavigationItem, index: number) => {
+    const destinationPath = item.destination.split(/[?#]/, 1)[0].replace(/\/+$/, "") || "/";
+    const isCurrent =
+      !item.external &&
+      item.destination.startsWith("/") &&
+      !item.destination.startsWith("//") &&
+      (pathname === destinationPath ||
+        (destinationPath !== "/" && pathname?.startsWith(destinationPath + "/")));
+    return (
+      <Link
+        key={item.id ?? `${item.destination}:${index}`}
+        href={item.destination}
+        target={item.external ? "_blank" : undefined}
+        rel={item.external ? "noreferrer" : undefined}
+        aria-current={isCurrent ? "page" : undefined}
+        onClick={closeNavigation}
+      >
+        {item.label}
+        <ArrowUpRight size={15} aria-hidden="true" />
+      </Link>
+    );
+  };
   return (
     <header className="public-header">
       <a className="skip-link" href="#main-content">
@@ -86,7 +125,7 @@ export function PublicHeader({
           href="/"
           className="public-header__brand"
           aria-label="Makers and Engineers @Oberlin home"
-          onClick={() => setOpen(false)}
+          onClick={closeNavigation}
         >
           <BrandLogo variant="badge" src={logoSrc} />
           <span>
@@ -97,11 +136,19 @@ export function PublicHeader({
           {primary.map(itemLink)}
         </nav>
         <div className="header-actions">
-          <Link className="header-member" href="/member/login">
+          <Link
+            className="header-member"
+            href="/member/login"
+            onClick={closeNavigation}
+          >
             Member sign in
           </Link>
-          <Link className="header-join" href="/get-involved">
-            Join the club <ArrowUpRight size={17} />
+          <Link
+            className="header-join"
+            href="/get-involved"
+            onClick={closeNavigation}
+          >
+            Join the club <ArrowUpRight size={17} aria-hidden="true" />
           </Link>
           <button
             ref={trigger}
@@ -111,9 +158,9 @@ export function PublicHeader({
             aria-expanded={open}
             aria-controls="expanded-navigation"
             disabled={!ready}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => setMenu({ pathname, open: !open })}
           >
-            {open ? <X /> : <Menu />}
+            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
           </button>
         </div>
       </div>
@@ -126,14 +173,7 @@ export function PublicHeader({
         >
           <div className="shell expanded-navigation__grid">
             <div>{primary.map(itemLink)}</div>
-            <div>
-              {other.map(itemLink)}
-              {!other.some((i) => i.destination === "/member/login") && (
-                <Link href="/member/login" onClick={() => setOpen(false)}>
-                  Member sign in <ArrowUpRight size={15} />
-                </Link>
-              )}
-            </div>
+            <div>{other.map(itemLink)}</div>
           </div>
         </nav>
       )}

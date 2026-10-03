@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Bell, FolderKanban, Lightbulb, Search, Smartphone, Users } from 'lucide-react'
+import { ArrowRight, Bell, Briefcase, FolderKanban, Lightbulb, Search, Smartphone, Users } from 'lucide-react'
 import type { MemberDashboardSummary } from '@/lib/members/dashboard'
 import type { ProjectOverview, WorkspaceSummary } from '@/lib/projects/workspace'
 import type { MemberWork } from '@/lib/projects/memberActivity'
@@ -35,6 +35,7 @@ export function MemberDashboard({ displayName, summary, teams, clubTeams = [], p
     <div className="admin-page-heading"><div><h1>Hi, {displayName.trim().split(' ')[0]}.</h1><p>{headline(work, hasProjects)}</p></div><Link className="portal-text-link" href="/member/profile">My profile <ArrowRight size={16}/></Link></div>
     <section className="portal-attention" aria-label="Your next actions">
       <Link href="/app"><Smartphone size={21}/><span><strong>Get the MOE Members app</strong><small>Download for Android. iPhone is coming soon.</small></span><ArrowRight size={20}/></Link>
+      <Link href="/member/capstone"><Briefcase size={21}/><span><strong>Apply for a capstone project</strong><small>Share your interests and resume for projects with CED.</small></span><ArrowRight size={20}/></Link>
       {summary.pendingInvitations > 0 && <Link href="/member/invitations"><Users size={21}/><span><strong>{summary.pendingInvitations} team invitation{summary.pendingInvitations === 1 ? '' : 's'}</strong><small>Waiting for your response</small></span><ArrowRight size={20}/></Link>}
       {summary.unreadNotifications > 0 && <Link href="/member/notifications"><Bell size={21}/><span><strong>{summary.unreadNotifications} unread update{summary.unreadNotifications === 1 ? '' : 's'}</strong><small>Club and project activity</small></span><ArrowRight size={20}/></Link>}
     </section>

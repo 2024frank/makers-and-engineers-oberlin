@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View, type StyleProp, type TextInputProps, type TextStyle, type ViewStyle } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { errorMessage } from '@/lib/api'
@@ -35,10 +35,16 @@ export function Button({ label, onPress, kind = 'primary', icon, disabled, busy,
 }
 
 /** A labelled text input. Text is 16px so iOS never zooms. */
-export function Field({ label, hint, style, ...input }: TextInputProps & { label: string; hint?: string }) {
+export function Field({ label, hint, style, secureTextEntry, ...input }: TextInputProps & { label: string; hint?: string }) {
+  const [shown, setShown] = useState(false)
   return <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
-    <TextInput accessibilityLabel={label} placeholderTextColor="#98a39e" style={[styles.input, input.multiline && styles.inputMultiline, style]} {...input}/>
+    <View>
+      <TextInput accessibilityLabel={label} placeholderTextColor="#98a39e" secureTextEntry={secureTextEntry && !shown} style={[styles.input, input.multiline && styles.inputMultiline, secureTextEntry && styles.inputSecure, style]} {...input}/>
+      {secureTextEntry ? <Pressable accessibilityRole="button" accessibilityLabel={shown ? 'Hide password' : 'Show password'} hitSlop={8} onPress={() => setShown(value => !value)} style={styles.reveal}>
+        <Text style={styles.revealText}>{shown ? 'Hide' : 'Show'}</Text>
+      </Pressable> : null}
+    </View>
     {hint ? <Text style={styles.hint}>{hint}</Text> : null}
   </View>
 }
@@ -112,6 +118,9 @@ const styles = StyleSheet.create({
   label: { fontSize: text.small, fontWeight: '600', color: colors.ink },
   hint: { fontSize: text.tiny, color: colors.muted },
   input: { minHeight: 48, borderRadius: 12, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: colors.ink },
+  inputSecure: { paddingRight: 72 },
+  reveal: { position: 'absolute', right: 0, top: 0, bottom: 0, paddingHorizontal: 16, justifyContent: 'center' },
+  revealText: { color: colors.accent, fontWeight: '600', fontSize: 15 },
   inputMultiline: { minHeight: 96, textAlignVertical: 'top' },
   choiceRow: { gap: 8 },
   choice: { minHeight: 40, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, justifyContent: 'center' },

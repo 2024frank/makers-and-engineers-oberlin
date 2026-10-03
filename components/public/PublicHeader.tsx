@@ -136,6 +136,9 @@ export function PublicHeader({
           {primary.map(itemLink)}
         </nav>
         <div className="header-actions">
+          <Link className="header-app" href="/app" onClick={closeNavigation}>
+            Get the app
+          </Link>
           <Link
             className="header-member"
             href="/member/login"

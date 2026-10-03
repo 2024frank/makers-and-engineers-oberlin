@@ -16,7 +16,7 @@ export function adminPortalGroups(role: AdminRole): PortalNavGroup[] {
 export const memberPortalGroups: PortalNavGroup[] = [
   { label: 'Workspace', items: [item('Dashboard', '/member', 'home'), item('Find a project', '/member/projects', 'search'), item('My teams', '/member/teams', 'projects'), item('My ideas', '/member/proposals', 'idea')] },
   { label: 'Inbox', items: [item('Notifications', '/member/notifications', 'bell'), item('Invitations', '/member/invitations', 'inbox'), item('My applications', '/member/applications', 'requests')] },
-  { label: 'Community', items: [item('Member directory', '/member/directory', 'people'), item('Officer openings', '/member/leadership', 'people'), item('Saved items', '/member/saved', 'bookmark'), item('My profile', '/member/profile', 'profile')] },
+  { label: 'Community', items: [item('Member directory', '/member/directory', 'people'), item('Officer openings', '/member/leadership', 'people'), item('Saved items', '/member/saved', 'bookmark'), item('My profile', '/member/profile', 'profile'), item('Get the app', '/app', 'phone')] },
 ]
 
 export function portalPath(pathname: string, portal: 'admin' | 'member') {

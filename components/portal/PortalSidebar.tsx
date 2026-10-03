@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { ArrowUpRight, Bell, Bookmark, BookOpen, Briefcase, CalendarDays, ChevronDown, ClipboardList, FileText, FolderKanban, History, House, Image, Inbox, Lightbulb, Navigation, Search, Settings, ShieldCheck, UserRound, Users, X } from 'lucide-react'
+import { ArrowUpRight, Bell, Bookmark, BookOpen, Briefcase, CalendarDays, ChevronDown, ClipboardList, FileText, FolderKanban, History, House, Image, Inbox, Lightbulb, Navigation, Search, Settings, ShieldCheck, Smartphone, UserRound, Users, X } from 'lucide-react'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { isPortalItemActive, portalPath, type PortalNavGroup } from '@/lib/navigation/portal'
 
-const icons = { home: House, inbox: Inbox, requests: ClipboardList, idea: Lightbulb, projects: FolderKanban, calendar: CalendarDays, people: Users, pages: FileText, updates: History, briefcase: Briefcase, book: BookOpen, image: Image, settings: Settings, navigation: Navigation, shield: ShieldCheck, history: History, search: Search, bell: Bell, bookmark: Bookmark, profile: UserRound }
+const icons = { home: House, inbox: Inbox, requests: ClipboardList, idea: Lightbulb, projects: FolderKanban, calendar: CalendarDays, people: Users, pages: FileText, updates: History, briefcase: Briefcase, book: BookOpen, image: Image, settings: Settings, navigation: Navigation, shield: ShieldCheck, history: History, search: Search, bell: Bell, bookmark: Bookmark, profile: UserRound, phone: Smartphone }
 
 export function PortalSidebar({ portal, groups, displayName, roleLabel, onNavigate }: { portal: 'admin' | 'member'; groups: PortalNavGroup[]; displayName?: string; roleLabel?: string; onNavigate?: () => void }) {
   const pathname = portalPath(usePathname(), portal)

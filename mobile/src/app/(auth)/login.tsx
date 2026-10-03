@@ -24,7 +24,7 @@ export default function Login() {
   return <SafeAreaView style={styles.safe}>
     <Screen>
       <View style={styles.top}>
-        <Image source={require('../../../assets/icon-only.png')} style={styles.logo} contentFit="contain" accessibilityLabel="Makers and Engineers @Oberlin"/>
+        <Image source={require('../../../assets/logo.png')} style={styles.logo} contentFit="contain" accessibilityLabel="Makers and Engineers @Oberlin"/>
         <Title>Member sign in</Title>
         <Muted>Makers and Engineers @Oberlin</Muted>
       </View>
@@ -46,5 +46,5 @@ export default function Login() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.page },
   top: { alignItems: 'flex-start', gap: 6, marginTop: 24, marginBottom: 8 },
-  logo: { width: 84, height: 84, borderRadius: 18, marginBottom: 10 },
+  logo: { width: 132, height: 132, marginBottom: 10 },
 })

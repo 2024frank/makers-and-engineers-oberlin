@@ -11,7 +11,8 @@
       "policy": "appVersion"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
+      "buildNumber": "1",
       "bundleIdentifier": "com.oberlin32engineeringsociety.members",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -33,7 +34,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/icon-only.png",
+          "image": "./assets/logo.png",
           "imageWidth": 180,
           "backgroundColor": "#fffdf6"
         }

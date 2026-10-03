@@ -10,7 +10,7 @@ const headings = ['Workshops', 'Talks from 3-2 students and alumni', 'Capstone p
 it.each(['home','about'])('centres all six charter activities on %s', async slug => {
   render(await CmsPage({ page: fallbackPages[slug] }))
   for (const name of headings) expect(screen.getByRole('heading', { level: 3, name })).toBeVisible()
-  expect(screen.getByText(/plan to work with Career Exploration and Development \(CED\)/)).toBeVisible()
+  expect(screen.getByText(/We work with Career Exploration and Development \(CED\)/)).toBeVisible()
   expect(screen.getByText(/CAD and 3D printing, electronics and soldering, Arduino/)).toBeVisible()
   expect(screen.getByText(/Socials, study sessions, and informal build nights/)).toBeVisible()
 })

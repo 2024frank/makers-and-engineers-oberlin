@@ -1,7 +1,7 @@
 'use client'
 import { formatPortalDate } from '@/lib/format/portalDate'
-import { useRef, useState } from 'react'
-import { Check, Pencil, Plus, Save, Search, Upload } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Check, Pencil, Plus, Save, Search, Trash2, Upload } from 'lucide-react'
 import type { ContentEntityType } from '@/lib/cms/contentDrafts'
 import type { AdminContentRow } from '@/lib/cms/adminContent'
 import type { MediaAsset } from '@/lib/cms/media'
@@ -33,6 +33,14 @@ export function ContentManager({ entityType, title, rows: initial, canPublish, c
   const toast = useToast(), Form = formRegistry[entityType]
   const dirty = Boolean(current && JSON.stringify(current.payload) !== savedPayload)
   const visibleRows = rows.filter(row => row.title.toLowerCase().includes(query.trim().toLowerCase()) && (!stateFilter || (stateFilter === 'draft' ? row.hasDraft || row.status === 'draft' : row.status === stateFilter)))
+  // The delete step sits at the bottom of a long editor, so the row's Delete button opens the editor scrolled to it.
+  const rowDeletable = canDelete && (entityType === 'projects' || (deletableContentTypes as readonly string[]).includes(entityType))
+  const [jumpToDelete, setJumpToDelete] = useState(false)
+  useEffect(() => {
+    if (!jumpToDelete || !current) return
+    requestAnimationFrame(() => fields.current?.parentElement?.querySelector('.project-delete')?.scrollIntoView({ block: 'center' }))
+    setJumpToDelete(false)
+  }, [jumpToDelete, current])
   function open(draft: Draft) { setSavedPayload(JSON.stringify(draft.payload)); setCurrent(draft); setFeedback(''); setError(''); setConfirmClose(false) }
   async function deleteRow(id: string): Promise<string | null> {
     const response = await fetch(`/api/admin/content?entityType=${encodeURIComponent(entityType)}&id=${encodeURIComponent(id)}`, { method: 'DELETE' })
@@ -102,7 +110,7 @@ export function ContentManager({ entityType, title, rows: initial, canPublish, c
   }
   return <main className="admin-panel"><div className="admin-page-heading"><div><h1>{title}</h1><p>{rows.length} {title.toLowerCase()}</p></div><button className="button button--cardinal" onClick={() => open(newDraft())}><Plus size={18}/>New {singular}</button></div>
     <div className="content-search"><label><Search size={18}/><input type="search" aria-label={`Search ${title}`} placeholder={`Search ${title.toLowerCase()}`} value={query} onChange={event => setQuery(event.target.value)}/></label><select aria-label="Publication status" value={stateFilter} onChange={event => setStateFilter(event.target.value)}><option value="">All statuses</option><option value="draft">Draft changes</option><option value="published">Published</option></select><span role="status">{visibleRows.length} shown</span></div>
-    <div className="manager-list">{visibleRows.map(row => <article key={row.id}><div><strong>{row.title}</strong><small className={row.hasDraft || row.status === 'draft' ? 'portal-draft-label' : 'portal-published-label'}>{row.hasDraft ? 'Unpublished changes' : row.status === 'published' ? 'Published' : row.status.replaceAll('_', ' ')}</small></div><time dateTime={row.updatedAt}>{formatPortalDate(row.updatedAt)}</time><button type="button" aria-label={`Edit ${row.title}`} onClick={() => open({ id: row.id, title: row.title, payload: structuredClone(row.payload) })}><Pencil size={17}/><span>Edit</span></button></article>)}</div>
+    <div className="manager-list">{visibleRows.map(row => <article key={row.id} className={rowDeletable ? 'manager-row--delete' : undefined}><div><strong>{row.title}</strong><small className={row.hasDraft || row.status === 'draft' ? 'portal-draft-label' : 'portal-published-label'}>{row.hasDraft ? 'Unpublished changes' : row.status === 'published' ? 'Published' : row.status.replaceAll('_', ' ')}</small></div><time dateTime={row.updatedAt}>{formatPortalDate(row.updatedAt)}</time><button type="button" aria-label={`Edit ${row.title}`} onClick={() => open({ id: row.id, title: row.title, payload: structuredClone(row.payload) })}><Pencil size={17}/><span>Edit</span></button>{rowDeletable && <button type="button" className="manager-row-delete" aria-label={`Delete ${row.title}`} onClick={() => { open({ id: row.id, title: row.title, payload: structuredClone(row.payload) }); setJumpToDelete(true) }}><Trash2 size={17}/><span>Delete</span></button>}</article>)}</div>
     {!visibleRows.length && <div className="portal-empty"><div><h2>{rows.length ? 'No matching records.' : `No ${title.toLowerCase()} yet.`}</h2>{rows.length ? <button className="button button--ghost" onClick={() => { setQuery(''); setStateFilter('') }}>Clear filters</button> : <button className="button button--primary" onClick={() => open(newDraft())}><Plus size={17}/>Create first {singular.toLowerCase()}</button>}</div></div>}
     <EditorDrawer open={Boolean(current)} title={current?.title || `New ${singular.toLowerCase()}`} onClose={close}>{current && <>
       {confirmClose ? <div className="portal-discard" role="alert"><h3>Discard unsaved changes?</h3><p>Your latest edits have not been saved.</p><div><button className="button button--primary" onClick={() => setConfirmClose(false)}>Keep editing</button><button className="button button--ghost" onClick={() => { setConfirmClose(false); setCurrent(null) }}>Discard changes</button></div></div> : <>

@@ -1,6 +1,7 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import ProjectPage from '@/app/(public)/projects/[slug]/page'
+import { previewProjects } from '@/lib/content/previewProjects'
 
 const fixture = vi.hoisted(() => ({ project: {} as Record<string, unknown>, member: null as null | { userId: string }, teams: [] as { projectId: string }[], applications: [] as { projectId: string; status: string }[], stats: {} as Record<string, unknown> }))
 vi.mock('@/lib/content/projects', () => ({
@@ -25,6 +26,21 @@ beforeEach(() => {
   }
 })
 afterEach(cleanup)
+
+it('describes a snapshot honestly without fabricated progress or unavailable member actions', async () => {
+  fixture.project = previewProjects[0]
+  fixture.stats = { [previewProjects[0].id]: { memberCount: 4, milestonesTotal: 5, milestonesDone: 2, startedAt: '2026-09-12T16:00:00Z' } }
+  render(await ProjectPage({ params: Promise.resolve({ slug: previewProjects[0].slug }) }))
+  const panel = within(screen.getByRole('complementary', { name: 'Project snapshot' }))
+  expect(panel.getByText('Contact the club to confirm current progress and availability.')).toBeVisible()
+  expect(panel.getByRole('link', { name: 'Ask about this project' })).toHaveAttribute('href', '/get-involved?type=join_project&project=Ender%203%20Repair%20%26%20Klipper%20Upgrade')
+  expect(panel.queryByText(/not taking new members|Not taking members yet/)).not.toBeInTheDocument()
+  expect(panel.queryByText('4 members')).not.toBeInTheDocument()
+  expect(panel.queryByText(/Started/)).not.toBeInTheDocument()
+  expect(panel.queryByRole('img', { name: /milestones done/ })).not.toBeInTheDocument()
+  expect(panel.queryByRole('link', { name: /Sign in to apply|Sign in to save/ })).not.toBeInTheDocument()
+  expect(screen.queryByRole('list', { name: 'Project stage' })).not.toBeInTheDocument()
+})
 
 it('shows the published difficulty alongside the existing project details', async () => {
   fixture.project.difficulty = 'Intermediate'

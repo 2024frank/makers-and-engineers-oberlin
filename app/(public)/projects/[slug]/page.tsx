@@ -53,7 +53,8 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
   const {slug}=await params
   const p=await getPublishedProject(slug)
   if(!p)notFound()
-  const member=await getCurrentMember()
+  const snapshot=p.isSnapshot===true
+  const member=snapshot?null:await getCurrentMember()
   const [media, stats, viewer, saved, related] = await Promise.all([
     p.cover_media_id ? publicMedia([p.cover_media_id]) : Promise.resolve({} as Record<string, { url: string; alt: string }>),
     getProjectTeamStats([p.id]),
@@ -68,7 +69,7 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
   const stageIndex = stages.indexOf(String(p.status))
   const timeline=(p.timeline??[]) as Array<{label?:string;title?:string;body?:string;description?:string}>
   return <><section className="project-detail-heading"><div className="shell"><Link className="breadcrumb" href="/projects"><ArrowLeft size={16}/>All projects</Link><h1>{p.title}</h1>{(p.problem||p.goal)&&<p>{p.summary}</p>}<div className="tag-row">{(p.disciplines??[]).map((d:string)=><span key={d}>{capitalize(d)}</span>)}</div>
-    {stageIndex >= 0 && <ol className="project-stage-track" aria-label="Project stage">{stages.map((stage, index) => <li key={stage} className={index < stageIndex ? 'is-done' : index === stageIndex ? 'is-current' : undefined} aria-current={index === stageIndex ? 'step' : undefined}><span aria-hidden="true">{index < stageIndex ? <Check size={13}/> : index + 1}</span>{stageLabels[stage]}</li>)}</ol>}
+    {!snapshot && stageIndex >= 0 && <ol className="project-stage-track" aria-label="Project stage">{stages.map((stage, index) => <li key={stage} className={index < stageIndex ? 'is-done' : index === stageIndex ? 'is-current' : undefined} aria-current={index === stageIndex ? 'step' : undefined}><span aria-hidden="true">{index < stageIndex ? <Check size={13}/> : index + 1}</span>{stageLabels[stage]}</li>)}</ol>}
   </div></section>
   <section className="detail-body"><div className="shell detail-grid"><div className="prose">
     {cover && <figure className="project-cover"><Image src={cover.url} alt={cover.alt || p.title} width={1200} height={800} sizes="(max-width:950px) 100vw, 760px" priority/></figure>}
@@ -80,18 +81,19 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
     {p.updates?.length>0&&<><h2>Project updates</h2>{p.updates.map((u:{id:string;update_date?:string;title:string;summary:string})=><article className="update" key={u.id}><small>{u.update_date}</small><h3>{u.title}</h3><p>{u.summary}</p></article>)}</>}
   </div>
   <aside className="detail-aside project-join" aria-labelledby="project-join-heading">
-    <h2 id="project-join-heading">{viewer === 'on-team' ? 'You are on this team' : 'Join this project'}</h2>
-    <div className={`project-team project-team--${phase}`}><span className="project-team__phase">{teamPhaseLabels[phase]}</span>{Boolean(team?.memberCount) && <span className="project-team__count">{team!.memberCount} {team!.memberCount === 1 ? 'member' : 'members'}</span>}</div>
+    <h2 id="project-join-heading">{snapshot ? 'Project snapshot' : viewer === 'on-team' ? 'You are on this team' : 'Join this project'}</h2>
+    {!snapshot && <><div className={`project-team project-team--${phase}`}><span className="project-team__phase">{teamPhaseLabels[phase]}</span>{Boolean(team?.memberCount) && <span className="project-team__count">{team!.memberCount} {team!.memberCount === 1 ? 'member' : 'members'}</span>}</div>
     {team?.startedAt && <p className="project-join__note">Started {formatPortalDate(team.startedAt)}</p>}
-    {Boolean(team?.milestonesTotal) && <MilestoneMeter done={team!.milestonesDone} total={team!.milestonesTotal}/>}
+    {Boolean(team?.milestonesTotal) && <MilestoneMeter done={team!.milestonesDone} total={team!.milestonesTotal}/>}</>}
     <div className="project-join__actions">
-      {viewer === 'on-team' ? <Link className="button button--primary" href={`/member/teams/${p.id}`}>Open your workspace <ArrowRight size={17}/></Link>
+      {snapshot ? <><p className="project-join__note">Contact the club to confirm current progress and availability.</p><Link className="button button--primary" href={'/get-involved?type=join_project&project='+encodeURIComponent(p.title)}>Ask about this project <ArrowUpRight size={16}/></Link></>
+        : viewer === 'on-team' ? <Link className="button button--primary" href={`/member/teams/${p.id}`}>Open your workspace <ArrowRight size={17}/></Link>
         : viewer === 'applied' ? <><p className="project-join__note">Your application is waiting for a decision.</p><Link className="button button--secondary" href="/member/applications">View your application</Link></>
         : p.recruiting ? viewer === 'member'
           ? <Link className="button button--primary" href={applyPath}>Apply to join <ArrowRight size={17}/></Link>
           : <><Link className="button button--primary" href={`/member/login?next=${encodeURIComponent(applyPath)}`}>Sign in to apply <ArrowRight size={17}/></Link><p className="project-join__note">New to the club? <Link href="/get-involved">Join MOE first</Link>. No engineering experience needed.</p></>
         : <><p className="project-join__note">This team is not taking new members right now.</p>{viewer === 'visitor' && <Link className="text-link" href={'/get-involved?type=join_project&project='+encodeURIComponent(p.title)}>Ask the club about this project <ArrowUpRight size={16}/></Link>}</>}
-      <SaveButton itemType="PROJECT" itemId={p.id} canSave={Boolean(member)} initialSaved={saved}/>
+      {!snapshot && <SaveButton itemType="PROJECT" itemId={p.id} canSave={Boolean(member)} initialSaved={saved}/>}
     </div>
     <dl>{p.difficulty&&<><dt>Difficulty</dt><dd>{p.difficulty}</dd></>}{p.lead_name&&<><dt>Lead</dt><dd>{p.lead_name}</dd></>}{p.next_step&&<><dt>Next step</dt><dd>{p.next_step}</dd></>}</dl>
     {p.github_url&&<a className="text-link" href={p.github_url} target="_blank" rel="noreferrer">GitHub <ArrowUpRight size={16}/></a>}{p.external_url&&<a className="text-link" href={p.external_url} target="_blank" rel="noreferrer">Project website <ArrowUpRight size={16}/></a>}

@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { NextMeeting } from "@/components/public/NextMeeting";
-import { homeIntroduction, publicCopy } from "@/lib/content/publicCopy";
+import { homeIntroduction } from "@/lib/content/publicCopy";
 import type { z } from "zod";
 import type { heroSchema } from "@/lib/page-builder/schemas/hero";
 import type { PageRenderContext } from "@/lib/page-builder/types";
@@ -16,29 +16,39 @@ export function HeroSection({
   const media = section.imageId ? context?.media?.[section.imageId] : undefined;
   const home = context?.pageSlug === "home";
   if (home) {
-    // The workbench photograph the club chose for the homepage, unless an officer sets another.
+    // Preserve officer-selected media and new copy; only retire the original seed headline.
     const image = media?.url ?? "https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg";
+    const defaultHeadline = ["Build things. Learn together.", "Student engineering projects at Oberlin College.", "Makers and Engineers @Oberlin", "Makers and Engineers @Oberlin."].includes(section.headline);
     return <>
-      <section className="photo-hero">
-        <Image className="photo-hero__image" src={image} alt={section.imageAlt || media?.alt || ""} fill priority sizes="100vw"/>
-        <div className="shell photo-hero__inner">
-          <h1>Makers and Engineers<br/>@Oberlin<span aria-hidden="true">.</span></h1>
-          <div className="photo-hero__aside">
-            <p>{publicCopy(section.body) || homeIntroduction}</p>
-            <Link className="button button--light" href="/projects">Explore projects <ArrowRight size={18} aria-hidden="true"/></Link>
-            <nav className="hero-member-links" aria-label="Get started">
-              <Link href="/get-involved?type=propose_project">Share a project idea</Link>
-              <Link href="/member/login">Member sign in</Link>
-            </nav>
+      <section className="club-opening" aria-label="Makers and Engineers at Oberlin">
+        <div className="shell club-opening__grid">
+          <div className="club-opening__copy">
+            <p className="eyebrow">A student club at Oberlin College</p>
+            <h1>{defaultHeadline ? <><span>Makers and Engineers</span><small>@Oberlin<span aria-hidden="true">.</span></small></> : section.headline}</h1>
+            <p className="club-opening__intro">{section.body || homeIntroduction}</p>
+            <div className="button-row">
+              <Link className="button button--primary" href="/projects">Explore projects <ArrowRight size={18} aria-hidden="true"/></Link>
+              <Link className="button button--secondary" href="/get-involved">Join the club</Link>
+            </div>
+            <p className="club-opening__welcome">Every major. Every experience level.</p>
           </div>
+          <figure className="club-opening__media">
+            <div className="club-opening__photograph"><Image src={image} alt={section.imageAlt || media?.alt || "Students at a workshop bench with electronics and tools"} fill preload sizes="(max-width: 800px) 100vw, 50vw"/></div>
+            <figcaption><span>Hands-on work. Shared curiosity.</span><Link href="/about">Meet the club <ArrowUpRight size={17} aria-hidden="true"/></Link></figcaption>
+          </figure>
         </div>
+        <nav className="shell club-opening__paths" aria-label="Get started">
+          <Link href="/events"><span>Come along</span><strong>See club events</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
+          <Link href="/get-involved?type=propose_project"><span>Bring an idea</span><strong>Share a project idea</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
+          <Link href="/member/login"><span>Already a member?</span><strong>Member sign in</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
+        </nav>
       </section>
       <NextMeeting events={context?.events ?? []}/>
       <section className="home-statement" aria-label="About the club">
         <div className="shell">
-          <p className="home-statement__lead">A student club at Oberlin College. We repair and build hardware in project teams.</p>
+          <p className="home-statement__lead">Different majors.<br/><span>A shared place to learn and build.</span></p>
           <div className="home-statement__aside">
-            <p>No engineering experience needed, and you don’t have to be in the 3-2 program.</p>
+            <p>Workshops, student and alumni talks, team projects, and a community to explore engineering with. Every major is welcome, with no experience or 3-2 participation required.</p>
             <Link className="text-link" href="/about">About the club <ArrowUpRight size={17} aria-hidden="true"/></Link>
           </div>
         </div>

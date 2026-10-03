@@ -1,7 +1,7 @@
 import 'server-only'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { computeTeamStats, type ProjectTeamStats } from './teamStatsModel'
-import { previewTeamStats, publicPreviewEnabled } from './previewProjects'
+import { publicPreviewEnabled } from './previewProjects'
 
 export type { ProjectTeamStats } from './teamStatsModel'
 
@@ -10,7 +10,7 @@ export type { ProjectTeamStats } from './teamStatsModel'
 // service client. Any failure hides the status instead of breaking the page.
 export async function getProjectTeamStats(projectIds: string[]): Promise<Record<string, ProjectTeamStats>> {
   const ids = Array.from(new Set(projectIds.filter(Boolean)))
-  if (publicPreviewEnabled()) return Object.fromEntries(ids.filter(id => previewTeamStats[id]).map(id => [id, previewTeamStats[id]]))
+  if (publicPreviewEnabled()) return {}
   if (!ids.length || !process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) return {}
   try {
     const s = createSupabaseAdminClient()

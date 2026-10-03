@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { GetInvolvedForm } from '@/components/forms/GetInvolvedForm'
@@ -7,6 +7,29 @@ beforeEach(() => { Element.prototype.scrollIntoView = vi.fn() })
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 describe('Spatial join flow', () => {
+  it('lets preview visitors review their details without submitting or making a network request', async () => {
+    const user = userEvent.setup()
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) })
+    vi.stubGlobal('fetch', fetch)
+    const { container } = render(<GetInvolvedForm previewMode/>)
+    expect(screen.getByText('Submissions unavailable in this preview')).toBeVisible()
+    await user.click(screen.getByRole('checkbox', { name: 'Electronics' }))
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    await user.type(screen.getByRole('textbox', { name: 'Full name' }), 'Sample Student')
+    await user.type(screen.getByRole('textbox', { name: 'Email' }), 'sample@example.com')
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.getByRole('heading', { name: 'Review your request' })).toBeVisible()
+    expect(screen.getByText('sample@example.com')).toBeVisible()
+    expect(screen.getByText('Electronics')).toBeVisible()
+    expect(screen.getByText('Submissions unavailable in this preview')).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Send to MOE' })).toBeDisabled()
+    fireEvent.submit(container.querySelector('form')!)
+    expect(fetch).not.toHaveBeenCalled()
+    expect(screen.queryByText('Request received')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Previous step' }))
+    expect(screen.getByRole('textbox', { name: 'Full name' })).toHaveValue('Sample Student')
+  })
+
   it('scrolls only the tablet content when changing steps inside the 3D screen', async () => {
     const user = userEvent.setup(), scrollTo = vi.fn()
     const { container } = render(<div className="robot-terminal-content"><GetInvolvedForm/></div>)
@@ -104,4 +127,10 @@ describe('Spatial join flow', () => {
     await user.click(screen.getByRole('button', { name: 'Send to MOE' }))
     expect(JSON.parse(fetch.mock.calls[0][1].body).message).not.toContain('Capstone')
   })
+})
+
+it('does not link to an unavailable member workspace in preview proposal mode', () => {
+  render(<GetInvolvedForm defaultType="propose_project" previewMode/>)
+  expect(screen.queryByRole('link', { name: /Submit in your workspace/ })).not.toBeInTheDocument()
+  expect(screen.getByText('The member workspace is unavailable in this preview.')).toBeVisible()
 })

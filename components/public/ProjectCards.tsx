@@ -16,6 +16,7 @@ export type ProjectCardData = {
   title: string;
   summary: string;
   status: string;
+  isSnapshot?: boolean;
   difficulty?: string;
   disciplines: string[];
   image?: { url: string; alt: string };
@@ -47,7 +48,7 @@ export function ProjectCards({
       [p.title, p.summary, ...p.disciplines]
         .join(" ")
         .toLowerCase()
-        .includes(query.toLowerCase()),
+        .includes(query.trim().toLowerCase()),
   );
   return (
     <>
@@ -77,7 +78,7 @@ export function ProjectCards({
               </option>
             ))}
           </select>
-          <span role="status">{filtered.length} {filtered.length === 1 ? 'project' : 'projects'}</span>
+          <span role="status" aria-live="polite" aria-atomic="true">{filtered.length} {filtered.length === 1 ? 'project' : 'projects'}</span>
         </div>
       )}
       {filters && <AdvancedProjectFilters defaults={filters} />}
@@ -94,7 +95,7 @@ export function ProjectCards({
                   src={p.image.url}
                   alt={p.image.alt || p.title}
                   fill
-                  sizes={layout === 'magazine' ? (index === 0 ? '(max-width:760px) 100vw,50vw' : '(max-width:760px) 50vw,25vw') : layout === 'list' ? '(max-width:600px) 105px,(max-width:950px) 160px,(max-width:1150px) 180px,210px' : layout === 'featured' && index === 0 ? '(max-width:1000px) 90vw,800px' : '(max-width:600px) 90vw,(max-width:1000px) 44vw,390px'}
+                  sizes={layout === 'magazine' ? '(max-width:600px) 100vw,(max-width:950px) 50vw,33vw' : layout === 'list' ? '(max-width:600px) 105px,(max-width:950px) 160px,(max-width:1150px) 180px,210px' : layout === 'featured' && index === 0 ? '(max-width:1000px) 90vw,800px' : '(max-width:600px) 90vw,(max-width:1000px) 44vw,390px'}
                 />
               </div>
             )}
@@ -106,21 +107,21 @@ export function ProjectCards({
               <p>{p.summary}</p>
             </div>
             <div className="project-tile__footer">
-              <span className={"project-team project-team--" + (p.phase ?? "closed")}>
-                <span className="project-team__phase">{teamPhaseLabels[p.phase ?? "closed"]}</span>
-                {Boolean(p.memberCount) && <span className="project-team__count">{p.memberCount} {p.memberCount === 1 ? "member" : "members"}</span>}
+              <span className={"project-team project-team--" + (p.isSnapshot ? "snapshot" : p.phase ?? "closed")}>
+                <span className="project-team__phase">{p.isSnapshot ? "Project snapshot" : teamPhaseLabels[p.phase ?? "closed"]}</span>
+                {!p.isSnapshot && Boolean(p.memberCount) && <span className="project-team__count">{p.memberCount} {p.memberCount === 1 ? "member" : "members"}</span>}
               </span>
               <ArrowUpRight size={21} aria-hidden="true" />
-              {Boolean(p.milestonesTotal) && <MilestoneMeter done={p.milestonesDone} total={p.milestonesTotal} />}
+              {!p.isSnapshot && Boolean(p.milestonesTotal) && <MilestoneMeter done={p.milestonesDone} total={p.milestonesTotal} />}
             </div>
           </Link>
         ))}
       </div>
       {!filtered.length && (
         <div className="empty-state">
-          <h3>No matching projects</h3>
-          <p>Try a different search or discipline.</p>
-          <button
+          <h3>{projects.length ? 'No matching projects' : 'No projects to show yet'}</h3>
+          <p>{projects.length ? 'Try a different search or discipline.' : 'Get in touch to find out what the club is working on.'}</p>
+          {projects.length ? <button
             className="button button--secondary"
             onClick={() => {
               setQuery("");
@@ -128,7 +129,7 @@ export function ProjectCards({
             }}
           >
             Clear search
-          </button>
+          </button> : <Link className="button button--secondary" href="/get-involved">Get involved</Link>}
         </div>
       )}
     </>

@@ -1,7 +1,7 @@
 import 'server-only'
 import { randomUUID } from 'node:crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { CAPSTONE_LIMITS, RESUME_TYPES, type CapstoneApplication } from './types'
+import { CAPSTONE_LIMITS, resumeType, type CapstoneApplication } from './types'
 
 const BUCKET = 'capstone-resumes'
 const SIGNED_URL_SECONDS = 60 * 10
@@ -30,12 +30,13 @@ export async function submitCapstoneApplication({ userId, area, interests, compa
   let path: string | null = null
   let name = ''
   if (resume && resume.size > 0) {
-    const ext = RESUME_TYPES[resume.type]
-    if (!ext) throw new Error('RESUME_TYPE')
+    const type = resumeType(resume)
+    if (!type) throw new Error('RESUME_TYPE')
+    const { ext, mime } = type
     if (resume.size > CAPSTONE_LIMITS.resumeBytes) throw new Error('RESUME_TOO_LARGE')
     path = `${userId}/${randomUUID()}.${ext}`
     name = resume.name.slice(0, 200)
-    const { error } = await s.storage.from(BUCKET).upload(path, resume, { contentType: resume.type, upsert: false })
+    const { error } = await s.storage.from(BUCKET).upload(path, resume, { contentType: mime, upsert: false })
     if (error) throw new Error('RESUME_UPLOAD_FAILED')
   }
   const { data, error } = await s.rpc('capstone_application_action', { p_action: 'apply', p_area: area, p_interests: interests, p_company: company, p_resume_path: path, p_resume_name: name })

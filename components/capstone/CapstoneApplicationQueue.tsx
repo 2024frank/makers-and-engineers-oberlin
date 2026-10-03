@@ -16,7 +16,7 @@ function Application({ application }: { application: CapstoneApplication }) {
     <h4>Company in mind</h4><p className="leadership-copy">{application.company || 'None given'}</p>
     <div className="leadership-actions">
       <a className="portal-text-link" href={`/api/capstone/resume?user=${application.userId}`} target="_blank" rel="noreferrer"><FileText size={16} aria-hidden="true"/>{application.resumeName || 'Resume'}</a>
-      {application.status === 'PENDING' && <button type="button" className="button button--secondary" disabled={busy} onClick={() => run({ userId: application.userId })}><Check size={17} aria-hidden="true"/>{busy ? 'Saving...' : 'Mark reviewed'}</button>}
+      {application.status === 'PENDING' && <button type="button" className="button button--secondary" disabled={busy} onClick={() => run({ userId: application.userId, submittedAt: application.submittedAt })}><Check size={17} aria-hidden="true"/>{busy ? 'Saving...' : 'Mark reviewed'}</button>}
     </div>
     {error && <p className="portal-form-error" role="alert">{error}</p>}
   </article>

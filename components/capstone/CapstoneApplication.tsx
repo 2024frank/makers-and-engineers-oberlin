@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { FileText, Send, Undo2 } from 'lucide-react'
 import { LeadershipDate } from '@/components/leadership/shared'
-import { CAPSTONE_LIMITS, RESUME_TYPES, capstoneStatusLabels, type CapstoneApplication } from '@/lib/capstone/types'
+import { CAPSTONE_LIMITS, capstoneStatusLabels, resumeType, type CapstoneApplication } from '@/lib/capstone/types'
 
 async function post(body: FormData) {
   const response = await fetch('/api/member/capstone', { method: 'POST', body })
@@ -28,7 +28,7 @@ function ApplicationForm({ application, onDone }: { application?: CapstoneApplic
     if (area.trim().length < CAPSTONE_LIMITS.area[0]) { setError('Tell us your area of interest.'); return }
     if (interests.trim().length < CAPSTONE_LIMITS.interests[0]) { setError('Describe what you want to work on in at least 20 characters.'); return }
     if (!resume && !application) { setError('Attach your resume.'); return }
-    if (resume && !RESUME_TYPES[resume.type]) { setError('Upload your resume as a PDF or Word (.docx) file.'); return }
+    if (resume && !resumeType(resume)) { setError('Upload your resume as a PDF or Word (.docx) file.'); return }
     if (resume && resume.size > CAPSTONE_LIMITS.resumeBytes) { setError('Your resume must be 4 MB or smaller.'); return }
     const body = new FormData()
     body.set('area', area.trim()); body.set('interests', interests.trim()); body.set('company', company.trim())
@@ -70,14 +70,14 @@ export function CapstoneApplicationPanel({ application }: { application?: Capsto
     <ApplicationForm application={application} onDone={() => { setEditing(false); setNotice('Application sent. Officers will see it in the club admin.') }}/>
     {application && <div className="leadership-actions"><button type="button" className="button button--ghost" onClick={() => setEditing(false)}>Cancel</button></div>}
   </>
-  if (!application) return null
+  if (!application) return notice ? <p className="leadership-notice" role="status">{notice}</p> : null
   return <article className="leadership-application" aria-label="Your capstone application">
     {notice && <p className="leadership-notice" role="status">{notice}</p>}
     <p className="leadership-meta">{capstoneStatusLabels[application.status]} <LeadershipDate value={application.submittedAt}/></p>
     <h4>Area of interest</h4><p className="leadership-copy">{application.areaOfInterest}</p>
     <h4>What you want to work on</h4><p className="leadership-copy">{application.interests}</p>
     {application.company && <><h4>Company in mind</h4><p className="leadership-copy">{application.company}</p></>}
-    <h4>Resume</h4><p><a className="portal-text-link" href="/api/capstone/resume" target="_blank" rel="noreferrer"><FileText size={16} aria-hidden="true"/>{application.resumeName || 'View resume'}</a></p>
+    <h4>Resume</h4><p><a className="portal-text-link" href={`/api/capstone/resume?user=${application.userId}`} target="_blank" rel="noreferrer"><FileText size={16} aria-hidden="true"/>{application.resumeName || 'View resume'}</a></p>
     <div className="leadership-actions">
       <button type="button" className="button button--secondary" disabled={busy} onClick={() => { setNotice(''); setEditing(true) }}>{application.status === 'WITHDRAWN' ? 'Resubmit application' : 'Edit application'}</button>
       {application.status === 'PENDING' && <button type="button" className="button button--ghost" disabled={busy} onClick={withdraw}><Undo2 size={17} aria-hidden="true"/>{busy ? 'Withdrawing...' : 'Withdraw application'}</button>}

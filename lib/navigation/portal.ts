@@ -6,7 +6,7 @@ const item = (label: string, href: string, icon: string): PortalNavItem => ({ la
 
 export function adminPortalGroups(role: AdminRole): PortalNavGroup[] {
   return [
-    { label: 'Start here', items: [item('Overview', '/admin', 'home'), ...(role === 'EDITOR' ? [] : [item('Inbox', '/admin/submissions', 'inbox'), item('Member requests', '/admin/member-applications', 'requests'), item('Project ideas', '/admin/project-proposals', 'idea'), item('Project applications', '/admin/project-applications', 'requests'), item('Officer applications', '/admin/officer-applications', 'requests')])] },
+    { label: 'Start here', items: [item('Overview', '/admin', 'home'), ...(role === 'EDITOR' ? [] : [item('Inbox', '/admin/submissions', 'inbox'), item('Member requests', '/admin/member-applications', 'requests'), item('Project ideas', '/admin/project-proposals', 'idea'), item('Project applications', '/admin/project-applications', 'requests'), item('Officer applications', '/admin/officer-applications', 'requests'), item('Capstone applications', '/admin/capstone-applications', 'requests')])] },
     { label: 'Club', items: [item('Projects', '/admin/projects', 'projects'), ...(role === 'EDITOR' ? [] : [item('Project teams', '/admin/project-teams', 'people')]), item('Events', '/admin/events', 'calendar'), ...(role === 'EDITOR' ? [] : [item('Members', '/admin/members', 'people'), item('Club teams', '/admin/teams', 'people')]), item('Website pages', '/admin/pages', 'pages')] },
     { label: 'More publishing tools', collapsed: true, items: [item('Project updates', '/admin/project-updates', 'updates'), item('News', '/admin/news', 'pages'), item('Opportunities', '/admin/opportunities', 'briefcase'), item('Leadership', '/admin/leadership', 'people'), item('Resources', '/admin/resources', 'book'), item('Documents', '/admin/documents', 'pages'), item('Sponsors', '/admin/sponsors', 'people'), item('Media library', '/admin/media', 'image')] },
     { label: 'Settings', collapsed: true, items: [...(role === 'SUPER_ADMIN' ? [item('Site settings', '/admin/settings', 'settings'), item('Navigation', '/admin/navigation', 'navigation'), item('Redirects', '/admin/redirects', 'navigation'), item('Staff access', '/admin/users', 'shield')] : []), item('Activity history', '/admin/audit', 'history')] },
@@ -14,7 +14,7 @@ export function adminPortalGroups(role: AdminRole): PortalNavGroup[] {
 }
 
 export const memberPortalGroups: PortalNavGroup[] = [
-  { label: 'Workspace', items: [item('Dashboard', '/member', 'home'), item('Find a project', '/member/projects', 'search'), item('My teams', '/member/teams', 'projects'), item('My ideas', '/member/proposals', 'idea')] },
+  { label: 'Workspace', items: [item('Dashboard', '/member', 'home'), item('Find a project', '/member/projects', 'search'), item('My teams', '/member/teams', 'projects'), item('My ideas', '/member/proposals', 'idea'), item('Capstone application', '/member/capstone', 'briefcase')] },
   { label: 'Inbox', items: [item('Notifications', '/member/notifications', 'bell'), item('Invitations', '/member/invitations', 'inbox'), item('My applications', '/member/applications', 'requests')] },
   { label: 'Community', items: [item('Member directory', '/member/directory', 'people'), item('Officer openings', '/member/leadership', 'people'), item('Saved items', '/member/saved', 'bookmark'), item('My profile', '/member/profile', 'profile'), item('Get the app', '/app', 'phone')] },
 ]

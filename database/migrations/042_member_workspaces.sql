@@ -34,6 +34,17 @@ returns uuid language sql immutable set search_path='' as $$
 $$;
 grant execute on function private.workspace_photo_project(text) to authenticated;
 
+-- True while the caller may still add photos for this project: the project is
+-- started and the caller's folder holds fewer than 600 files.
+create or replace function private.workspace_upload_open(p_project_id uuid)
+returns boolean language sql stable security definer set search_path='' as $$
+  select exists(select 1 from public.projects where id=p_project_id and started_at is not null)
+    and (select count(*) from storage.objects where bucket_id='team-workspace'
+      and name like p_project_id::text||'/'||(select auth.uid())::text||'/%')<600;
+$$;
+revoke all on function private.workspace_upload_open(uuid) from public,anon;
+grant execute on function private.workspace_upload_open(uuid) to authenticated;
+
 insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
   values('team-workspace','team-workspace',false,5242880,array['image/jpeg'])
   on conflict (id) do update set public=false,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
@@ -46,7 +57,8 @@ drop policy if exists "members add own workspace photos" on storage.objects;
 create policy "members add own workspace photos" on storage.objects for insert to authenticated
   with check(bucket_id='team-workspace' and private.workspace_photo_project(name) is not null
     and split_part(name,'/',2)=(select auth.uid())::text
-    and private.is_project_member(private.workspace_photo_project(name)));
+    and private.is_project_member(private.workspace_photo_project(name))
+    and private.workspace_upload_open(private.workspace_photo_project(name)));
 drop policy if exists "members remove workspace photos" on storage.objects;
 create policy "members remove workspace photos" on storage.objects for delete to authenticated
   using(bucket_id='team-workspace' and private.workspace_photo_project(name) is not null
@@ -55,7 +67,8 @@ create policy "members remove workspace photos" on storage.objects for delete to
       or private.is_admin_or_super()));
 
 -- Add an entry to the caller's own workspace. Photos are uploaded first; every
--- path must sit in the caller's own folder for this project.
+-- path must sit in the caller's own folder for this project, exist in storage
+-- and belong to no other entry.
 create or replace function public.add_project_work_log(p_project_id uuid,p_body text,p_photo_paths text[] default '{}')
 returns jsonb language plpgsql security definer set search_path='' as $$
 declare v_user uuid := (select auth.uid());v_name text;v_started timestamptz;v_paths text[] := coalesce(p_photo_paths,'{}');v_path text;v_id uuid;begin
@@ -66,8 +79,12 @@ declare v_user uuid := (select auth.uid());v_name text;v_started timestamptz;v_p
   if length(coalesce(p_body,''))>4000 then raise exception 'WORK_LOG_TOO_LONG'; end if;
   if cardinality(v_paths)>6 then raise exception 'WORK_LOG_TOO_MANY_PHOTOS'; end if;
   if length(trim(coalesce(p_body,'')))<2 and cardinality(v_paths)=0 then raise exception 'WORK_LOG_REQUIRED'; end if;
+  if (select count(distinct p) from unnest(v_paths) p)<>cardinality(v_paths) then raise exception 'WORK_LOG_PHOTO_INVALID'; end if;
   foreach v_path in array v_paths loop
-    if private.workspace_photo_project(v_path) is distinct from p_project_id or split_part(v_path,'/',2)<>v_user::text then raise exception 'WORK_LOG_PHOTO_INVALID'; end if;
+    if private.workspace_photo_project(v_path) is distinct from p_project_id or split_part(v_path,'/',2)<>v_user::text
+      or not exists(select 1 from storage.objects where bucket_id='team-workspace' and name=v_path)
+      or exists(select 1 from public.project_work_logs where project_id=p_project_id and photo_paths @> array[v_path])
+    then raise exception 'WORK_LOG_PHOTO_INVALID'; end if;
   end loop;
   select display_name into v_name from public.member_profiles where user_id=v_user;
   insert into public.project_work_logs(project_id,author_user_id,author_name,body,photo_paths)

@@ -29,7 +29,7 @@ export async function listProjectWorkLogs(projectId: string): Promise<WorkLog[]>
   }))
 }
 
-/** Re-encode an upload as a JPEG no larger than 1600px. This also drops EXIF data such as GPS location. */
+/** Re-encode an upload as a JPEG no larger than 1600px. Photos saved through this route lose EXIF data such as GPS location. */
 async function normalizePhoto(file: File) {
   if (!file.type.startsWith('image/')) throw new Error('WORK_LOG_PHOTO_INVALID')
   if (file.size > MAX_UPLOAD_BYTES) throw new Error('WORK_LOG_PHOTO_TOO_LARGE')
@@ -54,7 +54,7 @@ export async function addProjectWorkLog(projectId: string, userId: string, body:
     if (error) throw new Error(error.message)
     return data as { id: string }
   } catch (error) {
-    if (paths.length) await s.storage.from(BUCKET).remove(paths).catch(() => null)
+    if (paths.length) { const { error: cleanup } = await s.storage.from(BUCKET).remove(paths); if (cleanup) console.error('work log upload cleanup failed', cleanup.message) }
     throw error
   }
 }
@@ -64,5 +64,5 @@ export async function deleteProjectWorkLog(logId: string) {
   const { data, error } = await s.rpc('delete_project_work_log', { p_log_id: logId })
   if (error) throw new Error(error.message)
   const paths = (data as string[] | null) ?? []
-  if (paths.length) await s.storage.from(BUCKET).remove(paths).catch(() => null)
+  if (paths.length) { const { error: cleanup } = await s.storage.from(BUCKET).remove(paths); if (cleanup) console.error('work log photo removal failed', cleanup.message) }
 }

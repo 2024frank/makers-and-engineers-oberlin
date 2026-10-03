@@ -46,6 +46,7 @@ const messages: Record<string, string> = {
   WORK_LOG_TOO_MANY_PHOTOS: 'You can add up to 6 photos to one entry.',
   WORK_LOG_PHOTO_INVALID: 'One of the photos could not be read. Try a different photo.',
   WORK_LOG_PHOTO_TOO_LARGE: 'One of the photos is too large. Try a smaller photo.',
+  WORK_LOG_UPLOAD_TOO_LARGE: 'These photos are too large to send together. Remove one and try again.',
   WORK_LOG_UPLOAD_FAILED: 'The photos could not be uploaded. Nothing was saved; please try again.',
   WORK_LOG_FORBIDDEN: 'You can only delete your own entries.',
   WORK_LOG_NOT_FOUND: 'This entry was already removed. Refresh the page.',

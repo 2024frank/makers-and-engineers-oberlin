@@ -412,7 +412,7 @@
   .professional-site .home-statement { padding-block: 80px 16px; }
   .professional-site .photo-hero__inner { min-height: min(700px, calc(100svh - 72px)); }
 }
-.professional-site .public-footer .footer-wordmark { max-width: none; margin: 0; padding: 56px 0 12px; font-size: clamp(36px, 8.6vw, 128px); line-height: 1; font-weight: 600; letter-spacing: -0.055em; white-space: nowrap; color: var(--oec-inverse-muted); opacity: 0.18; overflow: hidden; user-select: none; }
+.professional-site .public-footer .footer-wordmark { max-width: none; margin: 0; padding: 56px 0 12px; font-size: clamp(30px, 6vw, 96px); line-height: 1; font-weight: 600; letter-spacing: -0.055em; white-space: normal; overflow-wrap: anywhere; color: var(--oec-inverse-muted); opacity: 0.18; overflow: hidden; user-select: none; }
 .professional-site .event-planning { background: none; border: 0; border-top: 1px solid var(--oec-charcoal); padding: 24px 0 0; }
 .professional-site .event-planning > p { font-size: 17px; margin: 0 0 40px; }
 .professional-site .event-planning article { background: none; border: 0; border-top: 1px solid var(--oec-border); border-radius: 0; padding: 20px 0 0; }

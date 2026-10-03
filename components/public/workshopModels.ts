@@ -49,7 +49,7 @@ export function buildWorkshopCenterpiece(scene: THREE.Scene) {
   const sign = new THREE.Group(); sign.position.set(0, 4.6, -7); sign.rotation.y = .35; scene.add(sign)
   const backing = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.6, .15, 64), red); backing.rotation.x = Math.PI / 2; sign.add(backing)
   let disposed = false
-  const texture = new THREE.TextureLoader().load('/brand/oec-badge-circle.png', loaded => { if (disposed) { loaded.dispose(); return } loaded.colorSpace = THREE.SRGBColorSpace })
+  const texture = new THREE.TextureLoader().load('/brand/moe-badge-circle.png', loaded => { if (disposed) { loaded.dispose(); return } loaded.colorSpace = THREE.SRGBColorSpace })
   texture.colorSpace = THREE.SRGBColorSpace
   const face = new THREE.Mesh(new THREE.CircleGeometry(1.52, 64), new THREE.MeshBasicMaterial({ map: texture, transparent: true, toneMapped: false })); face.position.z = .083; sign.add(face)
   for (const x of [-1, 1]) box(sign, [.065, 4.6, .065], [x, -2.3, -.15], chrome)

@@ -15,7 +15,7 @@ for (const userAgent of ['WhatsApp/2.24.5.76 A', 'facebookexternalhit/1.1', 'Twi
       return Object.fromEntries([...document.head.querySelectorAll('meta')].map(element => [element.getAttribute('property') || element.getAttribute('name'), element.getAttribute('content')]))
     }, await response.text())
     const imagePath = '/brand/workbench/share-20260906.jpg'
-    const imageUrl = `https://oberlin32engineeringsociety.com${imagePath}`
+    const imageUrl = `https://makeoberlin.site${imagePath}`
     expect(metadata['og:image']).toBe(imageUrl)
     expect(metadata['og:image:width']).toBe('1200')
     expect(metadata['og:image:height']).toBe('660')

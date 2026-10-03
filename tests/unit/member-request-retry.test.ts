@@ -7,7 +7,7 @@ vi.mock('@/lib/email/client', () => ({ sendTransactionalEmail: mocks.send }))
 vi.mock('@/lib/submissions/rateLimit', () => ({ hashNetworkAddress: (value: string) => value, consumeSubmissionRateLimit: mocks.limit }))
 import { submitMembershipRequest } from '@/lib/auth/memberServer'
 
-const origin = 'https://oberlin32engineeringsociety.com'
+const origin = 'https://makeoberlin.site'
 const input = { email: ' Ada@oberlin.edu ', displayName: 'Changed name' }
 function setup(status = 'REQUESTED', overrides = {}) {
   const row = { id: 'request-a', email: 'ada@oberlin.edu', display_name: 'Ada', status, preapproved_at: null, last_email_sent_at: null, ...overrides }

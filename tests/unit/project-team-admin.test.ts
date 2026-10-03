@@ -14,14 +14,14 @@ beforeEach(() => { send.mockResolvedValue(true); sendBatch.mockResolvedValue(2);
 afterEach(() => { vi.resetAllMocks(); vi.unstubAllEnvs() })
 
 it('welcomes a new team member to their workspace on the public site', async () => {
-  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://admin.oberlin32engineeringsociety.com')
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://admin.makeoberlin.site')
   rpc.mockResolvedValue({ data: member, error: null })
   const { emailSent } = await approveProjectInterest({ source: 'application', requestId: 'a', role: 'MEMBER' })
   expect(rpc).toHaveBeenCalledWith('admin_approve_project_interest', { p_source: 'application', p_request_id: 'a', p_project_id: null, p_role: 'MEMBER' })
   expect(emailSent).toBe(true)
   const message = send.mock.calls[0][0].message
   expect(message.subject).toBe("You're on the Printer repair team")
-  expect(message.text).toContain(`https://oberlin32engineeringsociety.com/member/teams/${projectId}`)
+  expect(message.text).toContain(`https://makeoberlin.site/member/teams/${projectId}`)
   expect(message.text).not.toContain('project lead')
 })
 it('does not email again when an approval is repeated, and keeps the approval if email fails', async () => {

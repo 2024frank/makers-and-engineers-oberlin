@@ -19,7 +19,7 @@ it('restricts login return paths to the member leadership screen',()=>{
 it('includes the exact role, term, responsibilities, and application link in the email',()=>{
   const mail=officerOpeningEmail({displayName:'Test',roleTitle:'Secretary',term:'Fall',bio:'Keep meeting records.',closesAt:null,positionId:id})
   expect(mail.subject).toContain('Secretary');expect(mail.text).toContain('Keep meeting records.')
-  expect(mail.text).toContain('https://oberlin32engineeringsociety.com/leadership')
+  expect(mail.text).toContain('https://makeoberlin.site/leadership')
   expect(mail.text).not.toContain('reset')
 })
 

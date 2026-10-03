@@ -98,7 +98,7 @@ export function GetInvolvedForm({ defaultType = 'join_club', defaultProject = ''
         <CheckCheck size={32}/><p className="eyebrow">Request received</p>
         <h1 ref={heading} tabIndex={-1}>Thanks, {fields.fullName.trim().split(' ')[0]}.</h1>
         <p>Your message is with the MOE team. We will use the email you provided to follow up.</p>
-        <div className="button-row"><button className="button button--primary" onClick={async () => { try { await navigator.clipboard.writeText('https://oberlin32engineeringsociety.com/get-involved'); setCopied(true) } catch { setError('Copy this link: https://oberlin32engineeringsociety.com/get-involved') } }}><Copy size={16}/>{copied ? 'Link copied' : 'Copy club link'}</button><Link className="text-link" href="/projects">Explore projects<ArrowRight size={17}/></Link></div>
+        <div className="button-row"><button className="button button--primary" onClick={async () => { try { await navigator.clipboard.writeText('https://makeoberlin.site/get-involved'); setCopied(true) } catch { setError('Copy this link: https://makeoberlin.site/get-involved') } }}><Copy size={16}/>{copied ? 'Link copied' : 'Copy club link'}</button><Link className="text-link" href="/projects">Explore projects<ArrowRight size={17}/></Link></div>
         {error && <p role="alert">{error}</p>}
       </div> : <form onSubmit={submit} noValidate className="join-form">
         {previewMode && <p className="join-intro" role="status">Submissions unavailable in this preview</p>}

@@ -11,7 +11,7 @@ vi.mock('@/lib/page-builder/publicPages', () => ({
   getCmsRenderContext: async () => ({ media: cms.media }),
 }))
 
-const base = 'https://oberlin32engineeringsociety.com'
+const base = 'https://makeoberlin.site'
 const shareImage = `${base}/brand/workbench/share-20260906.jpg`
 const retiredImage = 'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg'
 const home: PageSnapshot = { pageId: '00000000-0000-4000-8000-000000000101', slug: 'home', title: 'Home', seoTitle: 'Makers and Engineers @Oberlin', seoDescription: 'Build projects together.', ogMediaId: null, sections: [] }

@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { ArrowRight, ArrowUpRight, Check, ChevronDown, GraduationCap, Menu, X } from 'lucide-react'
 import s from './preview.module.css'
 
-const live = 'https://oberlin32engineeringsociety.com'
+const live = 'https://makeoberlin.site'
 const projects = [
   { title: 'Ender 3 Repair & Klipper Upgrade', category: 'Electronics', slug: 'ender-3-klipper-upgrade', skills: 'Firmware / Electronics / Tuning', description: 'Upgrade the control board and extruder, install Klipper, and tune an Ender 3 for faster, more reliable printing.' },
   { title: 'Build Plate Carriage Repair', category: 'Fabrication', slug: 'large-format-build-plate-carriage', skills: 'CAD / Mechanical design / Fabrication', description: 'Design or source a replacement carriage for a large-format printer, then fabricate, install, and recalibrate it.' },

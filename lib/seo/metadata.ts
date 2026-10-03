@@ -16,10 +16,10 @@ export async function metadataForCmsPage(page: PageSnapshot): Promise<Metadata> 
   const title = page.slug === 'home' ? rawTitle : patterned
   const description = page.seoDescription || undefined
   let image: { url: string; alt: string; width?: number; height?: number } = {
-    url: `${base}/brand/workbench/share-20260906.jpg`,
-    alt: 'Makers and Engineers @Oberlin interactive workbench',
+    url: `${base}/brand/share-meo-20261003.jpg`,
+    alt: 'Makers and Engineers @Oberlin logo',
     width: 1200,
-    height: 660,
+    height: 630,
   }
   const mediaId = page.ogMediaId ?? settings.seo.defaultOgMediaId
   if (mediaId && process.env.NEXT_PUBLIC_SUPABASE_URL) {

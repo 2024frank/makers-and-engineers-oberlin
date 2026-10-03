@@ -1,4 +1,4 @@
-# MOE Deployment Runbook
+# MEO Deployment Runbook
 
 ## Launch rule
 

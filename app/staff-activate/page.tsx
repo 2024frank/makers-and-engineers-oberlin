@@ -8,7 +8,7 @@ export default async function StaffActivatePage({ searchParams }: { searchParams
     <section className="admin-login__intro">
       <BrandLogo variant="badge" />
       <p className="eyebrow">Officer Invitation</p>
-      <h1>Set up your MOE staff account.</h1>
+      <h1>Set up your MEO staff account.</h1>
       <p>Your email identity must match the invitation before administrative access is activated.</p>
     </section>
     <section className="admin-login__card">

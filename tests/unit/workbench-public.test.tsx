@@ -30,10 +30,10 @@ it('uses public URLs for the drawer, navigation and join lever, without preview 
 })
 
 it('renders real signup content on direct links and syncs machine progress without a demo form', () => {
-  render(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/get-involved', navigate: vi.fn() }}><h1>Live registration</h1><button>Send to MOE</button></WorkbenchPreview>)
+  render(<WorkbenchPreview projects={projects} events={[]} route={{ pathname: '/get-involved', navigate: vi.fn() }}><h1>Live registration</h1><button>Send to MEO</button></WorkbenchPreview>)
   expect(screen.getByRole('heading', { name: 'Live registration' })).toBeVisible()
   expect(screen.getByText('Membership', { selector: '.wb-label' })).toBeVisible()
-  expect(screen.getByRole('button', { name: 'Send to MOE' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Send to MEO' })).toBeVisible()
   expect(screen.queryByText(/Local preview only/)).not.toBeInTheDocument()
   act(() => window.dispatchEvent(new CustomEvent('oec-join-progress', { detail: { phase: 2 } })))
   expect(scene.progress).toBe(3)

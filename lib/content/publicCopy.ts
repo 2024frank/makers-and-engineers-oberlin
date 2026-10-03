@@ -12,10 +12,10 @@ const replacements: Record<string, string> = {
   'Build something with us.': 'Projects',
   'Help run the club.': 'Help with the club',
   'These roles are open now. They are how the club actually gets built this year.': 'Interested in organizing events or helping with projects? Choose an option in the form above and tell us what you would like to do.',
-  'MOE projects give students a chance to work on engineering problems outside class. That can mean hardware, software, CAD, electronics, robotics, or testing.': 'These projects are open to MOE members. Read a proposal to see what is involved, then express interest through your membership account.',
+  'MEO projects give students a chance to work on engineering problems outside class. That can mean hardware, software, CAD, electronics, robotics, or testing.': 'These projects are open to MEO members. Read a proposal to see what is involved, then express interest through your membership account.',
   'A club for students who build things.': 'About the club',
-  'Oberlin’s 3-2 program combines three years of liberal arts study at Oberlin with two years at a partner engineering school. Students interested in engineering are also spread across physics, computer science, chemistry, mathematics, environmental studies, and other departments. MOE gives those students a place to meet, build projects, share resources, and learn from each other.': 'Students interested in engineering are spread across departments at Oberlin. We started MOE so they can find one another and work on projects outside class. You can join whether you are considering the 3-2 program or simply want to try a project.',
-  'Engineering at Oberlin works differently.': 'Why we started MOE',
+  'Oberlin’s 3-2 program combines three years of liberal arts study at Oberlin with two years at a partner engineering school. Students interested in engineering are also spread across physics, computer science, chemistry, mathematics, environmental studies, and other departments. MEO gives those students a place to meet, build projects, share resources, and learn from each other.': 'Students interested in engineering are spread across departments at Oberlin. We started MEO so they can find one another and work on projects outside class. You can join whether you are considering the 3-2 program or simply want to try a project.',
+  'Engineering at Oberlin works differently.': 'Why we started MEO',
   'Engineering disciplines': 'Areas of interest',
   'Engineering brings different fields together.': 'Areas of interest',
   'How the club runs.': 'How we work',
@@ -35,7 +35,7 @@ const replacements: Record<string, string> = {
   'Opportunities worth knowing about': 'Opportunities',
   'Internships, research, and funding.': 'Opportunities',
   'Find engineering internships, research positions, fellowships, campus programs, and other opportunities worth knowing about.': 'Internships, research positions, and funding shared by the club. Check each listing for requirements and deadlines.',
-  'We are gathering engineering internships, research positions, fellowships, and funding worth knowing about. Join MOE and we will share them as they land.': 'There are no current listings. We will add opportunities here as members share them.',
+  'We are gathering engineering internships, research positions, fellowships, and funding worth knowing about. Join MEO and we will share them as they land.': 'There are no current listings. We will add opportunities here as members share them.',
 }
 
 export function publicCopy(text: string) {

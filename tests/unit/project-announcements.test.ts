@@ -28,7 +28,7 @@ describe('new project announcements', () => {
 
   it('emails the project name, summary, and link', () => {
     const message = newProjectEmail({ memberName: 'Ada', projectTitle: 'Solar Cart', summary: 'Build a solar charging cart.', actionUrl: 'https://example.org/projects/solar-cart' })
-    expect(message.subject).toBe('New MOE project: Solar Cart')
+    expect(message.subject).toBe('New MEO project: Solar Cart')
     expect(message.text).toContain('Hi Ada,')
     expect(message.text).toContain('Build a solar charging cart.')
     expect(message.text).toContain('https://example.org/projects/solar-cart')

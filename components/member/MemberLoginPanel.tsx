@@ -41,7 +41,7 @@ export function MemberLoginPanel({ authError, status, next }: { authError?: stri
         body: JSON.stringify({ email: String(form.get('email') ?? ''), next: officerLoginNext(next) }),
       })
       const body = await response.json()
-      if (!response.ok) throw new Error(body.error === 'ACTIVE_MEMBER_REQUIRED' ? 'That email does not have an active approved MOE member account.' : body.error ?? 'Could not send sign-in link.')
+      if (!response.ok) throw new Error(body.error === 'ACTIVE_MEMBER_REQUIRED' ? 'That email does not have an active approved MEO member account.' : body.error ?? 'Could not send sign-in link.')
       setNotice('Sign-in link sent to your approved Oberlin email.')
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not send sign-in link.') }
     finally { setBusy('') }

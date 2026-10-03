@@ -13,7 +13,7 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
         '@type': 'Organization',
         '@id': `${base}/#organization`,
         name: 'Makers and Engineers @Oberlin',
-        alternateName: 'MOE',
+        alternateName: 'MEO',
         url: base,
         email: contactEmail,
         logo: { '@type': 'ImageObject', url: `${base}/brand/moe-badge-circle.png` },

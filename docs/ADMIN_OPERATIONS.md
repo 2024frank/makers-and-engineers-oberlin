@@ -1,4 +1,4 @@
-# MOE Admin and Community Operations
+# MEO Admin and Community Operations
 
 ## Staff roles
 
@@ -22,7 +22,7 @@ Editor access is limited to explicitly assigned content scopes. Editor does not 
 4. The server activates the officer only when the authenticated email matches the invitation and the invitation is valid, unused, unrevoked, and unexpired.
 5. Super Admin can suspend/revoke the account later.
 
-An uninvited Supabase identity is not a MOE staff account. Someone who is already active staff cannot be invited again; change their access from **Manage** instead. A suspended officer can be reinstated with a new invitation.
+An uninvited Supabase identity is not a MEO staff account. Someone who is already active staff cannot be invited again; change their access from **Manage** instead. A suspended officer can be reinstated with a new invitation.
 
 Invitations last 72 hours. If the link or email cannot be created, no invitation is saved and the Super Admin can simply try again. **Resend** emails a fresh link for a pending or expired invitation and restarts the 72 hours; earlier links for that invitation stop working. Expired invitations are listed separately until they are resent or dismissed, are not counted as pending on the dashboard, and do not block a new invitation to the same email. Migration `028_staff_invite_lifecycle.sql` must be applied before deploying this workflow.
 
@@ -80,4 +80,4 @@ Role changes, bootstrap, invitation acceptance, membership decisions, project ap
 
 ## Email-link safety
 
-MOE custom authentication emails do not send users through a raw Supabase action redirect. They contain a token-hash URL on the MOE site. A GET opens `/auth/email-action` without consuming the token; an explicit POST from **Continue securely** verifies it through Supabase and creates the server cookie session. This prevents common mail-security prefetchers from spending the one-time token before the student or officer opens the message.
+MEO custom authentication emails do not send users through a raw Supabase action redirect. They contain a token-hash URL on the MEO site. A GET opens `/auth/email-action` without consuming the token; an explicit POST from **Continue securely** verifies it through Supabase and creates the server cookie session. This prevents common mail-security prefetchers from spending the one-time token before the student or officer opens the message.

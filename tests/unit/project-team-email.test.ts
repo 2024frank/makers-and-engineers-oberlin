@@ -25,8 +25,9 @@ it('does nothing without email configuration', async () => {
   expect(fetchMock).not.toHaveBeenCalled()
 })
 it('points member links at the public site', () => {
-  expect(memberSiteOrigin('https://admin.oberlin32engineeringsociety.com')).toBe('https://oberlin32engineeringsociety.com')
-  expect(memberSiteOrigin('')).toBe('https://oberlin32engineeringsociety.com')
+  expect(memberSiteOrigin('https://admin.makeoberlin.site')).toBe('https://makeoberlin.site')
+  expect(memberSiteOrigin('https://admin.oberlin32engineeringsociety.com')).toBe('https://makeoberlin.site')
+  expect(memberSiteOrigin('')).toBe('https://makeoberlin.site')
   expect(memberSiteOrigin('http://localhost:3000/')).toBe('http://localhost:3000')
 })
 it('writes a kickoff email with the meeting details in Eastern time', () => {

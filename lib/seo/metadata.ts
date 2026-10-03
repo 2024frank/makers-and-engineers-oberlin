@@ -5,7 +5,7 @@ import { getCmsRenderContext, getPublicSiteSettings } from '@/lib/page-builder/p
 const retiredSharePath = '/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg'
 
 export async function metadataForCmsPage(page: PageSnapshot): Promise<Metadata> {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://oberlin32engineeringsociety.com').replace(/\/$/, '')
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://makeoberlin.site').replace(/\/$/, '')
   const path = page.slug === 'home' ? '' : `/${page.slug}`
   const settings = await getPublicSiteSettings()
   const rawTitle = page.seoTitle || page.title

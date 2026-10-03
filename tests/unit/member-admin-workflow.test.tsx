@@ -29,8 +29,8 @@ it('distinguishes officer approval from verified, active membership', () => {
 })
 
 it('puts member emails on the public site, never the officer host', () => {
-  expect(memberEmailOrigin('https://admin.oberlin32engineeringsociety.com', 'https://oberlin32engineeringsociety.com')).toBe('https://oberlin32engineeringsociety.com')
-  expect(memberEmailOrigin('https://admin.oberlin32engineeringsociety.com', '')).toBe('https://oberlin32engineeringsociety.com')
+  expect(memberEmailOrigin('https://admin.makeoberlin.site', 'https://makeoberlin.site')).toBe('https://makeoberlin.site')
+  expect(memberEmailOrigin('https://admin.makeoberlin.site', '')).toBe('https://makeoberlin.site')
   expect(memberEmailOrigin('http://localhost:3022', '')).toBe('http://localhost:3022')
   expect(() => memberEmailOrigin('https://attacker.example', '')).toThrow()
 })

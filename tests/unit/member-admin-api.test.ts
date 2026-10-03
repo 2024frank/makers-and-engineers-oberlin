@@ -7,7 +7,7 @@ import { POST, PUT } from '@/app/api/admin/members/route'
 
 beforeEach(() => { mocks.admin.mockResolvedValue({ role: 'ADMIN', userId: 'officer' }); mocks.list.mockResolvedValue([]) })
 afterEach(() => vi.resetAllMocks())
-const request = (body: unknown) => new Request('https://admin.oberlin32engineeringsociety.com/api/admin/members', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+const request = (body: unknown) => new Request('https://admin.makeoberlin.site/api/admin/members', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
 
 it('rejects editors before sending or modifying any membership', async () => {
   mocks.admin.mockResolvedValue({ role: 'EDITOR' })
@@ -30,7 +30,7 @@ it('resends a setup email without attempting a new approval', async () => {
   mocks.resend.mockResolvedValue({ emailSent: true })
   const response = await PUT(request({ requestId: 'approved', action: 'resend' }))
   expect(response.status).toBe(200)
-  expect(mocks.resend).toHaveBeenCalledWith('approved', 'https://admin.oberlin32engineeringsociety.com')
+  expect(mocks.resend).toHaveBeenCalledWith('approved', 'https://admin.makeoberlin.site')
   expect(mocks.review).not.toHaveBeenCalled()
 })
 it('reports a saved approval separately from email failure', async () => {

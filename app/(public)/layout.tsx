@@ -11,7 +11,7 @@ import './editorial.css'
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [navigation, settings] = await Promise.all([getPublishedNavigation(), getPublicSiteSettings()])
   return <div className="professional-site">
-    <OrganizationSchema siteUrl={process.env.NEXT_PUBLIC_SITE_URL ?? 'https://oberlin32engineeringsociety.com'} contactEmail={settings.contact.email} socialLinks={settings.social}/>
+    <OrganizationSchema siteUrl={process.env.NEXT_PUBLIC_SITE_URL ?? 'https://makeoberlin.site'} contactEmail={settings.contact.email} socialLinks={settings.social}/>
     <PublicHeader items={navigation} logoSrc={settings.brand.badgeUrl}/>
     <AnnouncementBanner announcement={settings.announcement}/>
     {publicPreviewEnabled() && <div className="preview-notice" role="note" aria-label="About this preview"><div className="shell"><strong>Design preview</strong><span>Project snapshots from September 2026. Live club data and submissions are unavailable.</span></div></div>}

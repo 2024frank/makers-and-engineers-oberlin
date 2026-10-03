@@ -39,6 +39,7 @@ beforeAll(async () => {
     create function cron.schedule(name text,schedule text,command text) returns bigint language plpgsql as $$begin insert into cron.test_jobs values(name,schedule,command);return 1;end$$;`)
   const scheduler=readFileSync('database/migrations/026_officer_email_schedule.sql','utf8').replace(/^create extension if not exists (pg_cron|pg_net);$/gm,'')
   await db.exec(scheduler)
+  await db.exec(readFileSync('database/migrations/044_new_domain_cron.sql','utf8'))
 },30000)
 beforeEach(async()=>{
   await db.exec('begin')
@@ -166,7 +167,7 @@ it('checks the queue every five minutes without making idle HTTP calls',async()=
   expect((await db.query('select * from net.test_requests')).rows).toHaveLength(0)
   await publish();await db.query('insert into vault.decrypted_secrets values($1,$2)',['oec_officer_email_worker','test-secret-which-is-longer-than-thirty-two-characters'])
   await db.exec('select private.wake_officer_email_worker()')
-  expect((await db.query<{url:string}>('select url from net.test_requests')).rows).toEqual([{url:'https://oberlin32engineeringsociety.com/api/cron/officer-emails'}])
+  expect((await db.query<{url:string}>('select url from net.test_requests')).rows).toEqual([{url:'https://makeoberlin.site/api/cron/officer-emails'}])
   expect((await db.query<{ok:boolean}>("select has_function_privilege('authenticated','private.wake_officer_email_worker()','execute') ok")).rows[0].ok).toBe(false)
 })
 it('queues only a short-lived signature, never the reusable secret',async()=>{

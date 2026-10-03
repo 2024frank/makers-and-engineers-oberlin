@@ -41,7 +41,7 @@ export function HeroSection({
           <Link href="/events"><span>Come along</span><strong>See club events</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
           <Link href="/get-involved?type=propose_project"><span>Bring an idea</span><strong>Share a project idea</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
           <Link href="/member/login"><span>Already a member?</span><strong>Member sign in</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
-          <Link href="/app"><span>On your phone</span><strong>Get the MOE Members app</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
+          <Link href="/app"><span>On your phone</span><strong>Get the MEO Members app</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
         </nav>
       </section>
       <NextMeeting events={context?.events ?? []}/>

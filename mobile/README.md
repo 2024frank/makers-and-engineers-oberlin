@@ -1,4 +1,4 @@
-# MOE Members (phone app)
+# MEO Members (phone app)
 
 The native iOS and Android app for members of Makers and Engineers @Oberlin. Built with Expo SDK 57, React Native and Expo Router. It is a real native app, not a web view.
 

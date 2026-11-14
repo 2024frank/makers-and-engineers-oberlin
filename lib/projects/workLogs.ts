@@ -1,6 +1,6 @@
 import 'server-only'
 import { randomUUID } from 'node:crypto'
-import sharp from 'sharp'
+import { openUploadedImage } from '@/lib/media/uploadedImages'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 const BUCKET = 'team-workspace'
@@ -29,18 +29,38 @@ export async function listProjectWorkLogs(projectId: string): Promise<WorkLog[]>
   }))
 }
 
-/** Re-encode an upload as a JPEG no larger than 1600px. Photos saved through this route lose EXIF data such as GPS location. */
+/**
+ * Re-encode an upload as a JPEG no larger than 1600px. Photos saved through this route lose EXIF data such as GPS location.
+ * Only JPEG, PNG, WebP and GIF files are decoded, whatever type the browser declared.
+ */
 async function normalizePhoto(file: File) {
   if (!file.type.startsWith('image/')) throw new Error('WORK_LOG_PHOTO_INVALID')
   if (file.size > MAX_UPLOAD_BYTES) throw new Error('WORK_LOG_PHOTO_TOO_LARGE')
-  try { return await sharp(Buffer.from(await file.arrayBuffer())).rotate().resize(1600, 1600, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 82 }).toBuffer() }
-  catch { throw new Error('WORK_LOG_PHOTO_INVALID') }
+  try {
+    const { image } = await openUploadedImage(Buffer.from(await file.arrayBuffer()))
+    return await image.rotate().resize(1600, 1600, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 82 }).toBuffer()
+  } catch { throw new Error('WORK_LOG_PHOTO_INVALID') }
+}
+
+/**
+ * Whether the signed-in member is on the project's team. list_my_project_workspaces returns the projects for which
+ * private.is_project_member holds, the test that add_project_work_log and the photo storage policy apply later.
+ */
+async function isOnProjectTeam(s: Awaited<ReturnType<typeof createSupabaseServerClient>>, projectId: string) {
+  const { data, error } = await s.rpc('list_my_project_workspaces')
+  if (error) {
+    if (error.message === 'ACTIVE_MEMBER_REQUIRED') return false
+    throw new Error(error.message)
+  }
+  return (data ?? []).some((row: { project_id: string }) => row.project_id === projectId)
 }
 
 export async function addProjectWorkLog(projectId: string, userId: string, body: string, files: File[]) {
   if (files.length > WORK_LOG_MAX_PHOTOS) throw new Error('WORK_LOG_TOO_MANY_PHOTOS')
   if (body.trim().length < 2 && !files.length) throw new Error('WORK_LOG_REQUIRED')
   const s = await createSupabaseServerClient()
+  // Photos are decoded only for a member of the team. The database checks membership again when they are stored.
+  if (files.length && !(await isOnProjectTeam(s, projectId))) throw new Error('PROJECT_MEMBER_REQUIRED')
   const images = await Promise.all(files.map(normalizePhoto))
   const paths: string[] = []
   try {

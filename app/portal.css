@@ -1277,6 +1277,36 @@
   color: var(--portal-ink);
 }
 
+/* Buttons written with no class at all ("Send sign-in email", "Archive", "Show everyone",
+   "Refresh status") otherwise get the browser's grey default. Give them the ghost-button
+   look. :where() keeps every selector here at zero specificity, so any component rule
+   that already styles a button (tabs, dialog close, manager rows) still wins. */
+:where(.admin-workspace, .member-shell__workspace) :where(main button:not([class])) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 7px 13px;
+  border: 1px solid var(--portal-line-strong);
+  border-radius: var(--oec-radius-sm, 6px);
+  background: var(--portal-panel);
+  color: var(--portal-ink);
+  font: 600 13px/1.3 var(--oec-font-body, Inter, sans-serif);
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+}
+
+:where(.admin-workspace, .member-shell__workspace) :where(main button:not([class]):hover:not(:disabled)) {
+  border-color: var(--portal-accent);
+  color: var(--portal-accent);
+}
+
+:where(.admin-workspace, .member-shell__workspace) :where(main button:not([class]):disabled) {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 /* Manager List, Inbox, Tabs & Tables */
 .manager-list {
   display: grid;
@@ -1544,6 +1574,7 @@
 .ui-dialog__head button {
   width: 36px;
   height: 36px;
+  padding: 0;
   border: 1px solid var(--portal-line);
   border-radius: var(--oec-radius-sm, 6px);
   background: var(--portal-surface);

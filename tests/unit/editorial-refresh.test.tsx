@@ -24,3 +24,28 @@ it('preserves custom officer home headlines rather than overwriting every publis
   render(<HeroSection section={{ ...section, headline: 'Our autumn workshop is open' }} context={{ pageSlug: 'home' }}/>)
   expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Our autumn workshop is open')
 })
+
+it('replaces the retired Supabase stock workbench photo and its stale caption with the 4K workshop photo', () => {
+  render(
+    <HeroSection
+      section={{
+        ...section,
+        imageId: 'stock-workbench',
+        imageAlt: 'Two students in safety glasses leaning over a workbench covered with circuit boards, wiring and a multimeter',
+      }}
+      context={{
+        pageSlug: 'home',
+        media: {
+          'stock-workbench': {
+            url: 'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg',
+            alt: 'Two students in safety glasses',
+          },
+        },
+      }}
+    />
+  )
+  const heroImg = screen.getByRole('img', {
+    name: 'Oberlin students and mentor discussing hardware builds in the makerspace studio',
+  })
+  expect(heroImg).toHaveAttribute('src', expect.stringContaining('oberlin-workshop-4k.webp'))
+})

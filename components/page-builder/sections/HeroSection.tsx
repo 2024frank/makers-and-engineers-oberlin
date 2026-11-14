@@ -9,7 +9,25 @@ import { NextMeeting } from '@/components/public/NextMeeting'
 import { retireCopy } from '@/lib/content/publicCopy'
 
 const DEFAULT_HOME_IMAGE = '/brand/project-led/oberlin-workshop-4k.webp'
-const RETIRED_HOME_IMAGES = ['/home-workshop-wide.jpg', '/brand/project-led/hardware-hero.webp']
+const DEFAULT_HOME_IMAGE_ALT =
+  'Oberlin students and mentor discussing hardware builds in the makerspace studio'
+const RETIRED_HOME_IMAGE_PATHS = [
+  '/home-workshop-wide.jpg',
+  '/brand/project-led/hardware-hero.webp',
+  '/site/home-hero-workbench.jpg',
+  '/home-hero-workbench.jpg',
+]
+
+/** Treat legacy placeholder/stock workbench hero URLs as retired so curated studio photography renders instead. */
+function isRetiredHomeImage(url?: string | null): boolean {
+  if (!url) return false
+  try {
+    const pathname = new URL(url, 'https://makeoberlin.site').pathname
+    return RETIRED_HOME_IMAGE_PATHS.some(retired => pathname.endsWith(retired))
+  } catch {
+    return RETIRED_HOME_IMAGE_PATHS.some(retired => url.includes(retired))
+  }
+}
 
 export function HeroSection({
   section,
@@ -29,13 +47,11 @@ export function HeroSection({
   const eyebrowText = section.eyebrow ? retireCopy(section.eyebrow) : undefined
 
   if (isHome) {
-    const useCustomMedia = Boolean(
-      media?.url && !RETIRED_HOME_IMAGES.some(retired => media.url.endsWith(retired))
-    )
+    const useCustomMedia = Boolean(media?.url && !isRetiredHomeImage(media.url))
     const heroPhotoUrl = useCustomMedia && media ? media.url : DEFAULT_HOME_IMAGE
-    const heroPhotoAlt =
-      (useCustomMedia ? section.imageAlt || media?.alt : section.imageAlt) ||
-      'Oberlin students and mentor discussing hardware builds in the makerspace studio'
+    const heroPhotoAlt = useCustomMedia
+      ? section.imageAlt || media?.alt || DEFAULT_HOME_IMAGE_ALT
+      : DEFAULT_HOME_IMAGE_ALT
 
     return (
       <section className="club-opening" aria-label="Projects for Makers and Engineers">

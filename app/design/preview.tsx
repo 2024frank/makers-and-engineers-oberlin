@@ -37,7 +37,7 @@ export default function DesignPreview() {
       </header>
       <main id="content">
         <section className={s.hero} aria-labelledby="hero-title">
-          <Image className={s.heroImage} src="https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg" alt="Students working together at an electronics workbench" fill priority sizes="100vw" />
+          <Image className={s.heroImage} src="/brand/project-led/oberlin-workshop-4k.webp" alt="Oberlin students and mentor discussing hardware builds in the makerspace studio" fill priority sizes="100vw" />
           <div className={s.heroShade} />
           <div className={s.heroContent}><h1 id="hero-title">Makers and<br />Engineers<br /><em>@Oberlin.</em></h1><h2>Build things. Learn together.</h2><p className={s.heroDescription}>Engineering projects, technical workshops, and support for students exploring the 3-2 pathway at Oberlin College.</p><a className={s.primary} href="#projects">Explore projects <ArrowRight size={19} /></a></div>
         </section>

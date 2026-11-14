@@ -921,7 +921,6 @@
 .professional-site .pathway-timeline li {
   background: var(--oec-surface-elevated);
   border: 1px solid var(--oec-border);
-  border-top: 3px solid var(--oec-cardinal);
   border-radius: var(--oec-radius-md);
   padding: 20px;
   display: grid;
@@ -1386,7 +1385,6 @@
   padding: 20px 22px;
   background: var(--oec-surface-elevated);
   border: 1px solid var(--oec-border);
-  border-top: 2px solid var(--oec-cardinal);
   border-radius: var(--oec-radius-md);
   box-shadow: var(--oec-shadow-xs);
 }

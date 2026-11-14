@@ -939,7 +939,6 @@
   padding: 16px 18px;
   background: var(--portal-panel);
   border: 1px solid var(--portal-line);
-  border-left: 3px solid var(--portal-accent);
   border-radius: var(--oec-radius-md, 10px);
   color: var(--portal-ink);
   text-decoration: none;

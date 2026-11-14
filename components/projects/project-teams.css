@@ -121,7 +121,7 @@
 }
 
 .pt-card--attention {
-  border-left: 4px solid var(--pt-accent);
+  border-color: var(--oec-cardinal-border, #e5b8bf);
   background: var(--pt-panel);
 }
 
@@ -384,7 +384,7 @@
 }
 
 .pt-milestone--mine {
-  border-left: 3px solid var(--pt-accent);
+  border-color: var(--oec-cardinal-border, #e5b8bf);
   background: var(--pt-panel);
 }
 

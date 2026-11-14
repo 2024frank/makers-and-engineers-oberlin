@@ -127,7 +127,7 @@ body {
 }
 
 .notification-list article.is-unread {
-  border-left: 3px solid var(--oec-cardinal);
+  border-color: var(--oec-cardinal-border);
   background: var(--oec-surface-elevated);
 }
 

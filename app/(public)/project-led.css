@@ -575,7 +575,6 @@
   padding: 16px 18px;
   border-radius: var(--oec-radius-md);
   border: 1px solid var(--oec-border);
-  border-left: 3px solid var(--oec-cardinal);
   background: var(--oec-surface-elevated);
 }
 

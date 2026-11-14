@@ -259,9 +259,9 @@
 
 .leadership-feedback {
   padding: 12px 16px;
-  border-left: 3px solid var(--oec-cardinal, #a6192e);
+  border: 1px solid var(--oec-border, #e2ded7);
   background: var(--oec-surface-subtle, #f3f2ee);
-  border-radius: 0 var(--oec-radius-sm, 6px) var(--oec-radius-sm, 6px) 0;
+  border-radius: var(--oec-radius-sm, 6px);
   margin-top: 16px;
 }
 

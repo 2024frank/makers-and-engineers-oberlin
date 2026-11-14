@@ -1,4 +1,5 @@
 import Link from 'next/link'; import type { z } from 'zod'; import type { newsGridSchema } from '@/lib/page-builder/schemas/community'; import type { PageRenderContext } from '@/lib/page-builder/types'
+import type { Tables } from '@/lib/supabase/database'
 // The news_posts columns this grid draws.
-type NewsCard={id:string;slug:string;title:string;excerpt:string;published_at:string|null}
+type NewsCard=Pick<Tables<'news_posts'>,'id'|'slug'|'title'|'excerpt'|'published_at'>
 export function NewsGridSection({section,context}:{section:z.infer<typeof newsGridSchema>;context?:PageRenderContext}){const items=(context?.news??[]).slice(0,section.limit) as NewsCard[];return <section className="cms-section"><div className="shell"><h2>{section.heading}</h2><div className="card-grid">{items.map(n=><article className="content-card" key={n.id}><small>{n.published_at?new Date(n.published_at).toLocaleDateString():''}</small><h3>{n.title}</h3><p>{n.excerpt}</p>{n.slug&&<Link href={`/news/${n.slug}`}>Read update →</Link>}</article>)}</div></div></section>}

@@ -1,8 +1,11 @@
+import type { Tables } from '@/lib/supabase/database'
+
 export type SavedItemType = 'PROJECT' | 'OPPORTUNITY' | 'RESOURCE'
 export type SavedItem = { itemType: SavedItemType; itemId: string; createdAt: string; title: string; subtitle?: string; href: string }
-// The published record a save points at. Which of the optional columns is selected depends on the item type,
-// and because that column list is chosen at run time the client cannot infer this shape itself.
-type SavedEntityRow = { id: string; title: string; slug?: string; summary?: string; organization?: string; category?: string }
+// The published record a save points at. Which of the optional columns is selected depends on the item type.
+// The table and its column list are both chosen at run time, so the client cannot infer this shape and the
+// result is cast to it. The columns are taken from the generated types, which keeps their names checked.
+type SavedEntityRow = Pick<Tables<'projects'>, 'id' | 'title'> & Partial<Pick<Tables<'projects'>, 'slug' | 'summary'> & Pick<Tables<'opportunities'>, 'organization'> & Pick<Tables<'resources'>, 'category'>>
 
 const tableByType: Record<SavedItemType, 'projects'|'opportunities'|'resources'> = { PROJECT:'projects', OPPORTUNITY:'opportunities', RESOURCE:'resources' }
 const uuidPattern=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i

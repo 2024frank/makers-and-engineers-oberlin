@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/auth/requireRole'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { Tables } from '@/lib/supabase/database'
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 function text(value: unknown) { return typeof value === 'string' ? value.trim() : '' }
@@ -21,7 +22,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
       actorIds = Array.from(new Set([...(staff.data ?? []), ...(members.data ?? [])].map(row => row.user_id)))
     }
   }
-  let rows: Array<{ id: string; actor_id: string | null; action: string; entity_type: string; entity_id: string; before_snapshot: unknown; after_snapshot: unknown; created_at: string }> = []
+  let rows: Pick<Tables<'audit_log'>, 'id' | 'actor_id' | 'action' | 'entity_type' | 'entity_id' | 'before_snapshot' | 'after_snapshot' | 'created_at'>[] = []
   if (!actorIds || actorIds.length) {
     let q = s.from('audit_log').select('id,actor_id,action,entity_type,entity_id,before_snapshot,after_snapshot,created_at').order('created_at', { ascending: false }).limit(100)
     if (actorIds) q = q.in('actor_id', actorIds)

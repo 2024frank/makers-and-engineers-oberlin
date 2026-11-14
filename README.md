@@ -26,6 +26,16 @@ npm run dev
 
 Apply `database/migrations/*.sql` in numeric order to the environment database before running authenticated flows.
 
+### Database types
+
+`lib/supabase/database.types.ts` is generated from `database/migrations/`. The Supabase clients are typed from it, so the compiler checks table, column and database function names. After you add or change a migration, run this and commit the file together with the migration:
+
+```bash
+npm run db:types
+```
+
+It reads no database. It applies the migrations to a throwaway in-process Postgres and generates the types from that. `npm test` fails while the file is out of date.
+
 ## Verification
 
 Run the local baseline with `npm test`. It runs Vitest unit/integration tests,

@@ -63,6 +63,6 @@ export async function deleteProjectWorkLog(logId: string) {
   const s = await createSupabaseServerClient()
   const { data, error } = await s.rpc('delete_project_work_log', { p_log_id: logId })
   if (error) throw new Error(error.message)
-  const paths = (data as string[] | null) ?? []
+  const paths = data ?? []
   if (paths.length) { const { error: cleanup } = await s.storage.from(BUCKET).remove(paths); if (cleanup) console.error('work log photo removal failed', cleanup.message) }
 }

@@ -1,8 +1,9 @@
 import { officerOpeningEmail } from './emailTemplate'
+import type { RpcArgs, RpcName } from '@/lib/supabase/database'
 
 type EmailJob = { id: string; claimToken: string; recipient: string; displayName: string; positionId: string; roleTitle: string; term: string; bio: string; closesAt: string | null }
 type Dependencies = {
-  rpc: (name: string, params?: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }>
+  rpc: <Name extends RpcName>(name: Name, params?: RpcArgs<Name>) => PromiseLike<{ data: unknown; error: unknown }>
   send?: typeof fetch
   wait?: (ms: number) => Promise<void>
 }

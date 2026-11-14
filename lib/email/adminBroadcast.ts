@@ -4,6 +4,7 @@ import { sendTransactionalEmail, sendTransactionalEmailBatch } from '@/lib/email
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
 import { renderAdminBroadcastEmail } from '@/lib/email/templates'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import {
   adminBroadcastSchema,
   parseCustomEmailList,
@@ -33,6 +34,14 @@ function resolveBroadcastUrl(raw: string | undefined | null, origin?: string): s
   }
 }
 
+// SCHEMA MISMATCH. The queries marked below name a table or a column that no migration in
+// database/migrations creates: the `admin_users` relation, `membership_requests.oberlin_email`
+// (that column is `email`) and `club_team_memberships.status`. On a database built from the
+// migrations each of them fails, and this file reads a failed query as an empty list. They
+// are kept exactly as written, because the fix decides who receives email. Until then they go
+// through an untyped view of the client, so that the rest of the file is still checked.
+type UncheckedClient = SupabaseClient
+
 /** Load members, groups, media assets, and recent broadcast history for the Admin Email composer. */
 export async function getAdminEmailConsoleData() {
   const admin = createSupabaseAdminClient()
@@ -53,12 +62,14 @@ export async function getAdminEmailConsoleData() {
       .eq('status', 'ACTIVE')
       .order('display_name')
       .limit(1000),
-    admin
+    // SCHEMA MISMATCH: no migration creates `admin_users`.
+    (admin as UncheckedClient)
       .from('admin_users')
       .select('user_id,display_name,email,role')
       .eq('active', true)
       .order('display_name')
       .limit(100),
+    // SCHEMA MISMATCH: membership_requests has `email`, not `oberlin_email`.
     admin
       .from('membership_requests')
       .select('id,display_name,oberlin_email,status')
@@ -72,7 +83,8 @@ export async function getAdminEmailConsoleData() {
       .order('title'),
     admin.from('project_memberships').select('project_id,user_id,role').eq('status', 'ACTIVE'),
     admin.from('club_teams').select('id,name').order('name'),
-    admin.from('club_team_memberships').select('team_id,user_id').eq('status', 'ACTIVE'),
+    // SCHEMA MISMATCH: club_team_memberships has no `status` column.
+    (admin as UncheckedClient).from('club_team_memberships').select('team_id,user_id').eq('status', 'ACTIVE'),
     admin
       .from('audit_log')
       .select('id,created_at,after_snapshot')
@@ -257,7 +269,8 @@ async function resolveRecipients(
       if (!input.clubTeamId) throw new Error('TEAM_SELECTION_REQUIRED')
       const [{ data: team }, { data: roster }] = await Promise.all([
         admin.from('club_teams').select('name').eq('id', input.clubTeamId).maybeSingle(),
-        admin
+        // SCHEMA MISMATCH: club_team_memberships has no `status` column.
+        (admin as UncheckedClient)
           .from('club_team_memberships')
           .select('user_id')
           .eq('team_id', input.clubTeamId)
@@ -290,7 +303,8 @@ async function resolveRecipients(
 
     case 'officers': {
       audienceLabel = 'Club officers & staff'
-      const { data } = await admin
+      // SCHEMA MISMATCH: no migration creates `admin_users`.
+      const { data } = await (admin as UncheckedClient)
         .from('admin_users')
         .select('user_id,display_name,email')
         .eq('active', true)
@@ -300,7 +314,8 @@ async function resolveRecipients(
 
     case 'pending_applicants': {
       audienceLabel = 'Pending membership requests'
-      const { data } = await admin
+      // SCHEMA MISMATCH: membership_requests has `email`, not `oberlin_email`.
+      const { data } = await (admin as UncheckedClient)
         .from('membership_requests')
         .select('display_name,oberlin_email')
         .in('status', ['REQUESTED', 'EMAIL_VERIFIED', 'PENDING_APPROVAL'])
@@ -317,7 +332,8 @@ async function resolveRecipients(
           .from('member_profiles')
           .select('user_id,display_name,oberlin_email')
           .in('user_id', ids),
-        admin.from('admin_users').select('user_id,display_name,email').in('user_id', ids),
+        // SCHEMA MISMATCH: no migration creates `admin_users`.
+        (admin as UncheckedClient).from('admin_users').select('user_id,display_name,email').in('user_id', ids),
       ])
       for (const row of members ?? []) push(row.oberlin_email, row.display_name, row.user_id)
       for (const row of officers ?? []) push(row.email, row.display_name, row.user_id)

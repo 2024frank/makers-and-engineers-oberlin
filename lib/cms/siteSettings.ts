@@ -21,7 +21,8 @@ export function parseSiteSettings(input:unknown):SiteSettings{return siteSetting
 export async function getAdminSiteSettings():Promise<SiteSettings>{
   const s=await createSupabaseServerClient();const{data,error}=await s.from('site_settings').select('key,value').in('key',['contact','footer','social','seo','announcement','brand'])
   if(error)throw new Error(`SITE_SETTINGS_LOAD_FAILED:${error.message}`)
-  const values=Object.fromEntries((data??[]).map(row=>[row.key,row.value])) as Record<string,any>
+  // Each stored value is a JSON object whose fields are checked by parseSiteSettings below.
+  const values=Object.fromEntries((data??[]).map(row=>[row.key,row.value])) as Record<string,Record<string,unknown>|undefined>
   return parseSiteSettings({
     contactEmail:values.contact?.email??defaultSiteSettings.contactEmail,
     footerText:values.footer?.text??values.contact?.footerText??defaultSiteSettings.footerText,

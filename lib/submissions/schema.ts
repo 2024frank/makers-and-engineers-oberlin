@@ -8,4 +8,7 @@ export const submissionSchema=z.object({
 }).superRefine((v,ctx)=>{if(v.type==='join_project'&&!v.project.trim())ctx.addIssue({code:'custom',path:['project'],message:'Choose or name the project you are interested in.'});if(v.type==='propose_project'&&!v.projectIdea.trim())ctx.addIssue({code:'custom',path:['projectIdea'],message:'Tell us what you want to build or investigate.'});if(v.type==='partnership_inquiry'&&!v.organization.trim())ctx.addIssue({code:'custom',path:['organization'],message:'Enter your organization or group.'})})
 export type PublicSubmission=z.infer<typeof submissionSchema>
 export function isSpam({honeypot,formStartedAt}:{honeypot:string;formStartedAt:number},now=Date.now()){return Boolean(honeypot.trim())||now-formStartedAt<1500}
-export function sanitizedPayload(v:PublicSubmission){const{honeypot:_,formStartedAt:__,type,fullName,email,...payload}=v;return{type,fullName,email,payload}}
+// Copies an object without the named keys.
+function omit<T extends object,K extends keyof T>(value:T,...keys:K[]):Omit<T,K>{const copy={...value};for(const key of keys)delete copy[key];return copy}
+// The spam-check fields are dropped; every other answer is stored as the submission payload.
+export function sanitizedPayload(v:PublicSubmission){const{type,fullName,email,...answers}=v;return{type,fullName,email,payload:omit(answers,'honeypot','formStartedAt')}}

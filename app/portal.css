@@ -2360,96 +2360,15 @@
   word-break: break-all;
 }
 
-.email-link-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) auto;
-  gap: 8px;
-  align-items: center;
-}
 
-@media (max-width: 640px) {
-  .email-link-row {
-    grid-template-columns: 1fr;
-  }
-}
 
-.email-preview-card {
-  border: 1px solid var(--portal-line-strong);
-  border-radius: var(--oec-radius-md, 8px);
-  overflow: hidden;
-  background: #ffffff;
-}
 
-.email-preview-card__head {
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--portal-line);
-  background: var(--portal-surface);
-}
 
-.email-preview-card__head small {
-  display: block;
-  font-family: var(--oec-font-mono, monospace);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--portal-accent);
-  margin-bottom: 6px;
-}
 
-.email-preview-card__head h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #181a1f;
-}
 
-.email-preview-card__body {
-  padding: 18px 20px;
-  display: grid;
-  gap: 12px;
-  font-size: 14px;
-  line-height: 1.55;
-  color: #20232a;
-}
 
-.email-preview-card__img {
-  width: 100%;
-  max-height: 220px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid var(--portal-line);
-}
 
-.email-preview-card__cta span {
-  display: inline-flex;
-  align-items: center;
-  padding: 9px 16px;
-  border-radius: 6px;
-  background: var(--portal-accent);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 13.5px;
-}
 
-.email-preview-card__links {
-  padding-top: 8px;
-  border-top: 1px solid var(--portal-line);
-  font-size: 13px;
-}
-
-.email-preview-card__links ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
-  display: grid;
-  gap: 4px;
-}
-
-.email-preview-card__links li {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--portal-accent);
-}
 
 /* =========================================================
    Teams: team browser, project rosters, team workspace,

@@ -1,8 +1,7 @@
 'use client'
 
 import { useMemo, useState, type FormEvent } from 'react'
-import { Check, ExternalLink, Image as ImageIcon, Link2, Mail, Plus, Send, Sparkles, Trash2, Upload, Users } from 'lucide-react'
-import type { MediaAsset } from '@/lib/cms/media'
+import { Check, Mail, Send, Sparkles, Users } from 'lucide-react'
 import {
   parseCustomEmailList,
   type BroadcastAudienceMode,
@@ -14,14 +13,11 @@ import { describeSendFailure } from '@/lib/email/sendFailure'
 import { useToast } from '@/components/ui/Toast'
 import { formatPortalDate } from '@/lib/format/portalDate'
 
-type LinkRow = { label: string; url: string }
-
 type Props = {
   senderEmail: string
   recipients: EmailRecipientChoice[]
   groups: EmailGroupChoice
   initialHistory: EmailBroadcastHistoryEntry[]
-  initialMedia: MediaAsset[]
 }
 
 const AUDIENCE_TABS: Array<{ id: BroadcastAudienceMode; label: string; hint: string }> = [
@@ -41,7 +37,6 @@ export function AdminEmailComposer({
   recipients,
   groups,
   initialHistory,
-  initialMedia,
 }: Props) {
   const toast = useToast()
   const [audience, setAudience] = useState<BroadcastAudienceMode>('all_members')
@@ -53,19 +48,10 @@ export function AdminEmailComposer({
   const [customEmails, setCustomEmails] = useState('')
 
   const [subject, setSubject] = useState('')
-  const [eyebrow, setEyebrow] = useState('Projects for Makers and Engineers @Oberlin')
   const [body, setBody] = useState('')
   const [replyTo, setReplyTo] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
-  const [imageAlt, setImageAlt] = useState('')
-  const [ctaLabel, setCtaLabel] = useState('')
-  const [ctaUrl, setCtaUrl] = useState('')
-  const [links, setLinks] = useState<LinkRow[]>([])
   const [alsoNotifyPortal, setAlsoNotifyPortal] = useState(true)
 
-  const [mediaAssets, setMediaAssets] = useState(initialMedia)
-  const [pickerOpen, setPickerOpen] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [sending, setSending] = useState<'send' | 'test' | null>(null)
   const [history, setHistory] = useState(initialHistory)
   const [statusMessage, setStatusMessage] = useState('')
@@ -107,32 +93,6 @@ export function AdminEmailComposer({
     setSelectedIds(prev => (prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]))
   }
 
-  async function handleImageUpload(file: File | undefined) {
-    if (!file) return
-    setUploading(true)
-    setErrorMessage('')
-    try {
-      const form = new FormData()
-      form.append('file', file)
-      form.append('sourceType', 'original')
-      const response = await fetch('/api/media', { method: 'POST', body: form })
-      const data = await response.json().catch(() => ({}))
-      if (!response.ok || !data.item?.publicUrl) {
-        throw new Error(data.error ?? 'Could not upload image.')
-      }
-      setMediaAssets(prev => [data.item, ...prev])
-      setImageUrl(data.item.publicUrl)
-      if (!imageAlt.trim()) setImageAlt(file.name.replace(/\.[^.]+$/, ''))
-      toast('Image uploaded and attached to your email.')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Image upload failed.'
-      setErrorMessage(message)
-      toast(message, 'error')
-    } finally {
-      setUploading(false)
-    }
-  }
-
   async function submitEmail(event: FormEvent<HTMLFormElement>, testOnly = false) {
     event.preventDefault()
     setErrorMessage('')
@@ -151,10 +111,6 @@ export function AdminEmailComposer({
 
     setSending(testOnly ? 'test' : 'send')
     try {
-      const cleanLinks = links
-        .map(row => ({ label: row.label.trim(), url: row.url.trim() }))
-        .filter(row => row.label || row.url)
-
       const response = await fetch('/api/admin/email', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -166,13 +122,7 @@ export function AdminEmailComposer({
           recipientUserIds: audience === 'individuals' ? selectedIds : [],
           customEmails,
           subject,
-          eyebrow,
           body,
-          imageUrl,
-          imageAlt,
-          ctaLabel,
-          ctaUrl,
-          links: cleanLinks,
           replyTo,
           alsoNotifyPortal,
           testOnly,
@@ -327,24 +277,8 @@ export function AdminEmailComposer({
           />
         </label>
 
-        <div className="pt-form-row">
-          <label>
-            Header label <small>Shown above title</small>
-            <input value={eyebrow} onChange={e => setEyebrow(e.target.value)} maxLength={80} />
-          </label>
-          <label>
-            Reply-to email <small>Optional</small>
-            <input
-              type="email"
-              value={replyTo}
-              onChange={e => setReplyTo(e.target.value)}
-              placeholder="makers.engineers@oberlin.edu"
-            />
-          </label>
-        </div>
-
         <label>
-          Email body
+          Message
           <textarea
             rows={8}
             value={body}
@@ -353,142 +287,18 @@ export function AdminEmailComposer({
             required
             placeholder="Share meeting times, project instructions, links, or updates. Separate paragraphs with a blank line."
           />
+          <small>Sent as plain text, exactly as you type it.</small>
         </label>
 
-        <div className="studio-subbox">
-          <div className="pt-card-head">
-            <h3>
-              <ImageIcon size={16} /> Image banner <small>(optional)</small>
-            </h3>
-            <div className="pt-actions">
-              <label className="button button--ghost pt-btn--small" style={{ cursor: 'pointer', margin: 0 }}>
-                <Upload size={14} /> {uploading ? 'Uploading...' : 'Upload photo'}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/webp,image/gif"
-                  hidden
-                  disabled={uploading}
-                  onChange={e => void handleImageUpload(e.target.files?.[0])}
-                />
-              </label>
-              <button
-                type="button"
-                className="pt-btn--small"
-                onClick={() => setPickerOpen(prev => !prev)}
-              >
-                {pickerOpen ? 'Hide library' : 'Media library'}
-              </button>
-              {imageUrl && (
-                <button type="button" className="pt-btn--small pt-btn--danger" onClick={() => setImageUrl('')}>
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-
-          {pickerOpen && (
-            <div className="media-grid" style={{ maxHeight: 220, overflowY: 'auto' }}>
-              {mediaAssets.map(asset => (
-                <button
-                  key={asset.id}
-                  type="button"
-                  className={imageUrl === asset.publicUrl ? 'selected' : ''}
-                  onClick={() => {
-                    setImageUrl(asset.publicUrl)
-                    setImageAlt(asset.altText || asset.fileName)
-                    setPickerOpen(false)
-                  }}
-                >
-                  <img src={asset.publicUrl} alt={asset.altText || asset.fileName} />
-                  <span>{asset.fileName}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="pt-form-row">
-            <label>
-              Image URL
-              <input
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="https://... or /brand/..."
-              />
-            </label>
-            <label>
-              Image description (alt text)
-              <input
-                value={imageAlt}
-                onChange={e => setImageAlt(e.target.value)}
-                placeholder="Students assembling robot chassis"
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="studio-subbox">
-          <div className="pt-card-head">
-            <h3>
-              <Link2 size={16} /> Button & shared links <small>(optional)</small>
-            </h3>
-            <button
-              type="button"
-              className="pt-btn--small"
-              onClick={() => setLinks(prev => [...prev, { label: '', url: '' }])}
-            >
-              <Plus size={14} /> Add link
-            </button>
-          </div>
-
-          <div className="pt-form-row">
-            <label>
-              Primary button label
-              <input
-                value={ctaLabel}
-                onChange={e => setCtaLabel(e.target.value)}
-                maxLength={60}
-                placeholder="Open project workspace"
-              />
-            </label>
-            <label>
-              Primary button link
-              <input
-                value={ctaUrl}
-                onChange={e => setCtaUrl(e.target.value)}
-                placeholder="/member/teams or https://..."
-              />
-            </label>
-          </div>
-
-          {links.map((item, idx) => (
-            <div key={idx} className="email-link-row">
-              <input
-                aria-label={`Link ${idx + 1} label`}
-                value={item.label}
-                onChange={e =>
-                  setLinks(prev => prev.map((row, n) => (n === idx ? { ...row, label: e.target.value } : row)))
-                }
-                placeholder="CAD specs / Google Doc"
-              />
-              <input
-                aria-label={`Link ${idx + 1} URL`}
-                value={item.url}
-                onChange={e =>
-                  setLinks(prev => prev.map((row, n) => (n === idx ? { ...row, url: e.target.value } : row)))
-                }
-                placeholder="https://... or /resources"
-              />
-              <button
-                type="button"
-                className="pt-btn--small pt-btn--danger"
-                aria-label="Remove link"
-                onClick={() => setLinks(prev => prev.filter((_, n) => n !== idx))}
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ))}
-        </div>
+        <label>
+          Reply-to email <small>Optional</small>
+          <input
+            type="email"
+            value={replyTo}
+            onChange={e => setReplyTo(e.target.value)}
+            placeholder="makers.engineers@oberlin.edu"
+          />
+        </label>
 
         {audience !== 'custom' && audience !== 'pending_applicants' && (
           <label className="inline-check">
@@ -529,51 +339,6 @@ export function AdminEmailComposer({
       </form>
 
       <aside className="pt-stack">
-        <section className="pt-card" aria-label="Live email preview">
-          <div className="pt-card-head">
-            <h2>Live email preview</h2>
-            <span className="portal-muted">HTML + Plain text</span>
-          </div>
-          <div className="email-preview-card">
-            <header className="email-preview-card__head">
-              <small>{eyebrow || 'Projects for Makers and Engineers @Oberlin'}</small>
-              <h3>{subject.trim() || 'Your email subject appears here'}</h3>
-            </header>
-            <div className="email-preview-card__body">
-              {imageUrl.trim() && (
-                <img
-                  src={imageUrl.trim()}
-                  alt={imageAlt || 'Email header preview'}
-                  className="email-preview-card__img"
-                />
-              )}
-              <p className="portal-muted">Hi [Member Name],</p>
-              <p style={{ whiteSpace: 'pre-wrap' }}>
-                {body.trim() || 'Your formatted message, embedded image, button, and shared links appear here.'}
-              </p>
-              {ctaLabel.trim() && ctaUrl.trim() && (
-                <div className="email-preview-card__cta">
-                  <span>{ctaLabel.trim()}</span>
-                </div>
-              )}
-              {links.some(l => l.label.trim() && l.url.trim()) && (
-                <div className="email-preview-card__links">
-                  <strong>Shared links</strong>
-                  <ul>
-                    {links
-                      .filter(l => l.label.trim() && l.url.trim())
-                      .map((l, idx) => (
-                        <li key={idx}>
-                          {l.label} <ExternalLink size={12} />
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
         <section className="pt-card" aria-label="Recent email sends">
           <div className="pt-card-head">
             <h2>

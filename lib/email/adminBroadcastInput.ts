@@ -14,23 +14,6 @@ export const BROADCAST_AUDIENCES = [
 
 export type BroadcastAudienceMode = (typeof BROADCAST_AUDIENCES)[number]
 
-const optionalUrl = z
-  .string()
-  .trim()
-  .max(500)
-  .refine(
-    value => {
-      if (!value) return true
-      if (value.startsWith('/') && !value.startsWith('//')) return true
-      try {
-        return ['http:', 'https:'].includes(new URL(value).protocol)
-      } catch {
-        return false
-      }
-    },
-    'Links must begin with / or https://',
-  )
-
 export const adminBroadcastSchema = z
   .object({
     audience: z.enum(BROADCAST_AUDIENCES),
@@ -40,27 +23,14 @@ export const adminBroadcastSchema = z
     recipientUserIds: z.array(z.string().uuid()).max(500).optional().default([]),
     customEmails: z.string().trim().max(8000).optional().default(''),
     subject: z.string().trim().min(2, 'Enter a subject').max(180),
-    eyebrow: z.string().trim().max(80).optional().default(''),
     body: z.string().trim().min(2, 'Write a message').max(12000),
-    imageUrl: optionalUrl.optional().default(''),
-    imageAlt: z.string().trim().max(180).optional().default(''),
-    ctaLabel: z.string().trim().max(60).optional().default(''),
-    ctaUrl: optionalUrl.optional().default(''),
-    links: z
-      .array(
-        z.object({
-          label: z.string().trim().min(1).max(80),
-          url: optionalUrl.refine(val => Boolean(val), 'Enter a valid URL'),
-        }),
-      )
-      .max(12)
-      .optional()
-      .default([]),
     replyTo: z.union([z.literal(''), z.string().trim().email().max(320)]).optional().default(''),
     alsoNotifyPortal: z.boolean().optional().default(false),
     testOnly: z.boolean().optional().default(false),
   })
-  .strict()
+  // Club email is plain text. Design fields an older composer tab may still send (header
+  // label, image, button, links) are dropped here rather than rejected.
+  .strip()
 
 export type AdminBroadcastInput = z.infer<typeof adminBroadcastSchema>
 
@@ -92,9 +62,6 @@ export type EmailBroadcastHistoryEntry = {
   recipientCount: number
   sentCount: number
   notifiedCount: number
-  ctaLabel?: string
-  hasImage?: boolean
-  linkCount?: number
   previewText?: string
   senderName?: string
 }

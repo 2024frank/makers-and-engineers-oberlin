@@ -41,7 +41,7 @@ describe('expanded admin capabilities & streamlined navigation', () => {
   })
 })
 
-describe('admin email broadcast validation and HTML escaping', () => {
+describe('admin email broadcast validation and plain-text rendering', () => {
   it('parses, normalizes, and deduplicates comma/newline-separated email lists', () => {
     expect(parseCustomEmailList('Ada@Oberlin.edu, bob@oberlin.edu;\nADA@oberlin.edu')).toEqual([
       'ada@oberlin.edu',
@@ -50,54 +50,37 @@ describe('admin email broadcast validation and HTML escaping', () => {
     expect(() => parseCustomEmailList('good@oberlin.edu, not-an-email')).toThrow('INVALID_EMAIL:not-an-email')
   })
 
-  it('accepts rich broadcast links and blocks javascript: URLs', () => {
+  it('drops design fields an older composer may still send instead of rejecting the send', () => {
     const parsed = adminBroadcastSchema.parse({
       audience: 'all_members',
       subject: 'Spring Build Night',
       body: 'Join us in Science Center.',
+      eyebrow: 'Robotics Team',
       imageUrl: 'https://www.makeoberlin.site/brand/workshop.webp',
       ctaLabel: 'RSVP now',
-      ctaUrl: '/events',
+      ctaUrl: 'javascript:alert(1)',
       links: [{ label: 'Design folder', url: 'https://drive.google.com/drive/folders/123' }],
       alsoNotifyPortal: true,
     })
-    expect(parsed.links).toHaveLength(1)
-
-    expect(() =>
-      adminBroadcastSchema.parse({
-        audience: 'all_members',
-        subject: 'Bad link test',
-        body: 'Hello',
-        ctaLabel: 'Click',
-        ctaUrl: 'javascript:alert(1)',
-      }),
-    ).toThrow()
+    expect(parsed.subject).toBe('Spring Build Night')
+    for (const key of ['eyebrow', 'imageUrl', 'ctaLabel', 'ctaUrl', 'links']) {
+      expect(parsed).not.toHaveProperty(key)
+    }
   })
 
-  it('renders rich HTML & plain-text email while escaping user HTML and unsafe protocols', () => {
+  it('renders club email as plain text with no HTML', () => {
     const email = renderAdminBroadcastEmail({
-      recipientName: 'Kwaku <script>',
-      subject: 'Kickoff & CAD <b>Review</b>',
-      eyebrow: 'Robotics Team',
+      recipientName: 'Kwaku',
+      subject: '  Kickoff & CAD <b>Review</b> ',
       body: 'Bring your laptop.\n\nSee you at 6pm.',
-      imageUrl: 'https://www.makeoberlin.site/hero.jpg',
-      ctaLabel: 'Open workspace',
-      ctaUrl: 'https://www.makeoberlin.site/member/teams/1',
-      links: [
-        { label: 'CAD files', url: 'https://onshape.com/doc/1' },
-        { label: 'Bad script', url: 'javascript:alert(1)' },
-      ],
+      replyTo: 'makers.engineers@oberlin.edu',
     })
 
+    expect(email.html).toBeUndefined()
     expect(email.subject).toBe('Kickoff & CAD <b>Review</b>')
-    expect(email.html).toContain('&lt;script&gt;')
-    expect(email.html).toContain('&lt;b&gt;Review&lt;/b&gt;')
-    expect(email.html).toContain('https://www.makeoberlin.site/hero.jpg')
-    expect(email.html).toContain('https://onshape.com/doc/1')
-    expect(email.html).not.toContain('javascript:')
-    expect(email.text).toContain('Open workspace: https://www.makeoberlin.site/member/teams/1')
-    expect(email.text).toContain('- CAD files: https://onshape.com/doc/1')
-    expect(email.text).not.toContain('javascript:')
+    expect(email.text).toBe('Hi Kwaku,\n\nBring your laptop.\n\nSee you at 6pm.\n\nMakers and Engineers @Oberlin')
+    expect(email.replyTo).toBe('makers.engineers@oberlin.edu')
+    expect(renderAdminBroadcastEmail({ subject: 'Hi', body: 'Hello' }).text.startsWith('Hi there,')).toBe(true)
   })
 })
 

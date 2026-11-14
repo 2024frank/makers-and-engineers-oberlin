@@ -42,7 +42,7 @@ describe('admin email route session handling', () => {
     send.mockResolvedValue({ ok: true, testOnly: true, recipientCount: 1, sentCount: 1, notifiedCount: 0 })
     const response = await POST(sendRequest())
     expect(response.status).toBe(200)
-    expect(send).toHaveBeenCalledWith(officer, expect.objectContaining({ subject: 'Hi' }), 'https://admin.example.com')
+    expect(send).toHaveBeenCalledWith(officer, expect.objectContaining({ subject: 'Hi' }))
   })
 })
 

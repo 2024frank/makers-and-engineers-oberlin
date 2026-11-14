@@ -5,115 +5,18 @@ export type TransactionalEmailMessage = {
   replyTo?: string
 }
 
-export type AdminBroadcastLink = {
-  label: string
-  url: string
-}
-
 export type AdminBroadcastEmailInput = {
   recipientName?: string
   subject: string
   body: string
-  eyebrow?: string
-  imageUrl?: string | null
-  imageAlt?: string
-  ctaLabel?: string
-  ctaUrl?: string
-  links?: AdminBroadcastLink[]
   replyTo?: string
 }
 
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;')
-}
-
-function safeEmailHttpUrl(value?: string | null): string | null {
-  if (!value) return null
-  try {
-    const parsed = new URL(value.trim())
-    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.toString() : null
-  } catch {
-    return null
-  }
-}
-
-function renderHtmlParagraphs(text: string): string {
-  const blocks = text
-    .split(/\n{2,}/)
-    .map(part => part.trim())
-    .filter(Boolean)
-  if (!blocks.length) return ''
-  return blocks
-    .map(
-      block =>
-        `<p style="margin:0 0 14px;color:#1d1f1e;font-size:15px;line-height:1.65;">${escapeHtml(block).replaceAll('\n', '<br />')}</p>`,
-    )
-    .join('')
-}
-
-/** Build a clean responsive HTML and plain-text email for officer-to-member or mass club sends. */
+/** Build the plain-text email for officer-to-member or mass club sends. No HTML, images or buttons. */
 export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): TransactionalEmailMessage {
-  const subject = input.subject.trim()
-  const greeting = hello(input.recipientName ?? '')
-  const body = input.body.trim()
-  const imageUrl = safeEmailHttpUrl(input.imageUrl)
-  const ctaUrl = safeEmailHttpUrl(input.ctaUrl)
-  const ctaLabel = input.ctaLabel?.trim()
-  const safeLinks = (input.links ?? [])
-    .map(item => ({ label: item.label.trim(), url: safeEmailHttpUrl(item.url) }))
-    .filter((item): item is { label: string; url: string } => Boolean(item.label && item.url))
-
-  const textParts = [greeting, '', body]
-  if (imageUrl) textParts.push('', `Image: ${imageUrl}`)
-  if (ctaLabel && ctaUrl) textParts.push('', `${ctaLabel}: ${ctaUrl}`)
-  if (safeLinks.length) {
-    textParts.push('', 'Links:', ...safeLinks.map(link => `- ${link.label}: ${link.url}`))
-  }
-  textParts.push('', 'Makers and Engineers @Oberlin')
-
-  const eyebrow = input.eyebrow?.trim() || 'Projects for Makers and Engineers @Oberlin'
-  const imageBlock = imageUrl
-    ? `<div style="margin:0 0 20px;border-radius:12px;overflow:hidden;border:1px solid #e6e4de;"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(input.imageAlt?.trim() || subject)}" style="display:block;width:100%;max-height:360px;object-fit:cover;border:0;" /></div>`
-    : ''
-  const ctaBlock =
-    ctaLabel && ctaUrl
-      ? `<div style="margin:22px 0;"><a href="${escapeHtml(ctaUrl)}" style="display:inline-block;padding:12px 22px;background:#a6192e;color:#ffffff;font-weight:600;font-size:14px;text-decoration:none;border-radius:999px;">${escapeHtml(ctaLabel)}</a></div>`
-      : ''
-  const linksBlock = safeLinks.length
-    ? `<div style="margin-top:22px;padding-top:16px;border-top:1px solid #ebe9e3;"><p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#666a67;">Shared links</p><ul style="margin:0;padding-left:18px;">${safeLinks.map(link => `<li style="margin:0 0 6px;font-size:14px;"><a href="${escapeHtml(link.url)}" style="color:#a6192e;font-weight:600;text-decoration:underline;">${escapeHtml(link.label)}</a></li>`).join('')}</ul></div>`
-    : ''
-
-  const html = `<!doctype html>
-<html lang="en">
-<body style="margin:0;padding:24px 12px;background:#f5f4f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Helvetica,Arial,sans-serif;color:#141514;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e3dc;border-radius:16px;overflow:hidden;">
-    <div style="padding:18px 26px;background:#141514;color:#fafaf8;">
-      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#f3bcc4;">${escapeHtml(eyebrow)}</p>
-      <h1 style="margin:6px 0 0;font-size:21px;line-height:1.3;font-weight:700;color:#ffffff;">${escapeHtml(subject)}</h1>
-    </div>
-    <div style="padding:24px 26px;">
-      ${imageBlock}
-      <p style="margin:0 0 14px;color:#1d1f1e;font-size:15px;line-height:1.65;">${escapeHtml(greeting)}</p>
-      ${renderHtmlParagraphs(body)}
-      ${ctaBlock}
-      ${linksBlock}
-    </div>
-    <div style="padding:16px 26px;background:#fafaf8;border-top:1px solid #ebe9e3;font-size:12px;color:#666a67;">
-      Projects for Makers and Engineers @Oberlin · Oberlin College
-    </div>
-  </div>
-</body>
-</html>`
-
   return {
-    subject,
-    text: textParts.join('\n'),
-    html,
+    subject: input.subject.trim(),
+    text: `${hello(input.recipientName ?? '')}\n\n${input.body.trim()}${signature}`,
     replyTo: input.replyTo?.trim() || undefined,
   }
 }

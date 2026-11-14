@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   if (!auth.ok) return auth.response
   try {
     const body = await request.json()
-    const result = await sendAdminBroadcast(auth.admin, body, new URL(request.url).origin)
+    const result = await sendAdminBroadcast(auth.admin, body)
     return NextResponse.json(result)
   } catch (error) {
     return NextResponse.json(

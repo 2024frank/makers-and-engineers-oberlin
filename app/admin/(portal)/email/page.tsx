@@ -24,8 +24,8 @@ export default async function AdminEmailPage() {
           <p className="eyebrow">Club messaging</p>
           <h1>Email members</h1>
           <p>
-            Send announcements, project instructions, images, and resource links directly to
-            individuals, project teams, club tracks, or everyone in the club.
+            Send plain-text announcements and project instructions to individuals, project
+            teams, club tracks, or everyone in the club.
           </p>
         </div>
       </div>
@@ -34,7 +34,6 @@ export default async function AdminEmailPage() {
         recipients={data.recipients}
         groups={data.groups}
         initialHistory={data.history}
-        initialMedia={data.imageAssets}
       />
     </main>
   )

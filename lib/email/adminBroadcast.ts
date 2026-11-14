@@ -1,7 +1,5 @@
 import 'server-only'
-import { listMedia } from '@/lib/cms/media'
 import { sendTransactionalEmail, sendTransactionalEmailBatch } from '@/lib/email/client'
-import { memberSiteOrigin } from '@/lib/email/siteOrigin'
 import { renderAdminBroadcastEmail } from '@/lib/email/templates'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import {
@@ -19,21 +17,7 @@ type ResolvedRecipient = {
   userId: string | null
 }
 
-function resolveBroadcastUrl(raw: string | undefined | null, origin?: string): string | undefined {
-  const trimmed = raw?.trim()
-  if (!trimmed) return undefined
-  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
-    return `${memberSiteOrigin(origin)}${trimmed}`
-  }
-  try {
-    const parsed = new URL(trimmed)
-    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.toString() : undefined
-  } catch {
-    return undefined
-  }
-}
-
-/** Load members, groups, media assets, and recent broadcast history for the Admin Email composer. */
+/** Load members, groups, and recent broadcast history for the Admin Email composer. */
 export async function getAdminEmailConsoleData() {
   const admin = createSupabaseAdminClient()
   const [
@@ -45,7 +29,6 @@ export async function getAdminEmailConsoleData() {
     clubTeamsRes,
     clubTeamMembersRes,
     historyRes,
-    mediaAssets,
   ] = await Promise.all([
     admin
       .from('member_profiles')
@@ -79,7 +62,6 @@ export async function getAdminEmailConsoleData() {
       .eq('action', 'ADMIN_EMAIL_BROADCAST')
       .order('created_at', { ascending: false })
       .limit(20),
-    listMedia('').catch(() => []),
   ])
 
   const members = membersRes.data ?? []
@@ -161,9 +143,6 @@ export async function getAdminEmailConsoleData() {
       recipientCount: Number(snap.recipientCount ?? 0),
       sentCount: Number(snap.sentCount ?? 0),
       notifiedCount: Number(snap.notifiedCount ?? 0),
-      ctaLabel: typeof snap.ctaLabel === 'string' ? snap.ctaLabel : undefined,
-      hasImage: Boolean(snap.hasImage),
-      linkCount: Number(snap.linkCount ?? 0),
       previewText: typeof snap.previewText === 'string' ? snap.previewText : undefined,
       senderName: typeof snap.senderName === 'string' ? snap.senderName : undefined,
     }
@@ -173,7 +152,6 @@ export async function getAdminEmailConsoleData() {
     recipients,
     groups,
     history,
-    imageAssets: mediaAssets.filter(asset => asset.mimeType.startsWith('image/')),
   }
 }
 
@@ -352,31 +330,15 @@ async function resolveRecipients(
 export async function sendAdminBroadcast(
   adminActor: { userId: string; email: string; displayName: string },
   rawInput: unknown,
-  origin?: string,
 ) {
   const input = adminBroadcastSchema.parse(rawInput)
   const { audienceLabel, recipients } = await resolveRecipients(input, adminActor)
-
-  const resolvedImageUrl = resolveBroadcastUrl(input.imageUrl, origin)
-  const resolvedCtaUrl = resolveBroadcastUrl(input.ctaUrl, origin)
-  const resolvedLinks = input.links
-    .map(link => ({
-      label: link.label.trim(),
-      url: resolveBroadcastUrl(link.url, origin),
-    }))
-    .filter((item): item is { label: string; url: string } => Boolean(item.label && item.url))
 
   const buildMessageFor = (recipientName: string) =>
     renderAdminBroadcastEmail({
       recipientName,
       subject: input.subject,
-      eyebrow: input.eyebrow || undefined,
       body: input.body,
-      imageUrl: resolvedImageUrl,
-      imageAlt: input.imageAlt,
-      ctaLabel: input.ctaLabel,
-      ctaUrl: resolvedCtaUrl,
-      links: resolvedLinks,
       replyTo: input.replyTo || undefined,
     })
 
@@ -405,9 +367,7 @@ export async function sendAdminBroadcast(
       new Set(recipients.map(r => r.userId).filter((id): id is string => Boolean(id))),
     )
     if (memberUserIds.length) {
-      const actionUrl = input.ctaUrl?.trim().startsWith('/')
-        ? input.ctaUrl.trim()
-        : '/member/notifications'
+      const actionUrl = '/member/notifications'
       const summaryBody = input.body.trim().slice(0, 260)
       const { error: notifyError } = await admin.from('member_notifications').insert(
         memberUserIds.map(userId => ({
@@ -434,9 +394,6 @@ export async function sendAdminBroadcast(
         recipientCount: recipients.length,
         sentCount,
         notifiedCount,
-        ctaLabel: input.ctaLabel || undefined,
-        hasImage: Boolean(resolvedImageUrl),
-        linkCount: resolvedLinks.length,
         previewText: input.body.trim().slice(0, 180),
         senderName: adminActor.displayName,
       },

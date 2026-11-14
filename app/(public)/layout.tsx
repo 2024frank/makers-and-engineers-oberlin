@@ -6,7 +6,6 @@ import { AnnouncementBanner } from '@/components/public/AnnouncementBanner'
 import { publicPreviewEnabled } from '@/lib/content/previewProjects'
 import './professional.css'
 import './project-led.css'
-import './editorial.css'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [navigation, settings] = await Promise.all([getPublishedNavigation(), getPublicSiteSettings()])

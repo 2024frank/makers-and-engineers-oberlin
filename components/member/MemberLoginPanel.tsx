@@ -95,17 +95,17 @@ export function MemberLoginPanel({ authError, status, next }: { authError?: stri
     finally { setBusy('') }
   }
 
-  return <div className="member-auth-grid"><section className="admin-login__card">
-    <div className="auth-tabs" aria-label="Account access">{(['password','request'] as const).map(tab=><button key={tab} type="button" aria-pressed={tab==='password'?mode!=='request':mode==='request'} onClick={()=>{setMode(tab);setError('');setNotice('')}}>{tab==='password'?'Sign in':'Request an account'}</button>)}</div>
+  return <section className="studio-auth__main">
+    <div className="studio-auth__tabs" aria-label="Account access">{(['password','request'] as const).map(tab=><button key={tab} type="button" aria-pressed={tab==='password'?mode!=='request':mode==='request'} onClick={()=>{setMode(tab);setError('');setNotice('')}}>{tab==='password'?'Sign in':'Request an account'}</button>)}</div>
     <h2>{mode==='password'?'Member sign in':mode==='magic'?'Email sign-in link':mode==='reset'?'Reset your password':'Request an account'}</h2>
     <p>{mode==='request'?'Verify your Oberlin email, then wait for the club to approve your account.':'Use your approved Oberlin email.'}</p>
-    <form className="settings-form" onSubmit={mode==='password'?passwordSignIn:mode==='magic'?magicLink:mode==='reset'?passwordReset:requestMembership}>
+    <form className="studio-auth__form" onSubmit={mode==='password'?passwordSignIn:mode==='magic'?magicLink:mode==='reset'?passwordReset:requestMembership}>
     {mode==='request'&&<label>Full name<input name="displayName" autoComplete="name" minLength={2} required/></label>}
     <label>Oberlin email<input name="email" type="email" autoComplete={mode==='password'?'username':'email'} required/></label>
     {mode==='password'&&<label>Password<input name="password" type="password" autoComplete="current-password" required/></label>}
     {(error||notice)&&<p className="member-auth-message" role={error?'alert':'status'}>{error||notice}</p>}
     <button type="submit" disabled={Boolean(busy)}>{busy?'Please wait...':mode==='password'?'Sign in':mode==='magic'?'Send sign-in link':mode==='reset'?'Send reset link':'Request account'}</button>
     </form>
-    <div className="auth-options">{mode==='password'?<><button type="button" onClick={()=>{setMode('magic');setError('');setNotice('')}}>Sign in with an email link</button><button type="button" onClick={()=>{setMode('reset');setError('');setNotice('')}}>Forgot password?</button></>:<button type="button" onClick={()=>{setMode('password');setError('');setNotice('')}}>Back to sign in</button>}{mode!=='request'&&<button type="button" onClick={()=>{setMode('request');setError('');setNotice('')}}>Request a new setup email</button>}</div>
-  </section></div>
+    <div className="studio-auth__links">{mode==='password'?<><button type="button" onClick={()=>{setMode('magic');setError('');setNotice('')}}>Sign in with an email link</button><button type="button" onClick={()=>{setMode('reset');setError('');setNotice('')}}>Forgot password?</button></>:<button type="button" onClick={()=>{setMode('password');setError('');setNotice('')}}>Back to sign in</button>}{mode!=='request'&&<button type="button" onClick={()=>{setMode('request');setError('');setNotice('')}}>Request a new setup email</button>}</div>
+  </section>
 }

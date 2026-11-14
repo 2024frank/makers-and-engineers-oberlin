@@ -1,103 +1,107 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { NextMeeting } from "@/components/public/NextMeeting";
-import { homeIntroduction } from "@/lib/content/publicCopy";
-import type { z } from "zod";
-import type { heroSchema } from "@/lib/page-builder/schemas/hero";
-import type { PageRenderContext } from "@/lib/page-builder/types";
+import Link from 'next/link'
+import Image from 'next/image'
+import { ArrowRight } from 'lucide-react'
+import type { z } from 'zod'
+import type { heroSchema } from '@/lib/page-builder/schemas/hero'
+import type { PageRenderContext } from '@/lib/page-builder/types'
+import { NextMeeting } from '@/components/public/NextMeeting'
+import { retireCopy } from '@/lib/content/publicCopy'
+
+const DEFAULT_HOME_IMAGE =
+  'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-workshop-wide.jpg'
+
 export function HeroSection({
   section,
   context,
 }: {
-  section: z.infer<typeof heroSchema>;
-  context?: PageRenderContext;
+  section: z.infer<typeof heroSchema>
+  context?: PageRenderContext
 }) {
-  const media = section.imageId ? context?.media?.[section.imageId] : undefined;
-  const home = context?.pageSlug === "home";
-  if (home) {
-    // Preserve officer-selected media and new copy; only retire the original seed headline.
-    const image = media?.url ?? "https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-hero-workbench.jpg";
-    const defaultHeadline = ["Build things. Learn together.", "Student engineering projects at Oberlin College.", "Makers and Engineers @Oberlin", "Makers and Engineers @Oberlin."].includes(section.headline);
-    return <>
+  const isHome = context?.pageSlug === 'home'
+  const media = section.imageId ? context?.media?.[section.imageId] : undefined
+  const headlineText = retireCopy(section.headline)
+  const bodyText = retireCopy(section.body)
+  const eyebrowText = section.eyebrow ? retireCopy(section.eyebrow) : undefined
+
+  if (isHome) {
+    const heroPhotoUrl = media?.url ?? DEFAULT_HOME_IMAGE
+    const heroPhotoAlt =
+      section.imageAlt ||
+      media?.alt ||
+      'Oberlin students collaborating on a fabrication build at the workshop bench'
+
+    return (
       <section className="club-opening" aria-label="Makers and Engineers at Oberlin">
-        <div className="shell club-opening__grid">
-          <div className="club-opening__copy">
-            <p className="eyebrow">A student club at Oberlin College</p>
-            <h1>{defaultHeadline ? <><span>Makers and Engineers</span><small>@Oberlin<span aria-hidden="true">.</span></small></> : section.headline}</h1>
-            <p className="club-opening__intro">{section.body || homeIntroduction}</p>
-            <div className="button-row">
-              <Link className="button button--primary" href="/projects">Explore projects <ArrowRight size={18} aria-hidden="true"/></Link>
-              <Link className="button button--secondary" href="/get-involved">Join the club</Link>
-            </div>
-            <p className="club-opening__welcome">Every major. Every experience level.</p>
+        <div className="shell club-opening__inner">
+          <div className="club-opening__intro">
+            <span className="club-opening__badge">
+              {eyebrowText || 'Makers and Engineers @Oberlin'}
+            </span>
+            <h1>{headlineText}</h1>
+            <p className="club-opening__lead">{bodyText}</p>
+            <nav className="club-opening__actions" aria-label="Get started">
+              <Link className="button button--primary" href="/get-involved">
+                Join the club <ArrowRight size={17} aria-hidden="true" />
+              </Link>
+              <Link className="button button--secondary" href="/projects">
+                Explore projects
+              </Link>
+              <Link className="text-link" href="/events">
+                See club events <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </nav>
+            <NextMeeting events={context?.events ?? []} />
           </div>
-          <figure className="club-opening__media">
-            <div className="club-opening__photograph"><Image src={image} alt={section.imageAlt || media?.alt || "Students at a workshop bench with electronics and tools"} fill preload sizes="(max-width: 800px) 100vw, 50vw"/></div>
-            <figcaption><span>Hands-on work. Shared curiosity.</span><Link href="/about">Meet the club <ArrowUpRight size={17} aria-hidden="true"/></Link></figcaption>
-          </figure>
-        </div>
-        <nav className="shell club-opening__paths" aria-label="Get started">
-          <Link href="/events"><span>Come along</span><strong>See club events</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
-          <Link href="/get-involved?type=propose_project"><span>Bring an idea</span><strong>Share a project idea</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
-          <Link href="/member/login"><span>Already a member?</span><strong>Member sign in</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
-          <Link href="/app"><span>On your phone</span><strong>Get the MEO Members app</strong><ArrowUpRight size={22} aria-hidden="true"/></Link>
-        </nav>
-      </section>
-      <NextMeeting events={context?.events ?? []}/>
-      <section className="home-statement" aria-label="About the club">
-        <div className="shell">
-          <p className="home-statement__lead">Different majors.<br/><span>A shared place to learn and build.</span></p>
-          <div className="home-statement__aside">
-            <p>Workshops, student and alumni talks, team projects, and a community to explore engineering with. Every major is welcome, with no experience or 3-2 participation required.</p>
-            <Link className="text-link" href="/about">About the club <ArrowUpRight size={17} aria-hidden="true"/></Link>
+          <div className="club-opening__media">
+            <Image
+              src={heroPhotoUrl}
+              alt={heroPhotoAlt}
+              width={1200}
+              height={900}
+              sizes="(max-width: 980px) 100vw, 44vw"
+              priority
+            />
           </div>
         </div>
       </section>
-    </>;
+    )
   }
-  const image = media?.url;
+
   return (
-    <>
-      <section className={image ? "home-hero" : "editorial-hero"}>
-        {image && (
-          <Image
-            className="home-hero__image"
-            src={image}
-            alt={section.imageAlt || media?.alt || ""}
-            fill
-            priority
-            sizes="100vw"
-          />
-        )}
-        <div className="shell">
-          <div className="hero-copy">
-            {section.eyebrow && <p className="eyebrow">{section.eyebrow}</p>}
-            <h1>{section.headline}</h1>
-            <p>{section.body}</p>
+    <section className={media ? 'home-hero' : 'directory-hero'}>
+      <div className={media ? 'shell home-hero__grid' : 'shell'}>
+        <div>
+          {eyebrowText && <p className="eyebrow">{eyebrowText}</p>}
+          <h1>{headlineText}</h1>
+          <p>{bodyText}</p>
+          {(section.primaryCta || section.secondaryCta) && (
             <div className="button-row">
               {section.primaryCta && (
-                <Link
-                  className="button button--primary"
-                  href={section.primaryCta.href}
-                >
-                  {section.primaryCta.label}
-                  <ArrowRight size={18} />
+                <Link className="button button--primary" href={section.primaryCta.href}>
+                  {section.primaryCta.label} <ArrowRight size={17} aria-hidden="true" />
                 </Link>
               )}
               {section.secondaryCta && (
-                <Link
-                  className="hero-secondary"
-                  href={section.secondaryCta.href}
-                >
+                <Link className="button button--secondary" href={section.secondaryCta.href}>
                   {section.secondaryCta.label}
-                  <ArrowRight size={17} />
                 </Link>
               )}
             </div>
-          </div>
+          )}
         </div>
-      </section>
-    </>
-  );
+        {media && (
+          <div className="home-hero__media">
+            <Image
+              src={media.url}
+              alt={section.imageAlt || media.alt || headlineText}
+              width={1200}
+              height={900}
+              sizes="(max-width: 980px) 100vw, 45vw"
+              priority
+            />
+          </div>
+        )}
+      </div>
+    </section>
+  )
 }

@@ -42,8 +42,9 @@ it('introduces the club with a real image and direct membership links instead of
   render(<HeroSection section={section} context={{ pageSlug: 'home' }}/>)
   expect(screen.queryByTestId('printer-canvas')).not.toBeInTheDocument()
   const shortcuts = within(screen.getByRole('navigation', { name: 'Get started' }))
-  expect(shortcuts.getByRole('link', { name: /Member sign in/ })).toHaveAttribute('href', '/member/login')
-  expect(shortcuts.getByRole('link', { name: /Share a project idea/ })).toHaveAttribute('href', '/get-involved?type=propose_project')
+  expect(shortcuts.getByRole('link', { name: /Join the club/ })).toHaveAttribute('href', '/get-involved')
+  expect(shortcuts.getByRole('link', { name: /Explore projects/ })).toHaveAttribute('href', '/projects')
+  expect(shortcuts.getByRole('link', { name: /See club events/ })).toHaveAttribute('href', '/events')
 })
 
 it.each(['image', 'split', 'minimal'] as const)('preserves interior CMS %s hero content', async layout => {
@@ -60,7 +61,8 @@ it('passes the actual homepage identity through the CMS renderer', async () => {
   const { CmsPage } = await import('@/components/public/CmsPage')
   const page = pageSnapshotSchema.parse({ pageId: '00000000-0000-4000-8000-000000000098', slug: 'home', title: 'Home', sections: [{ stableKey: 'hero', type: 'hero', isVisible: true, layout: 'split', headline: 'Build things. Learn together.', body: '' }] })
   render(await CmsPage({ page }))
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Makers and Engineers@Oberlin.')
+  expect(screen.getByText('Makers and Engineers @Oberlin')).toBeVisible()
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Student engineering projects at Oberlin College.')
   expect(screen.getByRole('navigation', { name: 'Get started' })).toBeVisible()
 })
 

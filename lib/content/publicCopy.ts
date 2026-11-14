@@ -38,6 +38,10 @@ const replacements: Record<string, string> = {
   'We are gathering engineering internships, research positions, fellowships, and funding worth knowing about. Join MEO and we will share them as they land.': 'There are no current listings. We will add opportunities here as members share them.',
 }
 
+export function retireCopy(text: string) {
+  return replacements[text] ?? text
+}
+
 export function publicCopy(text: string) {
   const decoded = decodeHtmlEntities(text)
   return replacements[decoded] ?? decoded

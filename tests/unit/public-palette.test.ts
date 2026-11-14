@@ -39,7 +39,7 @@ describe('public color system', () => {
     })
     const fixture = document.createElement('div')
     fixture.className = 'professional-site'
-    for (const surface of ['cms-section--cardinal', 'cta-section cta-section--charcoal', 'hero', 'photo-hero', 'home-hero', 'directory-hero--image', 'detail-hero--image', 'public-footer']) {
+    for (const surface of ['cms-section--cardinal', 'cta-section cta-section--charcoal', 'hero', 'photo-hero', 'directory-hero--image', 'detail-hero--image']) {
       fixture.innerHTML = `<section class="${surface}"><a href="/projects">Projects</a><button>Join</button><input /><select></select><textarea></textarea><summary>Details</summary></section>`
       for (const control of fixture.querySelectorAll('a, button, input, select, textarea, summary')) {
         expect(selectors.some(selector => control.matches(selector)), `${surface} ${control.tagName}`).toBe(true)

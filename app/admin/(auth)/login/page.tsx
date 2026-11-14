@@ -1,17 +1,26 @@
 'use client'
 
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState, useSyncExternalStore } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
+
+const subscribeNoop = () => () => {}
 
 export default function AdminLoginPage() {
   const router = useRouter()
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('status') === 'password_reset') setNotice('Password updated. Sign in with your new password.')
-  }, [])
+  const resetNotice = useSyncExternalStore(
+    subscribeNoop,
+    () =>
+      new URLSearchParams(window.location.search).get('status') === 'password_reset'
+        ? 'Password updated. Sign in with your new password.'
+        : '',
+    () => '',
+  )
+  const statusMessage = notice || resetNotice
   const [busy, setBusy] = useState(false)
   const [recoveryBusy, setRecoveryBusy] = useState(false)
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -35,5 +44,66 @@ export default function AdminLoginPage() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : 'Could not send password reset.') }
     finally { setRecoveryBusy(false) }
   }
-  return <main className="admin-login"><section className="admin-login__intro"><BrandLogo variant="badge" /><h1>Officer portal</h1><p>Projects, events, membership, and website publishing.</p></section><section className="admin-login__card"><BrandLogo variant="badge" /><h2>Officer sign in</h2><form onSubmit={submit}><label>Email<input name="email" type="email" autoComplete="username" required /></label><label>Password<input name="password" type="password" autoComplete="current-password" required /></label><button type="submit" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button></form><details className="password-recovery"><summary>Forgot your password?</summary><form onSubmit={recover} className="settings-form"><label>Officer email<input name="email" type="email" autoComplete="email" required /></label><button type="submit" disabled={recoveryBusy}>{recoveryBusy ? 'Sending…' : 'Email me a password reset'}</button></form></details>{error && <p role="alert">{error}</p>}{notice && <p role="status">{notice}</p>}</section></main>
+  return (
+    <main className="studio-auth">
+      <div className="studio-auth__frame">
+        <aside className="studio-auth__aside">
+          <div>
+            <BrandLogo variant="badge" />
+            <h1>Officer portal</h1>
+            <p>Projects, events, membership, and website publishing.</p>
+            <ul className="studio-auth__aside-specs">
+              <li>Manage public club pages &amp; project directory</li>
+              <li>Review member &amp; capstone applications</li>
+              <li>Coordinate workshops, teams, and safety notes</li>
+            </ul>
+          </div>
+          <Link className="studio-auth__back" href="/">
+            Back to the club website
+          </Link>
+        </aside>
+        <section className="studio-auth__main">
+          <h2>Officer sign in</h2>
+          <form className="studio-auth__form" onSubmit={submit}>
+            <label>
+              Email
+              <input name="email" type="email" autoComplete="username" required />
+            </label>
+            <label>
+              Password
+              <input name="password" type="password" autoComplete="current-password" required />
+            </label>
+            <button type="submit" disabled={busy}>
+              {busy ? 'Signing in…' : 'Sign in'}
+            </button>
+          </form>
+          <details className="password-recovery">
+            <summary>Forgot your password?</summary>
+            <form onSubmit={recover} className="studio-auth__form">
+              <label>
+                Officer email
+                <input name="email" type="email" autoComplete="email" required />
+              </label>
+              <button type="submit" disabled={recoveryBusy}>
+                {recoveryBusy ? 'Sending…' : 'Email me a password reset'}
+              </button>
+            </form>
+          </details>
+          {error && (
+            <p className="member-auth-message" role="alert">
+              {error}
+            </p>
+          )}
+          {statusMessage && (
+            <p className="member-auth-message" role="status">
+              {statusMessage}
+            </p>
+          )}
+          <div className="studio-auth__links">
+            <Link href="/member/login">Looking for Member portal sign in?</Link>
+          </div>
+        </section>
+      </div>
+    </main>
+  )
 }

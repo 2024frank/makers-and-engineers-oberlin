@@ -1,0 +1,49 @@
+# Checks every pull request to main and every push to main.
+# It installs from package-lock.json, then runs lint, typecheck and npm test.
+# It deploys nothing and uses no repository secrets.
+#
+# Left out on purpose:
+#   - npm run build: Vercel already builds every pull request.
+#   - npm run test:e2e: the Playwright tests need officer credentials.
+#   - mobile/: a separate app with its own package.json. Lint and typecheck
+#     exclude it, and nothing here installs or checks it.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    # A required status check for main refers to this name. If you rename the
+    # job, update that setting too.
+    name: Lint, typecheck and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test

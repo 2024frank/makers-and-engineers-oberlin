@@ -38,6 +38,8 @@ const AUDIENCE_TABS: Array<{ id: BroadcastAudienceMode; label: string; hint: str
 const SEND_ERRORS: Record<string, string> = {
   ALL_RECIPIENTS_OPTED_OUT:
     'Everyone in this audience has turned off announcement email. Use Pick people or add an address to write to someone directly.',
+  PORTAL_NOTIFICATION_FAILED:
+    'Everyone in this audience has turned off announcement email, and the portal notification could not be posted. Nothing was sent.',
 }
 
 export function AdminEmailComposer({
@@ -190,7 +192,9 @@ export function AdminEmailComposer({
       const skipped = Number(result.optedOutCount ?? 0)
       const msg = testOnly
         ? `Test email sent to ${senderEmail}.`
-        : `Sent to ${result.sentCount} of ${result.recipientCount} recipients${result.notifiedCount ? ` (+${result.notifiedCount} portal notifications)` : ''}.${skipped ? ` Skipped ${skipped} member${skipped === 1 ? '' : 's'} who turned off announcement email.` : ''}`
+        : result.recipientCount === 0
+          ? `No email was sent, because everyone in this audience turned off announcement email. Posted ${result.notifiedCount} portal notification${result.notifiedCount === 1 ? '' : 's'}.`
+          : `Sent to ${result.sentCount} of ${result.recipientCount} recipients${result.notifiedCount ? ` (+${result.notifiedCount} portal notifications)` : ''}.${skipped ? ` Skipped ${skipped} member${skipped === 1 ? '' : 's'} who turned off announcement email.` : ''}`
       setStatusMessage(msg)
       toast(msg)
 

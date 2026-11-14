@@ -415,7 +415,9 @@ async function resolveRecipients(
 
   if (deduped.size === 0) throw new Error('NO_RECIPIENTS_FOUND')
   const { recipients, skipped } = applyAnnouncementOptOut(Array.from(deduped.values()))
-  if (recipients.length === 0) throw new Error('ALL_RECIPIENTS_OPTED_OUT')
+  // With nobody left to email, the send still goes ahead if it will post the portal
+  // notice, because turning off the email does not turn off the notice.
+  if (recipients.length === 0 && !input.alsoNotifyPortal) throw new Error('ALL_RECIPIENTS_OPTED_OUT')
   return { audienceLabel, recipients, skipped }
 }
 
@@ -462,7 +464,7 @@ export async function sendAdminBroadcast(
       required: true,
     })
     sentCount = ok ? 1 : 0
-  } else {
+  } else if (recipients.length > 1) {
     sentCount = await sendTransactionalEmailBatch({
       messages: recipients.map(recipient => ({
         to: recipient.email,
@@ -496,6 +498,8 @@ export async function sendAdminBroadcast(
       if (!notifyError) notifiedCount = memberUserIds.length
     }
   }
+  // Everyone had turned off the email, so the portal notice was the whole send.
+  if (recipients.length === 0 && notifiedCount === 0) throw new Error('PORTAL_NOTIFICATION_FAILED')
 
   if (!input.testOnly) {
     await admin.from('audit_log').insert({

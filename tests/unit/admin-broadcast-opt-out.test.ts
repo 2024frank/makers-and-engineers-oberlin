@@ -30,7 +30,11 @@ function query(table: string) {
       return builder
     },
     maybeSingle: async () => ({ data: error ? null : rows[0] ?? null, error }),
-    insert: async (payload: unknown) => { (state.inserts[table] ??= []).push(payload); return { error: null } },
+    insert: async (payload: unknown) => {
+      if (error) return { error }
+      ;(state.inserts[table] ??= []).push(payload)
+      return { error: null }
+    },
     then: (resolve: (value: { data: Row[] | null; error: { message: string } | null }) => unknown) =>
       Promise.resolve({ data: error ? null : rows, error }).then(resolve),
   }
@@ -146,10 +150,32 @@ describe('group sends', () => {
     expect(result.notifiedCount).toBe(3)
   })
 
-  it('refuses to send when everyone in the group has opted out', async () => {
-    state.tables.club_team_memberships = [{ team_id: id(60), user_id: id(BEN), status: 'ACTIVE' }]
-    await expect(send({ audience: 'club_team', clubTeamId: id(60) })).rejects.toThrow('ALL_RECIPIENTS_OPTED_OUT')
-    expect(sent()).toEqual([])
+  describe('when everyone in the group has opted out', () => {
+    beforeEach(() => { state.tables.club_team_memberships = [{ team_id: id(60), user_id: id(BEN), status: 'ACTIVE' }] })
+    const toTeam = (extra: Row = {}) => send({ audience: 'club_team', clubTeamId: id(60), ...extra })
+
+    it('refuses an email-only send, since nothing would reach anyone', async () => {
+      await expect(toTeam()).rejects.toThrow('ALL_RECIPIENTS_OPTED_OUT')
+      expect(sent()).toEqual([])
+      expect(state.inserts.audit_log).toBeUndefined()
+    })
+
+    it('sends no email but still posts the portal notice', async () => {
+      const result = await toTeam({ alsoNotifyPortal: true })
+      expect(sent()).toEqual([])
+      expect(state.single).not.toHaveBeenCalled()
+      expect(state.batch).not.toHaveBeenCalled()
+      expect((state.inserts.member_notifications[0] as Row[]).map(row => row.user_id)).toEqual([id(BEN)])
+      expect(result).toMatchObject({ recipientCount: 0, sentCount: 0, notifiedCount: 1, optedOutCount: 1 })
+      expect(state.inserts.audit_log).toEqual([expect.objectContaining({ after_snapshot: expect.objectContaining({ recipientCount: 0, notifiedCount: 1, optedOutCount: 1 }) })])
+    })
+
+    it('reports a failure instead of a success when the portal notice cannot be posted either', async () => {
+      state.failing.add('member_notifications')
+      await expect(toTeam({ alsoNotifyPortal: true })).rejects.toThrow('PORTAL_NOTIFICATION_FAILED')
+      expect(sent()).toEqual([])
+      expect(state.inserts.audit_log).toBeUndefined()
+    })
   })
 
   it('stops instead of guessing when the member lookup fails', async () => {

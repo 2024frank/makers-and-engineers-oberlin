@@ -27,8 +27,6 @@ export type Database = {
     : GeneratedDatabase[Schema]
 }
 
-/** A table the API serves. */
-export type TableName = keyof Database['public']['Tables']
 /** A database function the API serves under `rpc`. */
 export type RpcName = keyof Database['public']['Functions']
 export type RpcArgs<Name extends RpcName> = Database['public']['Functions'][Name]['Args']

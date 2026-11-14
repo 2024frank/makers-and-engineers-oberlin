@@ -10,16 +10,16 @@ const headings = ['Workshops', 'Talks from 3-2 students and alumni', 'Capstone p
 it.each(['home','about'])('centres all six charter activities on %s', async slug => {
   render(await CmsPage({ page: fallbackPages[slug] }))
   for (const name of headings) expect(screen.getByRole('heading', { level: 3, name })).toBeVisible()
-  expect(screen.getByText(/We work with Career Exploration and Development \(CED\)/)).toBeVisible()
+  expect(screen.getByText(/We partner with Career Exploration and Development \(CED\)/)).toBeVisible()
   expect(screen.getByText(/CAD and 3D printing, electronics and soldering, Arduino/)).toBeVisible()
-  expect(screen.getByText(/Socials, study sessions, and informal build nights/)).toBeVisible()
+  expect(screen.getByText(/Weekly build nights, socials, and studio study sessions/)).toBeVisible()
 })
 
 it('puts the charter activities before project discovery on the homepage', async () => {
   render(await CmsPage({ page: fallbackPages.home }))
   const ordered = screen.getAllByRole('heading', { level: 2 }).map(x => x.textContent)
-  expect(ordered.indexOf('What the club will do')).toBeGreaterThanOrEqual(0)
-  expect(ordered.indexOf('What the club will do')).toBeLessThan(ordered.indexOf('Projects'))
+  expect(ordered.indexOf('What we do')).toBeGreaterThanOrEqual(0)
+  expect(ordered.indexOf('What we do')).toBeLessThan(ordered.indexOf('Projects'))
   expect(screen.queryByRole('heading', { name: 'Areas of interest' })).not.toBeInTheDocument()
 })
 
@@ -42,7 +42,7 @@ it('retains an officer-customized section even when it uses a legacy stable key'
   const page = pageSnapshotSchema.parse({ ...fallbackPages.home, sections: [{ stableKey: 'disciplines', type: 'discipline_grid', isVisible: true, heading: 'Our current interests', items: [{ name: 'Assistive design', description: 'Build accessible tools.' }] }] })
   render(await CmsPage({ page }))
   expect(screen.getByRole('heading', { name: 'Assistive design' })).toBeVisible()
-  expect(screen.getByRole('heading', { name: 'What the club will do' })).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'What we do' })).toBeVisible()
 })
 
 it('preserves edited descriptions under unchanged starter discipline titles', async () => {

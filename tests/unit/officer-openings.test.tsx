@@ -280,7 +280,7 @@ it('redirects the legacy leadership query on the server', async () => {
 it('places openings in member Community and reviews in admin Start here, excluding editors', () => {
   expect(memberPortalGroups.find(group => group.label === 'Community')?.items).toContainEqual({ label: 'Officer openings', href: '/member/leadership', icon: 'people' })
   for (const role of ['ADMIN', 'SUPER_ADMIN'] as const) {
-    expect(adminPortalGroups(role).find(group => group.label === 'Start here')?.items).toContainEqual({ label: 'Officer applications', href: '/admin/officer-applications', icon: 'requests' })
+    expect(adminPortalGroups(role).find(group => group.label === 'Start here')?.items).toContainEqual({ label: 'Applications & ideas', href: '/admin/requests', icon: 'requests' })
   }
   expect(adminPortalGroups('EDITOR').flatMap(group => group.items).some(item => item.href === '/admin/officer-applications')).toBe(false)
 })

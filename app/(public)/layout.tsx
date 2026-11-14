@@ -9,7 +9,8 @@ import './project-led.css'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const [navigation, settings] = await Promise.all([getPublishedNavigation(), getPublicSiteSettings()])
-  return <div className="professional-site">
+  const themePreset = settings.studio?.themePreset && settings.studio.themePreset !== 'cardinal' ? settings.studio.themePreset : undefined
+  return <div className="professional-site" data-studio-theme={themePreset}>
     <OrganizationSchema siteUrl={process.env.NEXT_PUBLIC_SITE_URL ?? 'https://makeoberlin.site'} contactEmail={settings.contact.email} socialLinks={settings.social}/>
     <PublicHeader items={navigation} logoSrc={settings.brand.badgeUrl}/>
     <AnnouncementBanner announcement={settings.announcement}/>

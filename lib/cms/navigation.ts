@@ -1,3 +1,4 @@
+import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 export type NavigationItemInput={id?:string;label:string;destination:string;visible:boolean;external:boolean;sortOrder:number}
@@ -39,8 +40,26 @@ export async function listNavigationForAdmin():Promise<NavigationItem[]>{
 
 export async function replaceNavigation(items:unknown,actorId:string){
   const validated=validateNavigationItems(items)
-  const s=await createSupabaseServerClient()
-  const{error}=await s.rpc('replace_navigation_items',{p_items:validated.map(item=>({id:item.id??null,label:item.label,destination:item.destination,visible:item.visible,external:item.external,sort_order:item.sortOrder}))})
-  if(error)throw new Error(`NAVIGATION_SAVE_FAILED:${error.message}`)
-  await s.from('audit_log').insert({actor_id:actorId,action:'NAVIGATION_REPLACED',entity_type:'navigation',entity_id:'main',after_snapshot:validated})
+  const admin=createSupabaseAdminClient()
+  const prepared=validated.map((item,index)=>({
+    id:item.id||crypto.randomUUID(),
+    label:item.label,
+    destination:item.destination,
+    visible:item.visible,
+    external:item.external,
+    sort_order:item.sortOrder||(index+1)*10,
+    publication_state:'published',
+  }))
+  const keepIds=prepared.map(item=>item.id)
+  if(prepared.length){
+    const{error:upsertError}=await admin.from('navigation_items').upsert(prepared,{onConflict:'id'})
+    if(upsertError)throw new Error(`NAVIGATION_SAVE_FAILED:${upsertError.message}`)
+  }
+  const{data:existing}=await admin.from('navigation_items').select('id')
+  const staleIds=(existing??[]).map(row=>row.id).filter(id=>!keepIds.includes(id))
+  if(staleIds.length){
+    const{error:deleteError}=await admin.from('navigation_items').delete().in('id',staleIds)
+    if(deleteError)throw new Error(`NAVIGATION_DELETE_FAILED:${deleteError.message}`)
+  }
+  await admin.from('audit_log').insert({actor_id:actorId,action:'NAVIGATION_REPLACED',entity_type:'navigation',entity_id:'main',after_snapshot:validated})
 }

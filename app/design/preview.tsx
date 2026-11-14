@@ -18,7 +18,7 @@ const categories = ['All projects', 'Fabrication', 'Electronics', 'Sustainabilit
 const faqs = [
   ['Do I need engineering experience?', 'No. The club welcomes students at every experience level. Share what you are curious about when you submit your interest.'],
   ['Do I have to be in the 3-2 program?', 'No. You can join to build projects and meet people, whether or not you are considering the 3-2 pathway.'],
-  ['How do I join a project?', 'Explore a project to read its full scope, then submit your interest through the club website. The team is forming project groups as the club gets started.']
+  ['How do I join a project?', 'Explore a project to read its scope, then submit your interest or apply straight from the member portal to join a build team.']
 ]
 
 export default function DesignPreview() {
@@ -50,7 +50,7 @@ export default function DesignPreview() {
           <div className={s.projectBottom}><span>Have an idea of your own?</span><a href={`${live}/get-involved`}>Bring it to the club <ArrowRight size={17} /></a></div>
         </section>
 
-        <section className={s.community} id="community"><div className={s.sectionHeading}><h2>Events</h2><p>Fall events are being planned. Dates and locations will be posted when confirmed.</p></div><div className={s.eventGrid}>{[['01', 'Build nights', 'Work on projects with other club members.'], ['02', 'Technical workshops', 'Practice skills in electronics, fabrication, and software.'], ['03', 'Alumni conversations', 'Talk with alumni about engineering study and careers.']].map(([n, title, desc]) => <article key={n}><div className={s.eventTop}><span>{n}</span><span>BEING PLANNED</span></div><h3>{title}</h3><p>{desc}</p></article>)}</div><div className={s.eventFoot}><a href={`${live}/events`}>View events <ArrowUpRight size={17} /></a></div></section>
+        <section className={s.community} id="community"><div className={s.sectionHeading}><h2>Events</h2><p>Weekly build nights, technical workshops, and alumni talks run throughout the semester.</p></div><div className={s.eventGrid}>{[['01', 'Build nights', 'Work on active projects alongside club teammates.'], ['02', 'Technical workshops', 'Hands-on sessions in electronics, CAD, fabrication, and software.'], ['03', 'Alumni conversations', 'Talk with alumni about engineering study and careers.']].map(([n, title, desc]) => <article key={n}><div className={s.eventTop}><span>{n}</span><span>THIS SEMESTER</span></div><h3>{title}</h3><p>{desc}</p></article>)}</div><div className={s.eventFoot}><a href={`${live}/events`}>View events <ArrowUpRight size={17} /></a></div></section>
 
         <section className={s.pathway} id="pathway"><div className={s.pathwayMark}><GraduationCap size={28} /><span>3<span>+</span>2</span></div><div><h2>3-2 Engineering<br />Pathway</h2><p>Find partner-school information, planning resources, and questions to discuss with your adviser.</p><a href={`${live}/pathway`}>Explore the 3-2 pathway <ArrowUpRight size={19} /></a></div></section>
 

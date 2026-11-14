@@ -14,7 +14,9 @@ import {
   Image as ImageIcon,
   Inbox,
   Lightbulb,
+  Mail,
   Navigation,
+  Palette,
   Search,
   Settings,
   ShieldCheck,
@@ -46,6 +48,8 @@ const PORTAL_ICONS: Record<string, LucideIcon> = {
   bookmark: Bookmark,
   profile: UserRound,
   phone: Smartphone,
+  mail: Mail,
+  palette: Palette,
 }
 
 export function PortalNavIcon({ name, size = 16 }: { name: string; size?: number }) {

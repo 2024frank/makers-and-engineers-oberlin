@@ -44,7 +44,7 @@ it('introduces the club with a real image and direct membership links instead of
   const shortcuts = within(screen.getByRole('navigation', { name: 'Get started' }))
   expect(shortcuts.getByRole('link', { name: /Join the club/ })).toHaveAttribute('href', '/get-involved')
   expect(shortcuts.getByRole('link', { name: /Explore projects/ })).toHaveAttribute('href', '/projects')
-  expect(shortcuts.getByRole('link', { name: /See club events/ })).toHaveAttribute('href', '/events')
+  expect(shortcuts.queryByRole('link', { name: /See club events/ })).not.toBeInTheDocument()
 })
 
 it.each(['image', 'split', 'minimal'] as const)('preserves interior CMS %s hero content', async layout => {
@@ -74,5 +74,5 @@ it('puts the charter first while preserving custom homepage sections in their ex
     { stableKey: 'projects', type: 'project_grid', isVisible: true, heading: 'Projects', limit: 3, featuredOnly: false },
   ] })
   render(await CmsPage({ page }))
-  expect(screen.getAllByRole('heading', { level: 2 }).map(heading => heading.textContent)).toEqual(['What the club will do', 'Areas of interest', 'Projects'])
+  expect(screen.getAllByRole('heading', { level: 2 }).map(heading => heading.textContent)).toEqual(['What we do', 'Areas of interest', 'Projects'])
 })

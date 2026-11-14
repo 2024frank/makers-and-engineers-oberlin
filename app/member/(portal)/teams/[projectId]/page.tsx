@@ -8,6 +8,7 @@ import { searchMemberDirectory } from '@/lib/members/directory'
 import { listProjectApplications } from '@/lib/projects/applications'
 import { getProjectWorkspace, type ProjectWorkspace } from '@/lib/projects/workspace'
 import { listProjectWorkLogs } from '@/lib/projects/workLogs'
+import { listProjectSharedFiles } from '@/lib/projects/teamFiles'
 import { ProjectWorkspaceView } from '@/components/member/workspace/ProjectWorkspaceView'
 import '@/components/projects/project-teams.css'
 
@@ -23,6 +24,6 @@ export default async function TeamWorkspacePage({ params }: { params: Promise<{ 
   const workspace = await loadWorkspace(projectId)
   if (!workspace) return <main className="admin-panel pt-page"><Link className="pt-back" href="/member/teams"><ArrowLeft size={16}/>My teams</Link><div className="portal-empty"><div><h1>You are not on this project team</h1><p>You may have left the team, been removed, or the project was closed. Your other teams are unchanged.</p><Link className="portal-text-link" href="/member/projects">Find a project</Link></div></div></main>
   const isLead = workspace.myRole === 'LEAD'
-  const [[clubTeams, applications, directory], workLogs] = await Promise.all([isLead ? Promise.all([listClubTeams(), listProjectApplications(projectId), searchMemberDirectory('')]) : Promise.resolve([[], [], []] as const), listProjectWorkLogs(projectId).catch(() => [])])
-  return <ProjectWorkspaceView projectId={projectId} workspace={workspace} applications={[...applications]} directory={[...directory]} clubTeams={[...clubTeams]} workLogs={workLogs}/>
+  const [[clubTeams, applications, directory], workLogs, sharedFiles] = await Promise.all([isLead ? Promise.all([listClubTeams(), listProjectApplications(projectId), searchMemberDirectory('')]) : Promise.resolve([[], [], []] as const), listProjectWorkLogs(projectId).catch(() => []), listProjectSharedFiles(projectId).catch(() => [])])
+  return <ProjectWorkspaceView projectId={projectId} workspace={workspace} applications={[...applications]} directory={[...directory]} clubTeams={[...clubTeams]} workLogs={workLogs} sharedFiles={sharedFiles}/>
 }

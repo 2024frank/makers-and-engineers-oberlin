@@ -10,6 +10,7 @@ export default async function PortalLayout({ children }: { children: React.React
     ? {
         '/admin/submissions': summary.newSubmissions,
         '/admin/member-applications': summary.pendingMemberApprovals,
+        '/admin/requests': summary.pendingProjectProposals + summary.pendingProjectApplications,
         '/admin/project-proposals': summary.pendingProjectProposals,
         '/admin/project-applications': summary.pendingProjectApplications,
         '/admin/project-updates': summary.pendingProjectUpdateReviews,

@@ -53,19 +53,19 @@ export function AdminDashboard({
     ...(admin.role !== 'EDITOR' || admin.scopes.includes('projects')
       ? [{ label: 'New project', href: '/admin/projects?new=1', primary: true }]
       : []),
-    ...(admin.role !== 'EDITOR' || admin.scopes.includes('events')
-      ? [{ label: 'Post event', href: '/admin/events?new=1', primary: false }]
-      : []),
-    ...(admin.role !== 'EDITOR' || admin.scopes.includes('pages')
-      ? [{ label: 'Edit website pages', href: '/admin/pages', primary: false }]
-      : []),
-    ...(admin.role === 'EDITOR'
-      ? []
-      : [{ label: 'Open inbox', href: '/admin/submissions', primary: false }]),
+    ...(admin.role !== 'EDITOR'
+      ? [{ label: 'Email members', href: '/admin/email', primary: false }]
+      : [
+          ...(admin.scopes.includes('events')
+            ? [{ label: 'Post event', href: '/admin/events?new=1', primary: false }]
+            : []),
+          ...(admin.scopes.includes('pages')
+            ? [{ label: 'Edit website pages', href: '/admin/pages', primary: false }]
+            : []),
+        ].slice(0, 1)),
   ]
 
-  const projectsHref =
-    admin.role === 'EDITOR' ? '/admin/projects' : '/admin/project-teams?filter=underway'
+  const projectsHref = '/admin/projects'
 
   return (
     <main className="admin-panel portal-home">

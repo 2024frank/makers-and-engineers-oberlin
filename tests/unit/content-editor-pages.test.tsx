@@ -19,6 +19,7 @@ const fixture = vi.hoisted(() => ({
 vi.mock('@/lib/auth/requireRole', () => ({ requireAdmin: fixture.requireAdmin }))
 vi.mock('@/lib/cms/adminContent', () => ({ listAdminContent: async () => [] }))
 vi.mock('@/lib/cms/media', () => ({ listMedia: fixture.listMedia }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }), redirect: vi.fn() }))
 
 beforeEach(() => {
   vi.resetAllMocks()

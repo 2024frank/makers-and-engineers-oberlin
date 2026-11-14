@@ -6,12 +6,12 @@ import { heroSchema } from '@/lib/page-builder/schemas/hero'
 afterEach(cleanup)
 const section = heroSchema.parse({ stableKey: 'hero', type: 'hero', isVisible: true, layout: 'split', headline: 'Build things. Learn together.', body: 'An officer-written introduction.' })
 
-it('offers membership, project discovery, and events from the home opening without requiring a scheduled event', () => {
+it('offers membership and project discovery from the crisp 2-button home opening without requiring a scheduled event', () => {
   render(<HeroSection section={section} context={{ pageSlug: 'home', events: [] }}/>)
   const opening = within(screen.getByRole('region', { name: 'Projects for Makers and Engineers' }))
   expect(opening.getByRole('link', { name: /Join the club/ })).toHaveAttribute('href', '/get-involved')
   expect(opening.getByRole('link', { name: /Explore projects/ })).toHaveAttribute('href', '/projects')
-  expect(opening.getByRole('link', { name: /See club events/ })).toHaveAttribute('href', '/events')
+  expect(opening.queryByRole('link', { name: /See club events/ })).not.toBeInTheDocument()
   expect(opening.getByText('An officer-written introduction.')).toBeVisible()
 })
 

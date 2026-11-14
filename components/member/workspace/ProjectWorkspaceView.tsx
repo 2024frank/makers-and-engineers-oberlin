@@ -10,9 +10,11 @@ import { ApplicationReviewList, RosterManager, TeamInviteForm, TeamUpdateForm } 
 import type { WorkLog } from '@/lib/projects/workLogs'
 import { MilestoneBoard } from './MilestoneBoard'
 import { MemberWorkspaces } from './MemberWorkspaces'
-import { KickoffBanner, LeaveProject, TeamFeed, TeamLinks, UpdateHistory } from './TeamActivity'
+import { KickoffBanner, LeaveProject, TeamFeed, UpdateHistory } from './TeamActivity'
+import type { ProjectSharedFile } from '@/lib/projects/teamFilesTypes'
+import { TeamFilesAndLinks } from '@/components/projects/TeamFilesAndLinks'
 
-export function ProjectWorkspaceView({ projectId, workspace, applications = [], directory = [], clubTeams = [], workLogs = [] }: { projectId: string; workspace: ProjectWorkspace; applications?: ProjectApplication[]; directory?: DirectoryMember[]; clubTeams?: ClubTeam[]; workLogs?: WorkLog[] }) {
+export function ProjectWorkspaceView({ projectId, workspace, applications = [], directory = [], clubTeams = [], workLogs = [], sharedFiles = [] }: { projectId: string; workspace: ProjectWorkspace; applications?: ProjectApplication[]; directory?: DirectoryMember[]; clubTeams?: ClubTeam[]; workLogs?: WorkLog[]; sharedFiles?: ProjectSharedFile[] }) {
   const isLead = workspace.myRole === 'LEAD'
   const { project, roster, milestones } = workspace
   const done = milestones.filter(m => m.status === 'DONE').length
@@ -44,7 +46,7 @@ export function ProjectWorkspaceView({ projectId, workspace, applications = [], 
         </div>
         <div className="pt-stack">
           {isLead ? <RosterManager projectId={projectId} roster={roster}/> : <RosterReadOnly roster={roster}/>}
-          <TeamLinks projectId={projectId} links={workspace.links} me={workspace.me} isLead={isLead} githubUrl={project.githubUrl} externalUrl={project.externalUrl}/>
+          <TeamFilesAndLinks projectId={projectId} initialFiles={sharedFiles} links={workspace.links} me={workspace.me} canManageAll={isLead} githubUrl={project.githubUrl} externalUrl={project.externalUrl}/>
           {isLead && <TeamInviteForm projectId={projectId} members={directory} roster={roster}/>}
           <LeaveProject projectId={projectId} projectTitle={project.title} soleLead={soleLead}/>
         </div>

@@ -5,6 +5,7 @@ import { projectGridSchema, projectSpotlightSchema, disciplineGridSchema, projec
 import { leadershipGridSchema, eventListSchema, opportunityListSchema, newsGridSchema, sponsorGridSchema } from './schemas/community'
 import { ctaSchema } from './schemas/cta'
 import type { ProjectTeamStats } from '@/lib/content/teamStatsModel'
+import type { StudioCustomization } from '@/lib/cms/studioTheme'
 
 export const pageSectionSchema = z.discriminatedUnion('type', [heroSchema,textImageSchema,statisticsSchema,featuresGridSchema,richTextSchema,quoteSchema,gallerySchema,projectGridSchema,projectSpotlightSchema,disciplineGridSchema,projectTimelineSchema,leadershipGridSchema,eventListSchema,opportunityListSchema,newsGridSchema,sponsorGridSchema,ctaSchema])
 export type PageSection = z.infer<typeof pageSectionSchema>
@@ -27,4 +28,5 @@ export type PageRenderContext = {
   leaders?: Array<Record<string, unknown>>
   sponsors?: Array<Record<string, unknown>>
   media?: Record<string, { url: string; alt: string }>
+  studio?: Partial<StudioCustomization> & { heroImageUrl?: string | null }
 }

@@ -1,4 +1,8 @@
 'use client'
+import type { MediaAsset } from '@/lib/cms/media'
+import type { ProjectSharedFile } from '@/lib/projects/teamFilesTypes'
+import { TeamFilesAndLinks } from '@/components/projects/TeamFilesAndLinks'
+import { AdminProjectDetailsPanel } from './AdminProjectDetailsPanel'
 import Link from 'next/link'
 import { useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowUpRight, Crown, Eye, EyeOff, Rocket, Send, Trash2, UserMinus, UserPlus } from 'lucide-react'
@@ -11,12 +15,30 @@ import { ActionNotice, useProjectTeamAction } from './useProjectTeamAction'
 type Team = AdminProjectTeam
 const initial = (name: string) => name.trim().slice(0, 1).toUpperCase() || '?'
 
-export function ProjectTeamManager({ team, members }: { team: Team; members: ActiveMemberChoice[] }) {
+export function ProjectTeamManager({
+  team,
+  members,
+  projectDraft,
+  mediaAssets = [],
+  canPublish = false,
+  sharedFiles = [],
+  currentUserId = '',
+  defaultEditOpen = false,
+}: {
+  team: Team
+  members: ActiveMemberChoice[]
+  projectDraft?: { payload: Record<string, unknown>; hasDraft: boolean; updatedAt: string }
+  mediaAssets?: MediaAsset[]
+  canPublish?: boolean
+  sharedFiles?: ProjectSharedFile[]
+  currentUserId?: string
+  defaultEditOpen?: boolean
+}) {
   const { project, roster } = team
   const leads = roster.filter(person => person.role === 'LEAD')
   const done = team.milestones.filter(m => m.status === 'DONE').length
   return <>
-    <Link className="pt-back" href="/admin/project-teams"><ArrowLeft size={16}/>All project teams</Link>
+    <Link className="pt-back" href="/admin/projects"><ArrowLeft size={16}/>All projects</Link>
     <div className="admin-page-heading">
       <div>
         <div className="pt-pills">
@@ -29,7 +51,7 @@ export function ProjectTeamManager({ team, members }: { team: Team; members: Act
       </div>
       <div className="pt-actions">
         {project.publicationState === 'published' && <a className="button button--ghost" href={`/projects/${project.slug}`} target="_blank" rel="noreferrer">View on website <ArrowUpRight size={16}/></a>}
-        <Link className="button button--ghost" href={`/admin/projects?edit=${project.id}`}>Edit project details</Link>
+        <a className="button button--ghost" href="#project-edit-details">Edit project details</a>
       </div>
     </div>
     <p className="pt-summary">
@@ -47,9 +69,31 @@ export function ProjectTeamManager({ team, members }: { team: Team; members: Act
         <div className="pt-stack">
           <ProgressPanel team={team}/>
           <FeedPanel team={team}/>
-          {team.links.length > 0 && <section className="pt-card" aria-labelledby="pt-links"><h2 id="pt-links">Team links</h2><ul className="pt-links">{team.links.map(link => <li key={link.id}><a href={link.url} target="_blank" rel="noreferrer">{link.label}<ArrowUpRight size={14}/></a></li>)}</ul></section>}
+          <div id="admin-shared-files">
+            <TeamFilesAndLinks
+              projectId={project.id}
+              initialFiles={sharedFiles}
+              links={team.links}
+              me={currentUserId}
+              canManageAll
+              mode="admin"
+              githubUrl={typeof projectDraft?.payload.githubUrl === 'string' ? projectDraft.payload.githubUrl : null}
+              externalUrl={typeof projectDraft?.payload.externalUrl === 'string' ? projectDraft.payload.externalUrl : null}
+            />
+          </div>
         </div>
       </div>
+      {projectDraft && (
+        <AdminProjectDetailsPanel
+          projectId={project.id}
+          initialPayload={projectDraft.payload}
+          hasDraft={projectDraft.hasDraft}
+          updatedAt={projectDraft.updatedAt}
+          mediaAssets={mediaAssets}
+          canPublish={canPublish}
+          defaultOpen={defaultEditOpen}
+        />
+      )}
       <ManagePanel team={team}/>
     </div>
   </>
@@ -204,7 +248,7 @@ function ManagePanel({ team }: { team: Team }) {
   async function destroy(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const body = await remove.run({ action: 'delete', projectId: project.id, confirmTitle: typed }, () => 'Project deleted.', { refresh: false })
-    if (body) remove.router.push('/admin/project-teams')
+    if (body) remove.router.push('/admin/projects')
   }
   const matches = typed.trim().toLowerCase() === project.title.trim().toLowerCase()
   return <section className="pt-card pt-card--danger" aria-labelledby="pt-manage">

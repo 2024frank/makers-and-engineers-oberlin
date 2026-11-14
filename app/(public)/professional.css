@@ -57,6 +57,30 @@
   font-family: var(--oec-font-body);
 }
 
+.professional-site[data-studio-theme="amber"] {
+  --oec-cardinal: #b45309;
+  --oec-cardinal-dark: #92400e;
+  --oec-cardinal-soft: #fef3c7;
+  --oec-cardinal-border: rgba(180, 83, 9, 0.28);
+  --oec-cardinal-shadow: 0 10px 24px -8px rgba(180, 83, 9, 0.36);
+}
+
+.professional-site[data-studio-theme="forest"] {
+  --oec-cardinal: #166534;
+  --oec-cardinal-dark: #14532d;
+  --oec-cardinal-soft: #ecfdf5;
+  --oec-cardinal-border: rgba(22, 101, 52, 0.28);
+  --oec-cardinal-shadow: 0 10px 24px -8px rgba(22, 101, 52, 0.36);
+}
+
+.professional-site[data-studio-theme="cobalt"] {
+  --oec-cardinal: #1d4ed8;
+  --oec-cardinal-dark: #1e40af;
+  --oec-cardinal-soft: #eff6ff;
+  --oec-cardinal-border: rgba(29, 78, 216, 0.28);
+  --oec-cardinal-shadow: 0 10px 24px -8px rgba(29, 78, 216, 0.36);
+}
+
 .professional-site *,
 .professional-site *::before,
 .professional-site *::after {
@@ -310,8 +334,15 @@
   color: var(--oec-ink);
   font: 600 13.5px/1.2 var(--oec-font-body);
   white-space: nowrap;
+  overflow-wrap: normal;
+  min-width: max-content;
   flex-shrink: 0;
   cursor: pointer;
+}
+
+.professional-site .public-header .public-menu span {
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 .professional-site .public-header nav.expanded-navigation {

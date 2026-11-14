@@ -20,6 +20,13 @@ export const projectTeamActionSchema = z.discriminatedUnion('action', [
     location: z.string().trim().max(300).default(''),
   }).strict(),
   z.object({ action: z.literal('post'), projectId: uuid, kind: z.enum(['UPDATE', 'WIN', 'BLOCKER', 'QUESTION']).default('UPDATE'), body: z.string().trim().min(2).max(4000) }).strict(),
+  z.object({
+    action: z.literal('link-add'),
+    projectId: uuid,
+    label: z.string().trim().min(1).max(120),
+    url: z.string().trim().url().max(2000).refine(value => /^https?:\/\//i.test(value), 'TEAM_LINK_INVALID'),
+  }).strict(),
+  z.object({ action: z.literal('link-remove'), projectId: uuid.optional(), linkId: uuid }).strict(),
   z.object({ action: z.literal('archive'), projectId: uuid, archived: z.boolean() }).strict(),
   z.object({ action: z.literal('delete'), projectId: uuid, confirmTitle: z.string().max(300) }).strict(),
 ])

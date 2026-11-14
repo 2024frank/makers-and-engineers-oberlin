@@ -90,6 +90,10 @@ export async function performProjectTeamAction(input: ProjectTeamAction) {
     }
     case 'post':
       return { result: await rpc('post_project_team_update', { p_project_id: input.projectId, p_kind: input.kind, p_body: input.body }) }
+    case 'link-add':
+      return { result: await rpc('add_project_team_link', { p_project_id: input.projectId, p_label: input.label, p_url: input.url }) }
+    case 'link-remove':
+      return { result: await rpc('remove_project_team_link', { p_link_id: input.linkId }) }
     case 'archive':
       return { result: await rpc('set_project_archived', { p_project_id: input.projectId, p_archived: input.archived }) }
     case 'delete':

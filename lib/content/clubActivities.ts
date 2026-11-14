@@ -1,25 +1,25 @@
 import type { PageSection } from '@/lib/page-builder/types'
 
-export const clubPurpose = 'The club supports interdisciplinary work in engineering, technology, design, robotics, and related fields. All majors are welcome. Participation in a 3-2 program is not required for membership or projects.'
+export const clubPurpose = 'Projects for Makers and Engineers is an active, chartered Oberlin student organization supporting hands-on engineering, technology, design, and robotics across all majors. No 3-2 program affiliation or prior experience is required.'
 
 export const clubActivities: Extract<PageSection, { type: 'features_grid' }> = {
   stableKey: 'club-activities', type: 'features_grid', isVisible: true,
-  eyebrow: 'Our plans', heading: 'What the club will do', body: clubPurpose,
+  eyebrow: 'Chartered club', heading: 'What we do', body: clubPurpose,
   items: [
-    { title: 'Workshops', icon: '01', body: 'Beginner-friendly, hands-on workshops in CAD and 3D printing, electronics and soldering, Arduino and microcontrollers, coding, and prototyping. Members, staff, and invited guests can share practical skills.' },
-    { title: 'Talks from 3-2 students and alumni', icon: '02', body: 'We will invite current 3-2 students at their engineering school and alumni to discuss choosing a school and major, applying, the transition, coursework, and careers. Talks are open to everyone.' },
-    { title: 'Capstone projects with CED', icon: '03', body: 'We work with Career Exploration and Development (CED) to connect students with companies on longer projects shaped by student interests. Teams tackle real problems, develop designs, and present work they can discuss in applications, internships, and interviews.' },
-    { title: 'Group projects', icon: '04', body: 'Semester-long team projects will let members build together, try different roles, learn from one another, and share their work at showcases.' },
-    { title: 'Community building', icon: '05', body: 'Socials, study sessions, and informal build nights will help engineering-minded students from every major find friends, study partners, and mentors.' },
-    { title: 'Engineering pathways', icon: '06', body: 'We will connect interested students with academic and career resources, mentors, and official advising for engineering and 3-2 pathways. Participation in a 3-2 program is not required for membership or projects.' },
+    { title: 'Workshops', icon: '01', body: 'Beginner-friendly, hands-on workshops in CAD and 3D printing, electronics and soldering, Arduino and microcontrollers, coding, and prototyping led by members, faculty, and guests.' },
+    { title: 'Talks from 3-2 students and alumni', icon: '02', body: 'We invite current 3-2 engineering students and alumni to discuss choosing a school and major, applying, transitioning coursework, and careers. Talks are open to everyone.' },
+    { title: 'Capstone projects with CED', icon: '03', body: 'We partner with Career Exploration and Development (CED) to connect students with organizations on real engineering projects they can showcase in internships and applications.' },
+    { title: 'Group projects', icon: '04', body: 'Semester-long team projects give members space to build hardware and software together, try new roles, share files and CAD, and demo finished work.' },
+    { title: 'Community building', icon: '05', body: 'Weekly build nights, socials, and studio study sessions bring engineering-minded Oberlin students across every major together with peers and mentors.' },
+    { title: 'Engineering pathways', icon: '06', body: 'We connect students with peers, mentors, academic resources, and official advising for graduate study, industry engineering, and the 3-2 pathway.' },
   ],
 }
 
 export const pathwaySupport: Extract<PageSection, { type: 'text_image' }> = {
   stableKey: 'club-pathway-support', type: 'text_image', isVisible: true, layout: 'image_right', imageId: null, imageAlt: '',
   eyebrow: 'Support from the club', heading: 'Explore engineering with other students.',
-  body: 'Talks from current 3-2 students and alumni will cover choosing a school and major, applying, moving to an engineering school, coursework, and careers. We will help students find academic and career resources, mentors, and official advising. Participation in a 3-2 program is not required to join the club, attend talks, or take part in projects.',
-  cta: { label: 'Explore all club activities', href: '/about#club-activities' },
+  body: 'Talks from current 3-2 students and alumni cover choosing a school and major, applying, moving to an engineering school, coursework, and careers. We connect students with academic resources, mentors, and official advising. Participation in a 3-2 program is not required to join the club, attend talks, or take part in projects.',
+  cta: { label: 'Explore what we do', href: '/about#club-activities' },
 }
 
 const legacyDisciplines = [

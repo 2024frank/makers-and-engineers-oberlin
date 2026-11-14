@@ -37,21 +37,28 @@ export function HeroSection({
   context?: PageRenderContext
 }) {
   const isHome = context?.pageSlug === 'home'
+  const studio = isHome ? context?.studio : undefined
   const media = section.imageId ? context?.media?.[section.imageId] : undefined
-  const rawHeadline = retireCopy(section.headline)
+  const rawHeadline = studio?.heroHeadline?.trim() || retireCopy(section.headline)
   const headlineText =
     isHome && rawHeadline === 'Student engineering projects at Oberlin College.'
       ? 'Projects for Makers and Engineers.'
       : rawHeadline
-  const bodyText = retireCopy(section.body)
-  const eyebrowText = section.eyebrow ? retireCopy(section.eyebrow) : undefined
+  const bodyText = studio?.heroBody?.trim() || retireCopy(section.body)
+  const eyebrowText = studio?.heroEyebrow?.trim() || (section.eyebrow ? retireCopy(section.eyebrow) : undefined)
+  const primaryCtaLabel = studio?.heroPrimaryCtaLabel?.trim() || 'Join the club'
+  const primaryCtaHref = studio?.heroPrimaryCtaHref?.trim() || '/get-involved'
+  const secondaryCtaLabel = studio?.heroSecondaryCtaLabel?.trim() || 'Explore projects'
+  const secondaryCtaHref = studio?.heroSecondaryCtaHref?.trim() || '/projects'
 
   if (isHome) {
+    const customStudioImage = studio?.heroImageUrl && !isRetiredHomeImage(studio.heroImageUrl) ? studio.heroImageUrl : null
     const useCustomMedia = Boolean(media?.url && !isRetiredHomeImage(media.url))
-    const heroPhotoUrl = useCustomMedia && media ? media.url : DEFAULT_HOME_IMAGE
-    const heroPhotoAlt = useCustomMedia
-      ? section.imageAlt || media?.alt || DEFAULT_HOME_IMAGE_ALT
-      : DEFAULT_HOME_IMAGE_ALT
+    const heroPhotoUrl = customStudioImage ?? (useCustomMedia && media ? media.url : DEFAULT_HOME_IMAGE)
+    const heroPhotoAlt =
+      !customStudioImage && useCustomMedia
+        ? section.imageAlt || media?.alt || DEFAULT_HOME_IMAGE_ALT
+        : DEFAULT_HOME_IMAGE_ALT
 
     return (
       <section className="club-opening" aria-label="Projects for Makers and Engineers">
@@ -64,14 +71,11 @@ export function HeroSection({
             <h1>{headlineText}</h1>
             <p className="club-opening__lead">{bodyText}</p>
             <nav className="club-opening__actions" aria-label="Get started">
-              <Link className="button button--primary" href="/get-involved">
-                Join the club
+              <Link className="button button--primary" href={primaryCtaHref}>
+                {primaryCtaLabel}
               </Link>
-              <Link className="button button--secondary" href="/projects">
-                Explore projects
-              </Link>
-              <Link className="text-link" href="/events">
-                See club events
+              <Link className="button button--secondary" href={secondaryCtaHref}>
+                {secondaryCtaLabel}
               </Link>
             </nav>
             <NextMeeting events={context?.events ?? []} />

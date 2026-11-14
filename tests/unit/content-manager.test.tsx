@@ -38,3 +38,35 @@ describe('Content editor next actions',()=>{
     expect(within(screen.getByRole('article')).getByText('Published')).toBeInTheDocument()
   })
 })
+
+describe('Content row delete shortcut',()=>{
+  const row={id:'00000000-0000-4000-8000-000000000002',title:'Launch day',status:'published',updatedAt:'2026-08-17T00:00:00Z',hasDraft:false,payload:{slug:'launch-day',title:'Launch day',excerpt:'',body:'',author:'MEO',featured:false}}
+  let scrolled:Element[]
+  beforeEach(()=>{
+    scrolled=[]
+    Element.prototype.scrollIntoView=function(this:Element){scrolled.push(this)}
+    vi.stubGlobal('requestAnimationFrame',(callback:FrameRequestCallback)=>{callback(0);return 0})
+  })
+  afterEach(()=>vi.unstubAllGlobals())
+  it('opens the editor scrolled to the delete step, and only once',async()=>{
+    const user=userEvent.setup()
+    render(<ToastProvider><ContentManager entityType="news_posts" title="News" rows={[row]} canPublish canDelete/></ToastProvider>)
+    await user.click(screen.getByRole('button',{name:'Delete Launch day'}))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(scrolled).toEqual([screen.getByRole('region',{name:'Delete news post'})])
+    await user.type(screen.getByLabelText('Excerpt'),'More detail')
+    expect(scrolled).toHaveLength(1)
+  })
+  it('scrolls again each time Delete is used, but not for Edit',async()=>{
+    const user=userEvent.setup()
+    render(<ToastProvider><ContentManager entityType="news_posts" title="News" rows={[row]} canPublish canDelete/></ToastProvider>)
+    await user.click(screen.getByRole('button',{name:'Edit Launch day'}))
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(scrolled).toHaveLength(0)
+    await user.click(screen.getByRole('button',{name:'Close dialog'}))
+    await user.click(screen.getByRole('button',{name:'Delete Launch day'}))
+    await user.click(screen.getByRole('button',{name:'Close dialog'}))
+    await user.click(screen.getByRole('button',{name:'Delete Launch day'}))
+    expect(scrolled).toHaveLength(2)
+  })
+})

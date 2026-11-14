@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import { refreshSeedEvent } from '@/lib/content/publicCopy'
 
 export function NextMeeting({ events }: { events: Array<Record<string, unknown>> }) {
@@ -37,7 +36,6 @@ export function NextMeeting({ events }: { events: Array<Record<string, unknown>>
             {Number.isFinite(end) && end > date.getTime() ? ` – ${time(event.end_at)}` : ''}
           </span>
         </div>
-        <ArrowUpRight size={20} aria-hidden="true" />
       </div>
     </Link>
   )

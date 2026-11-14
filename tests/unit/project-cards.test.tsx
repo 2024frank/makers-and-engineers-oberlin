@@ -65,7 +65,7 @@ describe('Project discovery',()=>{
   })
 })
 
-it('sizes magazine images for the equal three, two, and one-column public grid', () => {
+it('sizes magazine images for high-DPI three, two, and one-column public grids', () => {
   render(<ProjectCards projects={projects} layout="magazine"/>)
-  expect(screen.getByRole('img', { name: 'Printer' })).toHaveAttribute('sizes', '(max-width:600px) 100vw,(max-width:950px) 50vw,33vw')
+  expect(screen.getByRole('img', { name: 'Printer' })).toHaveAttribute('sizes', '(max-width:600px) 100vw,(max-width:950px) 50vw,42vw')
 })

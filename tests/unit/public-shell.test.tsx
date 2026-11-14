@@ -7,8 +7,8 @@ import { PublicHeader } from '@/components/public/PublicHeader'
 describe('public shell', () => {
   it('keeps all public destinations available through the compact navigation', async () => {
     render(<PublicHeader />)
-    expect(screen.getByRole('img', { name: /makers and engineers @oberlin/i })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Makers and Engineers @Oberlin home' })).toHaveAttribute('href','/')
+    expect(screen.getByRole('img', { name: /projects for makers and engineers/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Projects for Makers and Engineers home' })).toHaveAttribute('href','/')
     expect(screen.getByRole('link', { name: 'Join the club' })).toHaveAttribute('href','/get-involved')
     const user=userEvent.setup()
     await user.click(screen.getByRole('button',{name:'Open navigation'}))

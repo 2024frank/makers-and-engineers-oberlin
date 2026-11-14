@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useFormReady } from "@/components/member/useFormReady";
 import { AdvancedProjectFilters, type ProjectFilterDefaults } from "@/components/public/filters/ProjectFilters";
 import { MilestoneMeter } from "@/components/projects/MilestoneMeter";
@@ -95,7 +95,8 @@ export function ProjectCards({
                   src={p.image.url}
                   alt={p.image.alt || p.title}
                   fill
-                  sizes={layout === 'magazine' ? '(max-width:600px) 100vw,(max-width:950px) 50vw,33vw' : layout === 'list' ? '(max-width:600px) 105px,(max-width:950px) 160px,(max-width:1150px) 180px,210px' : layout === 'featured' && index === 0 ? '(max-width:1000px) 90vw,800px' : '(max-width:600px) 90vw,(max-width:1000px) 44vw,390px'}
+                  quality={92}
+                  sizes={layout === 'magazine' ? '(max-width:600px) 100vw,(max-width:950px) 50vw,42vw' : layout === 'list' ? '(max-width:600px) 105px,(max-width:950px) 160px,(max-width:1150px) 180px,210px' : layout === 'featured' && index === 0 ? '(max-width:1000px) 90vw,800px' : '(max-width:600px) 90vw,(max-width:1000px) 44vw,390px'}
                 />
               </div>
             )}
@@ -111,7 +112,6 @@ export function ProjectCards({
                 <span className="project-team__phase">{p.isSnapshot ? "Project snapshot" : teamPhaseLabels[p.phase ?? "closed"]}</span>
                 {!p.isSnapshot && Boolean(p.memberCount) && <span className="project-team__count">{p.memberCount} {p.memberCount === 1 ? "member" : "members"}</span>}
               </span>
-              <ArrowUpRight size={21} aria-hidden="true" />
               {!p.isSnapshot && Boolean(p.milestonesTotal) && <MilestoneMeter done={p.milestonesDone} total={p.milestonesTotal} />}
             </div>
           </Link>

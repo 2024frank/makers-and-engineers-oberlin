@@ -3,8 +3,8 @@ import './globals.css'
 import './site.css'
 
 export const metadata: Metadata = {
-  title: { default: 'Makers and Engineers @Oberlin', template: '%s · Makers and Engineers @Oberlin' },
-  description: 'An interdisciplinary club at Oberlin College for engineering, technology, design, and robotics. Explore workshops, student and alumni talks, team projects, community, and engineering pathways. All majors welcome.'
+  title: { default: 'Projects for Makers and Engineers · Oberlin College', template: '%s · Projects for Makers and Engineers' },
+  description: 'Projects for Makers and Engineers at Oberlin College — collaborative hardware, robotics, software, CAD workshops, and 3-2 engineering pathways for all majors.'
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -17,7 +17,7 @@ export async function metadataForCmsPage(page: PageSnapshot): Promise<Metadata> 
   const description = page.seoDescription || undefined
   let image: { url: string; alt: string; width?: number; height?: number } = {
     url: `${base}/brand/share-meo-20261003.jpg`,
-    alt: 'Makers and Engineers @Oberlin logo',
+    alt: 'Projects for Makers and Engineers logo',
     width: 1200,
     height: 630,
   }
@@ -30,7 +30,7 @@ export async function metadataForCmsPage(page: PageSnapshot): Promise<Metadata> 
         const url = new URL(media.url, `${base}/`)
         // Retire the old stock photo without overriding other CMS sharing images.
         if (['http:', 'https:'].includes(url.protocol) && url.pathname !== retiredSharePath) {
-          image = { url: url.href, alt: media.alt || 'Makers and Engineers @Oberlin' }
+          image = { url: url.href, alt: media.alt || 'Projects for Makers and Engineers' }
         }
       } catch {
         // A malformed media URL must not break the public page.
@@ -42,7 +42,7 @@ export async function metadataForCmsPage(page: PageSnapshot): Promise<Metadata> 
     title: { absolute: title },
     description,
     alternates: { canonical: `${base}${path}` },
-    openGraph: { title, description, url: `${base}${path}`, siteName: 'Makers and Engineers @Oberlin', type: 'website', images: [image] },
+    openGraph: { title, description, url: `${base}${path}`, siteName: 'Projects for Makers and Engineers', type: 'website', images: [image] },
     twitter: { card: 'summary_large_image', title, description, images: [image] },
   }
 }

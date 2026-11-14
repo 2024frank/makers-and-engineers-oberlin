@@ -12,12 +12,12 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
       {
         '@type': 'Organization',
         '@id': `${base}/#organization`,
-        name: 'Makers and Engineers @Oberlin',
-        alternateName: 'MEO',
+        name: 'Projects for Makers and Engineers',
+        alternateName: 'Projects for Makers and Engineers @Oberlin',
         url: base,
         email: contactEmail,
         logo: { '@type': 'ImageObject', url: `${base}/brand/moe-badge-circle.png` },
-        description: 'A student club at Oberlin College for makers and engineers. Build projects, come to events, and get help with the 3-2 engineering pathway.',
+        description: 'Projects for Makers and Engineers at Oberlin College. Build interdisciplinary engineering projects, attend workshops, and explore the 3-2 pathway.',
         ...(sameAs.length ? { sameAs } : {}),
         memberOf: { '@type': 'CollegeOrUniversity', name: 'Oberlin College', url: 'https://www.oberlin.edu' }
       },
@@ -25,7 +25,7 @@ export function OrganizationSchema({ siteUrl, contactEmail, socialLinks }: { sit
         '@type': 'WebSite',
         '@id': `${base}/#website`,
         url: base,
-        name: 'Makers and Engineers @Oberlin',
+        name: 'Projects for Makers and Engineers',
         publisher: { '@id': `${base}/#organization` },
         inLanguage: 'en-US'
       }

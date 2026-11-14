@@ -4,11 +4,12 @@ import { ArrowRight } from 'lucide-react'
 import type { z } from 'zod'
 import type { heroSchema } from '@/lib/page-builder/schemas/hero'
 import type { PageRenderContext } from '@/lib/page-builder/types'
+import { LiveStudioCanvas } from '@/components/public/LiveStudioCanvas'
 import { NextMeeting } from '@/components/public/NextMeeting'
 import { retireCopy } from '@/lib/content/publicCopy'
 
-const DEFAULT_HOME_IMAGE =
-  'https://qaudokydctziaoakvkyv.supabase.co/storage/v1/object/public/oec-media/site/home-workshop-wide.jpg'
+const DEFAULT_HOME_IMAGE = '/brand/project-led/oberlin-workshop-4k.webp'
+const RETIRED_HOME_IMAGES = ['/home-workshop-wide.jpg', '/brand/project-led/hardware-hero.webp']
 
 export function HeroSection({
   section,
@@ -19,35 +20,42 @@ export function HeroSection({
 }) {
   const isHome = context?.pageSlug === 'home'
   const media = section.imageId ? context?.media?.[section.imageId] : undefined
-  const headlineText = retireCopy(section.headline)
+  const rawHeadline = retireCopy(section.headline)
+  const headlineText =
+    isHome && rawHeadline === 'Student engineering projects at Oberlin College.'
+      ? 'Projects for Makers and Engineers.'
+      : rawHeadline
   const bodyText = retireCopy(section.body)
   const eyebrowText = section.eyebrow ? retireCopy(section.eyebrow) : undefined
 
   if (isHome) {
-    const heroPhotoUrl = media?.url ?? DEFAULT_HOME_IMAGE
+    const useCustomMedia = Boolean(
+      media?.url && !RETIRED_HOME_IMAGES.some(retired => media.url.endsWith(retired))
+    )
+    const heroPhotoUrl = useCustomMedia && media ? media.url : DEFAULT_HOME_IMAGE
     const heroPhotoAlt =
-      section.imageAlt ||
-      media?.alt ||
-      'Oberlin students collaborating on a fabrication build at the workshop bench'
+      (useCustomMedia ? section.imageAlt || media?.alt : section.imageAlt) ||
+      'Oberlin students and mentor discussing hardware builds in the makerspace studio'
 
     return (
-      <section className="club-opening" aria-label="Makers and Engineers at Oberlin">
+      <section className="club-opening" aria-label="Projects for Makers and Engineers">
+        <LiveStudioCanvas />
         <div className="shell club-opening__inner">
           <div className="club-opening__intro">
-            <span className="club-opening__badge">
-              {eyebrowText || 'Makers and Engineers @Oberlin'}
-            </span>
+            <p className="club-opening__eyebrow">
+              {eyebrowText || 'Oberlin College'}
+            </p>
             <h1>{headlineText}</h1>
             <p className="club-opening__lead">{bodyText}</p>
             <nav className="club-opening__actions" aria-label="Get started">
               <Link className="button button--primary" href="/get-involved">
-                Join the club <ArrowRight size={17} aria-hidden="true" />
+                Join the club
               </Link>
               <Link className="button button--secondary" href="/projects">
                 Explore projects
               </Link>
               <Link className="text-link" href="/events">
-                See club events <ArrowRight size={16} aria-hidden="true" />
+                See club events
               </Link>
             </nav>
             <NextMeeting events={context?.events ?? []} />
@@ -56,9 +64,10 @@ export function HeroSection({
             <Image
               src={heroPhotoUrl}
               alt={heroPhotoAlt}
-              width={1200}
-              height={900}
-              sizes="(max-width: 980px) 100vw, 44vw"
+              width={3840}
+              height={2880}
+              quality={92}
+              sizes="(max-width: 980px) 100vw, 50vw"
               priority
             />
           </div>

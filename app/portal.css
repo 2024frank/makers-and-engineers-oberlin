@@ -447,39 +447,50 @@
   min-height: 100svh;
 }
 
-.admin-topbar,
-.member-shell__topbar {
+.admin-shell .admin-topbar,
+.member-shell .member-shell__topbar {
   position: sticky;
   top: 0;
   z-index: 30;
+  height: auto;
   min-height: 64px;
   padding: 10px clamp(16px, 3vw, 32px);
   background: rgba(250, 250, 248, 0.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--portal-line);
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px 20px;
 }
 
-.portal-topbar__left {
+.admin-shell .admin-topbar .portal-topbar__left,
+.member-shell .member-shell__topbar .portal-topbar__left {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1 1 auto;
 }
 
-.portal-breadcrumb {
+.admin-shell .admin-topbar .portal-breadcrumb,
+.member-shell .member-shell__topbar .portal-breadcrumb {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
   font-size: 13.5px;
   color: var(--portal-muted);
 }
 
-.portal-breadcrumb strong {
+.admin-shell .admin-topbar .portal-breadcrumb strong,
+.member-shell .member-shell__topbar .portal-breadcrumb strong {
   color: var(--portal-ink);
   font-weight: 600;
   white-space: nowrap;
@@ -487,10 +498,13 @@
   text-overflow: ellipsis;
 }
 
-.portal-topbar__right {
+.admin-shell .admin-topbar .portal-topbar__right,
+.member-shell .member-shell__topbar .portal-topbar__right {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -562,7 +576,8 @@
   place-items: center;
 }
 
-.portal-site-link {
+.admin-shell .admin-topbar .portal-site-link,
+.member-shell .member-shell__topbar .portal-site-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -575,9 +590,11 @@
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.portal-site-link:hover {
+.admin-shell .admin-topbar .portal-site-link:hover,
+.member-shell .member-shell__topbar .portal-site-link:hover {
   border-color: var(--portal-accent);
   color: var(--portal-accent);
 }
@@ -1752,10 +1769,8 @@
   place-items: center;
   padding: clamp(20px, 4vw, 48px) 16px;
   background-color: var(--portal-surface);
-  background-image:
-    linear-gradient(to right, rgba(20, 21, 20, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 21, 20, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(circle at 18% 15%, rgba(166, 25, 46, 0.045), transparent 46%),
+    radial-gradient(circle at 82% 88%, rgba(20, 21, 20, 0.04), transparent 52%);
 }
 
 .studio-auth__frame {
@@ -1770,13 +1785,34 @@
 }
 
 .studio-auth__aside {
-  background: var(--portal-ink);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #0a0b0d;
   color: #fafaf8;
   padding: clamp(26px, 4vw, 40px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 24px;
+}
+
+.studio-auth__aside .live-studio-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.studio-auth__aside .live-studio-canvas__surface {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.studio-auth__aside > :not(.live-studio-canvas) {
+  position: relative;
+  z-index: 1;
 }
 
 .studio-auth__aside .brand-logo {
@@ -1942,8 +1978,14 @@
   .member-shell > .member-sidebar {
     display: none;
   }
+  .admin-shell .admin-topbar,
+  .member-shell .member-shell__topbar {
+    padding: 10px clamp(14px, 3vw, 24px);
+    gap: 10px;
+  }
   .portal-mobile-toggle {
     display: grid;
+    flex-shrink: 0;
   }
   .admin-dashboard-grid,
   .member-dashboard-grid {
@@ -1964,12 +2006,21 @@
   }
 }
 
+@media (max-width: 600px) {
+  .admin-shell .admin-topbar .portal-breadcrumb > span,
+  .member-shell .member-shell__topbar .portal-breadcrumb > span {
+    display: none;
+  }
+  .admin-shell .admin-topbar .portal-site-link span,
+  .member-shell .member-shell__topbar .portal-site-link span,
+  .portal-cmd-trigger span {
+    display: none;
+  }
+}
+
 @media (max-width: 520px) {
   .member-dashboard-cards {
     grid-template-columns: 1fr;
-  }
-  .portal-cmd-trigger span {
-    display: none;
   }
 }
 

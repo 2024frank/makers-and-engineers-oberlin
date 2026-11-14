@@ -9,6 +9,8 @@ const replacements: Record<string, string> = {
   'Members come from physics, computer science, chemistry, mathematics, environmental studies, and other departments.': 'We bring students from every major together around engineering, technology, design, robotics, and related fields. Join to learn, make things, find community, and explore engineering pathways.',
   'A student engineering club at Oberlin for projects, workshops, technical opportunities, and students exploring the 3-2 pathway.': homeIntroduction,
   'Build things. Learn together.': 'Student engineering projects at Oberlin College.',
+  'Makers and Engineers @Oberlin': 'Oberlin College',
+  'Join MEO': 'Join Projects for Makers and Engineers',
   'Build something with us.': 'Projects',
   'Help run the club.': 'Help with the club',
   'These roles are open now. They are how the club actually gets built this year.': 'Interested in organizing events or helping with projects? Choose an option in the form above and tell us what you would like to do.',

@@ -4,6 +4,7 @@ import { FormEvent, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { BrandLogo } from '@/components/brand/BrandLogo'
+import { LiveStudioCanvas } from '@/components/public/LiveStudioCanvas'
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser'
 
 const subscribeNoop = () => () => {}
@@ -48,6 +49,7 @@ export default function AdminLoginPage() {
     <main className="studio-auth">
       <div className="studio-auth__frame">
         <aside className="studio-auth__aside">
+          <LiveStudioCanvas variant="subtle" />
           <div>
             <BrandLogo variant="badge" />
             <h1>Officer portal</h1>

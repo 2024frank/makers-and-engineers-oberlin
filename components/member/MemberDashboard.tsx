@@ -106,22 +106,22 @@ export function MemberDashboard({
           <Link href="/member/teams">
             <span>Active teams</span>
             <strong>{summary.activeTeams}</strong>
-            <small>View project teams →</small>
+            <small>View project teams</small>
           </Link>
           <Link href="/member/applications">
             <span>Open applications</span>
             <strong>{summary.openApplications}</strong>
-            <small>Track applications →</small>
+            <small>Track applications</small>
           </Link>
           <Link href="/member/invitations">
             <span>Pending invitations</span>
             <strong>{summary.pendingInvitations}</strong>
-            <small>Review invitations →</small>
+            <small>Review invitations</small>
           </Link>
           <Link href="/member/saved">
             <span>Saved items</span>
             <strong>{summary.saved}</strong>
-            <small>Open saved list →</small>
+            <small>Open saved list</small>
           </Link>
         </div>
       </section>
@@ -175,7 +175,7 @@ export function MemberDashboard({
               <Smartphone size={20} aria-hidden="true" />
             </span>
             <span>
-              <strong>Get the MEO Members app</strong>
+              <strong>Get the Members app</strong>
               <small>Download for Android. iPhone is coming soon.</small>
             </span>
             <ArrowRight size={18} aria-hidden="true" />

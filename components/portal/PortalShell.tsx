@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowUpRight, Bell, Menu, Search, X } from 'lucide-react'
+import { Bell, Globe, Menu, Search, X } from 'lucide-react'
 import { SignOutButton } from '@/components/auth/SignOutButton'
 import { isPortalItemActive, portalPath, type PortalNavGroup } from '@/lib/navigation/portal'
 import { PortalCommandPalette } from './PortalCommandPalette'
@@ -210,7 +210,7 @@ export function PortalShell({
               title="Club website"
             >
               <span>Club website</span>
-              <ArrowUpRight size={15} aria-hidden="true" />
+              <Globe size={15} aria-hidden="true" />
             </a>
 
             <SignOutButton portal={portal} />

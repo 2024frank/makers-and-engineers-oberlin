@@ -1,7 +1,18 @@
 import Link from 'next/link'
-import { ArrowUpRight } from 'lucide-react'
 import { BrandLogo } from '@/components/brand/BrandLogo'
 import { publicCopy } from '@/lib/content/publicCopy'
+
+const socialLabels: Record<string, string> = {
+  instagram: 'Instagram',
+  linkedin: 'LinkedIn',
+  github: 'GitHub',
+  youtube: 'YouTube',
+}
+
+function formatSocialLabel(label: string) {
+  const key = label.trim().toLowerCase()
+  return socialLabels[key] ?? `${label.charAt(0).toUpperCase()}${label.slice(1)}`
+}
 
 export function PublicFooter({
   contactEmail = 'makers.engineers@oberlin.edu',
@@ -27,9 +38,9 @@ export function PublicFooter({
           <div>
             <BrandLogo variant="badge" src={badgeSrc} />
             <h2>
-              Makers and Engineers
+              Projects for Makers
               <br />
-              @Oberlin
+              and Engineers
             </h2>
             <p>{cleanFooterText}</p>
           </div>
@@ -52,18 +63,17 @@ export function PublicFooter({
           <div className="footer-links">
             <h3>Connect</h3>
             <a href={`mailto:${contactEmail}`}>
-              Contact the club <ArrowUpRight size={15} />
+              Contact the club
             </a>
             {Object.entries(socialLinks)
               .filter(([, url]) => url)
               .map(([label, url]) => (
                 <a href={url} key={label} target="_blank" rel="noreferrer">
-                  {label}
-                  <ArrowUpRight size={15} />
+                  {formatSocialLabel(label)}
                 </a>
               ))}
             <Link href="/get-involved">
-              Join the club <ArrowUpRight size={15} />
+              Join the club
             </Link>
           </div>
         </div>
@@ -74,7 +84,7 @@ export function PublicFooter({
           {officerSignIn}
         </div>
         <p className="footer-wordmark" aria-hidden="true">
-          Makers and Engineers @Oberlin
+          Projects for Makers and Engineers
         </p>
       </div>
     </footer>

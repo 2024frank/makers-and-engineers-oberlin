@@ -61,8 +61,8 @@ it('passes the actual homepage identity through the CMS renderer', async () => {
   const { CmsPage } = await import('@/components/public/CmsPage')
   const page = pageSnapshotSchema.parse({ pageId: '00000000-0000-4000-8000-000000000098', slug: 'home', title: 'Home', sections: [{ stableKey: 'hero', type: 'hero', isVisible: true, layout: 'split', headline: 'Build things. Learn together.', body: '' }] })
   render(await CmsPage({ page }))
-  expect(screen.getByText('Makers and Engineers @Oberlin')).toBeVisible()
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Student engineering projects at Oberlin College.')
+  expect(screen.getByText('Oberlin College')).toBeVisible()
+  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Projects for Makers and Engineers.')
   expect(screen.getByRole('navigation', { name: 'Get started' })).toBeVisible()
 })
 

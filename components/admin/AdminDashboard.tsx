@@ -72,7 +72,7 @@ export function AdminDashboard({
       <div className="admin-page-heading">
         <div>
           <p className="eyebrow">Club administration</p>
-          <h1>What needs doing?</h1>
+          <h1>Operations overview</h1>
           <p>Review club requests, coordinate active teams, and publish upcoming programming.</p>
         </div>
         {quickButtons.length > 0 && (
@@ -95,22 +95,22 @@ export function AdminDashboard({
           <Link className="admin-kpi-card" href={projectsHref}>
             <span>Active projects</span>
             <strong>{summary.activeProjects}</strong>
-            <small>In build or recruiting →</small>
+            <small>In build or recruiting</small>
           </Link>
           <Link className="admin-kpi-card" href="/admin/events">
             <span>Upcoming events</span>
             <strong>{summary.upcomingEvents}</strong>
-            <small>Scheduled on calendar →</small>
+            <small>Scheduled on calendar</small>
           </Link>
           <Link className="admin-kpi-card" href="/admin/opportunities">
             <span>Closing soon</span>
             <strong>{summary.closingOpportunities}</strong>
-            <small>Deadlines in the next 14 days →</small>
+            <small>Deadlines in the next 14 days</small>
           </Link>
           <Link className="admin-kpi-card" href="/admin/pages">
             <span>Drafts &amp; scheduled</span>
             <strong>{summary.drafts + summary.scheduledPublications}</strong>
-            <small>Website publishing queue →</small>
+            <small>Website publishing queue</small>
           </Link>
         </div>
       </section>

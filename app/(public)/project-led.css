@@ -3,18 +3,20 @@
 
 .professional-site .club-opening {
   position: relative;
-  background-color: var(--oec-surface-elevated);
-  background-image:
-    linear-gradient(to right, var(--oec-grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--oec-grid-line) 1px, transparent 1px);
-  background-size: 36px 36px;
-  border-bottom: 1px solid var(--oec-border);
-  padding: clamp(44px, 6vw, 80px) 0;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--oec-obsidian);
+  background-image: var(--oec-live-scrim);
+  color: var(--oec-dark-ink);
+  border-bottom: 1px solid var(--oec-obsidian-border);
+  padding: clamp(44px, 6vw, 84px) 0 clamp(48px, 6vw, 80px);
 }
 
 .professional-site .club-opening__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
   gap: clamp(28px, 5vw, 56px);
   align-items: center;
 }
@@ -25,26 +27,25 @@
   min-width: 0;
 }
 
-.professional-site .club-opening__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: fit-content;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--oec-cardinal-soft);
-  border: 1px solid var(--oec-cardinal-border);
+.professional-site .club-opening__eyebrow {
+  margin: 0;
   font-family: var(--oec-font-mono);
   font-size: 11.5px;
   font-weight: 600;
-  color: var(--oec-cardinal);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--oec-obsidian-muted);
 }
 
 .professional-site .club-opening h1,
 .professional-site .home-statement h1 {
-  font-size: clamp(34px, 4.7vw, 58px);
-  line-height: 1.04;
-  letter-spacing: -0.028em;
+  font-size: clamp(36px, 4.9vw, 62px);
+  line-height: 1.02;
+  letter-spacing: -0.032em;
+  color: var(--oec-dark-ink);
+}
+
+.professional-site .home-statement h1 {
   color: var(--oec-ink);
 }
 
@@ -52,7 +53,7 @@
   margin: 0;
   font-size: 17px;
   line-height: 1.65;
-  color: var(--oec-muted);
+  color: var(--oec-obsidian-muted);
   max-width: 56ch;
 }
 
@@ -64,13 +65,33 @@
   margin-top: 4px;
 }
 
+.professional-site .club-opening .button--secondary {
+  background: var(--oec-obsidian-card);
+  border-color: var(--oec-obsidian-border-strong);
+  color: var(--oec-dark-ink);
+  backdrop-filter: blur(8px);
+}
+
+.professional-site .club-opening .button--secondary:hover {
+  background: var(--oec-obsidian-elevated);
+  border-color: var(--oec-dark-ink);
+}
+
+.professional-site .club-opening .text-link {
+  color: var(--oec-dark-ink);
+}
+
+.professional-site .club-opening .text-link:hover {
+  color: var(--oec-obsidian-pill-text);
+}
+
 .professional-site .club-opening__media {
   position: relative;
-  border-radius: var(--oec-radius-lg);
   overflow: hidden;
-  border: 1px solid var(--oec-border);
-  background: var(--oec-surface-subtle);
-  box-shadow: var(--oec-shadow-sm);
+  border-radius: var(--oec-radius-lg);
+  border: 1px solid var(--oec-obsidian-border);
+  background: var(--oec-obsidian-elevated);
+  box-shadow: var(--oec-obsidian-shadow);
 }
 
 .professional-site .club-opening__media img {
@@ -79,13 +100,14 @@
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  object-position: center;
 }
 
 /* Next Meeting Spotlight Card */
 .professional-site .next-meeting {
   display: block;
   margin-top: 6px;
-  padding: 16px 18px;
+  padding: 15px 18px;
   border-radius: var(--oec-radius-md);
   border: 1px solid var(--oec-border);
   background: var(--oec-surface);
@@ -94,16 +116,29 @@
   transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+.professional-site .club-opening .next-meeting {
+  border-color: var(--oec-obsidian-border);
+  background: var(--oec-obsidian-card);
+  color: var(--oec-dark-ink);
+  backdrop-filter: blur(12px);
+}
+
 .professional-site .next-meeting:hover {
   border-color: var(--oec-cardinal);
   background: var(--oec-surface-elevated);
   box-shadow: var(--oec-shadow-sm);
 }
 
+.professional-site .club-opening .next-meeting:hover {
+  border-color: var(--oec-obsidian-border-strong);
+  background: var(--oec-obsidian-elevated);
+  box-shadow: var(--oec-obsidian-shadow);
+}
+
 .professional-site .next-meeting__inner {
   width: 100%;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px 18px;
 }
@@ -119,6 +154,11 @@
   text-align: center;
 }
 
+.professional-site .club-opening .next-meeting__date {
+  background: var(--oec-obsidian-pill);
+  border-color: var(--oec-obsidian-pill-border);
+}
+
 .professional-site .next-meeting__date span {
   font-family: var(--oec-font-mono);
   font-size: 10px;
@@ -127,11 +167,19 @@
   color: var(--oec-cardinal);
 }
 
+.professional-site .club-opening .next-meeting__date span {
+  color: var(--oec-obsidian-pill-text);
+}
+
 .professional-site .next-meeting__date strong {
   font-family: var(--oec-font-display);
   font-size: 20px;
   line-height: 1.1;
   color: var(--oec-ink);
+}
+
+.professional-site .club-opening .next-meeting__date strong {
+  color: var(--oec-dark-ink);
 }
 
 .professional-site .next-meeting__title small {
@@ -145,9 +193,18 @@
   margin-bottom: 2px;
 }
 
+.professional-site .club-opening .next-meeting__title small {
+  color: var(--oec-obsidian-pill-text);
+}
+
 .professional-site .next-meeting__title h2 {
   font-size: 16px;
   line-height: 1.3;
+  color: var(--oec-ink);
+}
+
+.professional-site .club-opening .next-meeting__title h2 {
+  color: var(--oec-dark-ink);
 }
 
 .professional-site .next-meeting__where {
@@ -156,6 +213,61 @@
   text-align: right;
   font-size: 12.5px;
   color: var(--oec-muted);
+}
+
+.professional-site .club-opening .next-meeting__where {
+  color: var(--oec-obsidian-muted);
+}
+
+/* Architectural Studio Tracks (replaces bulky SaaS 6-card block) */
+.professional-site .club-activities {
+  padding: clamp(32px, 4.5vw, 52px) 0;
+  background: var(--oec-surface);
+}
+
+.professional-site .club-activities .section-heading {
+  margin-bottom: 20px;
+}
+
+.professional-site .club-activities .feature-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  background: var(--oec-surface-elevated);
+  border-top: 1px solid var(--oec-border);
+  border-left: 1px solid var(--oec-border);
+  border-radius: var(--oec-radius-md);
+  overflow: hidden;
+  box-shadow: var(--oec-shadow-xs);
+}
+
+.professional-site .club-activities .feature-grid article {
+  border: 0;
+  border-right: 1px solid var(--oec-border);
+  border-bottom: 1px solid var(--oec-border);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 18px 20px;
+  gap: 6px;
+  background: transparent;
+}
+
+.professional-site .club-activities .feature-grid article > span {
+  padding: 0;
+  min-width: 0;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.professional-site .club-activities .feature-grid h3 {
+  font-size: 15.5px;
+}
+
+.professional-site .club-activities .feature-grid p {
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 /* Home Visual Band */
@@ -491,9 +603,38 @@
   font-weight: 600;
 }
 
-@media (max-width: 980px) {
+@media (min-width: 1041px) {
+  .professional-site .projects-section--home .project-grid--magazine > :first-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+  }
+  .professional-site .projects-section--home .project-grid--magazine > :first-child .project-tile__image {
+    grid-row: 1 / 3;
+    aspect-ratio: auto;
+    min-height: 290px;
+    border-bottom: 0;
+    border-right: 1px solid var(--oec-border);
+  }
+  .professional-site .projects-section--home .project-grid--magazine > :first-child .project-tile__body {
+    padding: 26px 26px 16px;
+    align-content: center;
+  }
+  .professional-site .projects-section--home .project-grid--magazine > :first-child h3 {
+    font-size: clamp(22px, 2.2vw, 27px);
+  }
+  .professional-site .projects-section--home .project-grid--magazine > :first-child .project-tile__footer {
+    padding: 16px 26px 20px;
+  }
+}
+
+@media (max-width: 1040px) {
   .professional-site .club-opening__inner {
     grid-template-columns: 1fr;
+  }
+  .professional-site .club-activities .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .professional-site .project-grid,
   .professional-site .project-grid--magazine,
@@ -510,9 +651,13 @@
 }
 
 @media (max-width: 640px) {
+  .professional-site .club-activities .feature-grid,
   .professional-site .project-grid,
   .professional-site .project-grid--magazine,
   .professional-site .project-grid--featured {
     grid-template-columns: 1fr;
+  }
+  .professional-site .next-meeting__inner {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }

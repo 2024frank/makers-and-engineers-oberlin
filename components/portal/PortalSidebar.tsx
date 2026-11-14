@@ -92,7 +92,7 @@ export function PortalSidebar({
           <BrandLogo variant="badge" />
           <span className="portal-rail-title">
             <strong>{portalTitle}</strong>
-            <small>MEO @ Oberlin</small>
+            <small>Oberlin Engineering</small>
           </span>
         </Link>
         {rail && !rail.inDrawer && rail.onToggleCollapse && (

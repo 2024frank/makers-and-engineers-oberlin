@@ -319,13 +319,13 @@ export function PublicHeader({
         <Link
           className="public-header__brand"
           href="/"
-          aria-label="Makers and Engineers @Oberlin home"
+          aria-label="Projects for Makers and Engineers home"
           aria-current={isActiveHref('/') ? 'page' : undefined}
           onClick={closeAll}
         >
           <BrandLogo variant="badge" src={logoSrc} />
           <span className="public-header__brand-text">
-            <span className="public-header__brand-name">Makers &amp; Engineers</span>
+            <span className="public-header__brand-name">Projects for Makers and Engineers</span>
             <span className="public-header__brand-sub">Oberlin College</span>
           </span>
         </Link>
@@ -369,7 +369,6 @@ export function PublicHeader({
                       >
                         <strong>
                           {link.label}
-                          <ArrowRight size={13} aria-hidden="true" />
                         </strong>
                         <span>{link.description}</span>
                       </NavLinkItem>

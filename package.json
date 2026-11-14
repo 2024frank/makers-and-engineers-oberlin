@@ -20,6 +20,7 @@
     "fixture:legacy": "node --experimental-strip-types scripts/build-legacy-fixture.ts",
     "migrate:legacy": "node --experimental-strip-types scripts/migrate-legacy.ts",
     "verify:migration": "node --experimental-strip-types scripts/verify-migration.ts",
+    "db:types": "node --experimental-strip-types scripts/generate-database-types.ts",
     "verify:release": "npm run lint && npm run typecheck && npm run test && npm run build && npm run test:e2e",
     "bootstrap:super-admin": "node --experimental-strip-types scripts/bootstrap-super-admin.ts"
   },
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@playwright/test": "^1.55.0",
+    "@supabase/postgrest-typegen": "0.8.1",
     "@testing-library/jest-dom": "^6.8.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
@@ -52,6 +54,7 @@
     "eslint": "^9.35.0",
     "eslint-config-next": "16.3.0",
     "jsdom": "^26.1.0",
+    "oxfmt": "0.66.0",
     "playwright": "^1.55.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",

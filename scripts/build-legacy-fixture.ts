@@ -11,7 +11,7 @@ import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
 
-// Legacy JSON is untyped by nature; matches the `Row` convention in migrate-legacy.ts.
+// Legacy JSON is untyped by nature, and this script reads it field by field, so rows stay loose here.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Row = Record<string, any>
 

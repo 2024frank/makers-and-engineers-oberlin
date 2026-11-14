@@ -2,16 +2,16 @@ import 'server-only'
 import { z } from 'zod'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { Tables } from '@/lib/supabase/database'
 import { normalizeProjectProposalInput, reviewProjectProposal, type ProjectProposalStatus, type ProposalApprovalResult, type ProposalRejectionResult, type ProposalReviewDeps } from './proposals'
 import { sendTransactionalEmail } from '@/lib/email/client'
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
 import { projectProposalReviewEmail } from '@/lib/email/templates'
 
 export type ProjectProposalSummary={id:string;proposerUserId:string;proposerName?:string;proposerEmail?:string;title:string;problem:string;goal:string;summary:string;disciplines:string[];recruitingNeeds:string;links:string[];status:ProjectProposalStatus;adminFeedback:string|null;approvedProjectId:string|null;createdAt:string;reviewedAt:string|null}
-// The project_proposals columns read below. `links` is stored as JSON, so it is checked before use.
-type ProjectProposalRow={id:string;proposer_user_id:string;title:string;problem:string;goal:string;summary:string;disciplines:string[];recruiting_needs:string;links:unknown;status:ProjectProposalStatus;admin_feedback:string|null;approved_project_id:string|null;created_at:string;reviewed_at:string|null}
-type ProposerRow={user_id:string;display_name:string;oberlin_email:string}
-const map=(r:ProjectProposalRow):ProjectProposalSummary=>({id:r.id,proposerUserId:r.proposer_user_id,title:r.title,problem:r.problem,goal:r.goal,summary:r.summary??'',disciplines:r.disciplines??[],recruitingNeeds:r.recruiting_needs??'',links:Array.isArray(r.links)?r.links:[],status:r.status,adminFeedback:r.admin_feedback??null,approvedProjectId:r.approved_project_id??null,createdAt:r.created_at,reviewedAt:r.reviewed_at??null})
+// `links` is stored as JSON: a list of URLs, written by submitProjectProposal below.
+type ProposerRow=Pick<Tables<'member_profiles'>,'user_id'|'display_name'|'oberlin_email'>
+const map=(r:Tables<'project_proposals'>):ProjectProposalSummary=>({id:r.id,proposerUserId:r.proposer_user_id,title:r.title,problem:r.problem,goal:r.goal,summary:r.summary??'',disciplines:r.disciplines??[],recruitingNeeds:r.recruiting_needs??'',links:Array.isArray(r.links)?r.links as string[]:[],status:r.status,adminFeedback:r.admin_feedback??null,approvedProjectId:r.approved_project_id??null,createdAt:r.created_at,reviewedAt:r.reviewed_at??null})
 
 async function sendReviewEmail(result:ProposalApprovalResult|ProposalRejectionResult,feedback?:string){if(!result.email)return;const approved=result.status==='APPROVED';const base=memberSiteOrigin();const actionUrl=approved&&'projectId'in result?`${base}/member/teams/${result.projectId}`:`${base}/member/proposals`;await sendTransactionalEmail({to:result.email,message:projectProposalReviewEmail({memberName:result.displayName??'there',projectTitle:result.title??'Project proposal',decision:approved?'APPROVED':'REJECTED',feedback,actionUrl}),required:false})}
 

@@ -12,19 +12,6 @@ export type AdminUserRow = {
   createdAt: string
 }
 
-type RoleAssignmentRow = { role: AdminRole; scopes: string[]; can_publish: boolean }
-// role_assignments.user_id is both its primary key and its foreign key to admin_profiles, so
-// PostgREST embeds one object (or null) per profile. The untyped client infers a list instead,
-// which is why query results are cast to this shape.
-type AdminProfileRow = {
-  user_id: string
-  display_name: string
-  active: boolean
-  status: 'ACTIVE' | 'SUSPENDED' | 'REVOKED'
-  created_at: string
-  role_assignments: RoleAssignmentRow | null
-}
-
 export function assertCanChangeSuperAdmin(input: {
   targetIsSuperAdmin: boolean
   targetActive: boolean
@@ -50,7 +37,7 @@ export async function listAdminUsers(): Promise<AdminUserRow[]> {
   ])
   if (error) throw new Error(`ADMIN_USERS_LOAD_FAILED:${error.message}`)
   const emails = new Map((authPage?.users ?? []).map((user) => [user.id, user.email ?? '']))
-  return ((profiles ?? []) as unknown as AdminProfileRow[]).map((row) => ({
+  return (profiles ?? []).map((row) => ({
     userId: row.user_id,
     email: emails.get(row.user_id) ?? '',
     displayName: row.display_name,
@@ -74,7 +61,7 @@ export async function updateAdminUser(
     .eq('user_id', input.userId)
     .single()
   if (error || !data) throw new Error('ADMIN_USER_NOT_FOUND')
-  const profile = data as unknown as Omit<AdminProfileRow, 'created_at'>
+  const profile = data
   const assignment = profile.role_assignments
   const { count } = await supabase
     .from('admin_profiles')

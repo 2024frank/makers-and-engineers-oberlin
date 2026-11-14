@@ -1,5 +1,6 @@
 import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { Tables } from '@/lib/supabase/database'
 import type { z } from 'zod'
 import { projectStatusSchema } from '@/lib/validation/projects'
 import { previewProjects, publicPreviewEnabled } from './previewProjects'
@@ -18,7 +19,12 @@ export async function listPublishedProjects(filters:ProjectFilters={skills:[]}) 
   if(error)throw new Error('PROJECTS_LOAD_FAILED:'+error.message)
   return data??[]
 }
-export async function getPublishedProject(slug:string) {
+type ProjectRow=Tables<'projects'>
+// A published project and its updates, as the project page reads it. It is a database row or,
+// when no database is configured, a preview snapshot. A snapshot sets `isSnapshot` and has
+// only some of the columns, so the columns it leaves out are optional here.
+export type PublishedProject=Partial<ProjectRow>&Pick<ProjectRow,keyof ProjectRow&keyof (typeof previewProjects)[number]>&{updates:Tables<'project_updates'>[];isSnapshot?:boolean}
+export async function getPublishedProject(slug:string):Promise<PublishedProject|null> {
   if(publicPreviewEnabled())return previewProjects.find(p=>p.slug===slug)??null
   if(!process.env.NEXT_PUBLIC_SUPABASE_URL)return null
   const s=await createSupabaseServerClient()

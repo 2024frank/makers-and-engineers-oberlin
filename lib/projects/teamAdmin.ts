@@ -1,5 +1,6 @@
 import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { RpcArgs, RpcName, RpcReturns } from '@/lib/supabase/database'
 import { sendTransactionalEmail, sendTransactionalEmailBatch } from '@/lib/email/client'
 import { projectApplicationDecisionEmail, projectKickoffEmail, projectTeamWelcomeEmail } from '@/lib/email/templates'
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
@@ -23,19 +24,21 @@ export type AdminProjectTeam = {
 }
 export type ActiveMemberChoice = { userId: string; displayName: string; email: string }
 
-async function rpc<T>(name: string, params?: Record<string, unknown>) {
+// Calls a database function by name. The name and its arguments are checked against the generated types.
+// Most of these functions return JSON, so each caller states the shape it expects back.
+async function rpc<Name extends RpcName>(name: Name, params?: RpcArgs<Name>) {
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase.rpc(name, params)
   if (error) throw new Error(error.message)
-  return data as T
+  return data as RpcReturns<Name>
 }
 const workspaceUrl = (projectId: string) => `${memberSiteOrigin()}/member/teams/${projectId}`
 async function tryEmail(to: string, message: Parameters<typeof sendTransactionalEmail>[0]['message']) {
   try { return await sendTransactionalEmail({ to, message, required: false }) } catch { return false }
 }
 
-export const listProjectTeams = () => rpc<ProjectTeamSummary[]>('admin_list_project_teams').then(rows => rows ?? [])
-export const getAdminProjectTeam = (projectId: string) => rpc<AdminProjectTeam>('admin_project_team', { p_project_id: projectId })
+export const listProjectTeams = () => rpc('admin_list_project_teams').then(rows => (rows ?? []) as ProjectTeamSummary[])
+export const getAdminProjectTeam = (projectId: string) => rpc('admin_project_team', { p_project_id: projectId }) as Promise<AdminProjectTeam>
 
 export async function listActiveMemberChoices(): Promise<ActiveMemberChoice[]> {
   const supabase = await createSupabaseServerClient()
@@ -53,10 +56,10 @@ export async function listProjectChoices() {
 
 type ApprovalResult = { projectId: string; projectTitle: string; userId: string; memberName: string; memberEmail: string; role: ProjectRole; alreadyApproved: boolean }
 export async function approveProjectInterest(input: ProjectInterestDecision) {
-  const result = await rpc<ApprovalResult>('admin_approve_project_interest', {
+  const result = await rpc('admin_approve_project_interest', {
     p_source: input.source, p_request_id: input.requestId,
     p_project_id: input.source === 'submission' ? input.projectId : null, p_role: input.role,
-  })
+  }) as ApprovalResult
   const emailSent = result.alreadyApproved ? false : await tryEmail(result.memberEmail, projectTeamWelcomeEmail({ memberName: result.memberName, projectTitle: result.projectTitle, role: result.role, actionUrl: workspaceUrl(result.projectId) }))
   return { result, emailSent }
 }
@@ -64,12 +67,12 @@ export async function approveProjectInterest(input: ProjectInterestDecision) {
 export async function performProjectTeamAction(input: ProjectTeamAction) {
   switch (input.action) {
     case 'decline-application': {
-      const result = await rpc<{ applicantEmail?: string; applicantName?: string; projectTitle?: string }>('review_project_application', { p_application_id: input.applicationId, p_decision: 'REJECT', p_note: input.note || null })
+      const result = await rpc('review_project_application', { p_application_id: input.applicationId, p_decision: 'REJECT', p_note: input.note || null }) as { applicantEmail?: string; applicantName?: string; projectTitle?: string }
       const emailSent = result.applicantEmail ? await tryEmail(result.applicantEmail, projectApplicationDecisionEmail({ memberName: result.applicantName ?? 'there', projectTitle: result.projectTitle ?? 'MEO project', decision: 'REJECTED', note: input.note, actionUrl: `${memberSiteOrigin()}/member/applications` })) : false
       return { result, emailSent }
     }
     case 'set-member': {
-      const result = await rpc<ApprovalResult & { previousRole: ProjectRole | null; changed: boolean }>('admin_set_project_member', { p_project_id: input.projectId, p_user_id: input.userId, p_role: input.role })
+      const result = await rpc('admin_set_project_member', { p_project_id: input.projectId, p_user_id: input.userId, p_role: input.role }) as ApprovalResult & { previousRole: ProjectRole | null; changed: boolean }
       // Email when someone joins or becomes a lead; a demotion is shown in-app only.
       const welcome = result.changed && (result.previousRole === null || result.role === 'LEAD')
       const emailSent = welcome ? await tryEmail(result.memberEmail, projectTeamWelcomeEmail({ memberName: result.memberName, projectTitle: result.projectTitle, role: result.role, actionUrl: workspaceUrl(result.projectId) })) : false
@@ -78,9 +81,9 @@ export async function performProjectTeamAction(input: ProjectTeamAction) {
     case 'remove-member':
       return { result: await rpc('admin_remove_project_member', { p_project_id: input.projectId, p_user_id: input.userId }) }
     case 'start': {
-      const result = await rpc<{ kickoffId: string; projectId: string; projectTitle: string; restarted: boolean; recipients: { displayName: string; email: string; role: ProjectRole }[] }>('start_project', {
+      const result = await rpc('start_project', {
         p_project_id: input.projectId, p_message: input.message, p_meeting_at: input.meetingAt, p_location: input.location,
-      })
+      }) as { kickoffId: string; projectId: string; projectTitle: string; restarted: boolean; recipients: { displayName: string; email: string; role: ProjectRole }[] }
       const emailsSent = await sendTransactionalEmailBatch({
         idempotencyKey: `project-kickoff/${result.kickoffId}`,
         messages: result.recipients.filter(person => person.email).map(person => ({ to: person.email, message: projectKickoffEmail({ memberName: person.displayName, projectTitle: result.projectTitle, role: person.role, message: input.message, meetingAt: input.meetingAt, location: input.location, actionUrl: workspaceUrl(result.projectId) }) })),

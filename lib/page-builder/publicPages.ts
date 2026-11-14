@@ -3,6 +3,7 @@ import { getProjectTeamStats } from '@/lib/content/projectTeamStats'
 import { previewProjects, previewMedia, publicPreviewEnabled } from '@/lib/content/previewProjects'
 import { cache } from 'react'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import type { Tables } from '@/lib/supabase/database'
 import { defaultStudioCustomization, type StudioCustomization } from '@/lib/cms/studioTheme'
 import { validatePageForPublish } from './pageService'
 import { pageSnapshotSchema, type PageSnapshot } from './types'
@@ -74,6 +75,8 @@ export async function getPublicSiteSettings(){
   return{contact:{...fallback.contact,...(map.contact??{})},footer:{...fallback.footer,...(map.footer??{})},social:{...fallback.social,...(map.social??{})},seo:{...fallback.seo,...(map.seo??{})},announcement,brand:{badgeUrl:badgeMediaId?brandMedia[badgeMediaId]??null:null,horizontalUrl:horizontalMediaId?brandMedia[horizontalMediaId]??null:null},studio:{...fallbackStudio,...rawStudio,heroImageUrl:studioMediaId?brandMedia[studioMediaId]??null:null}}
 }
 
+// The events query below keeps only events that start now or later, so each has a start time.
+type UpcomingEvent=Tables<'events'>&{start_at:string}
 export async function getCmsRenderContext(){if(publicPreviewEnabled())return{projects:previewProjects,media:previewMedia};if(!process.env.NEXT_PUBLIC_SUPABASE_URL)return{};const s=await createSupabaseServerClient();const[projects,events,opportunities,news,leaders,sponsors,media,siteSettings]=await Promise.all([
   s.from('projects').select('*').eq('publication_state','published').order('sort_order').limit(12),s.from('events').select('*').eq('publication_state','published').gte('start_at',new Date().toISOString()).order('start_at').limit(12),s.from('opportunities').select('*').eq('publication_state','published').order('deadline').limit(12),s.from('news_posts').select('*').eq('publication_state','published').order('published_at',{ascending:false}).limit(12),s.from('leaders').select('*').eq('publication_state','published').eq('current',true).order('sort_order').limit(12),s.from('sponsors').select('*').eq('publication_state','published').order('sort_order').limit(12),s.from('media').select('id,public_url,alt_text').limit(200),getPublicSiteSettings().catch(()=>null)
-]);const teamStats=await getProjectTeamStats((projects.data??[]).map(p=>p.id));return{projects:projects.data??[],teamStats,events:events.data??[],opportunities:opportunities.data??[],news:news.data??[],leaders:leaders.data??[],sponsors:sponsors.data??[],media:Object.fromEntries((media.data??[]).map(m=>[m.id,{url:m.public_url,alt:m.alt_text}])),studio:siteSettings?.studio}}
+]);const teamStats=await getProjectTeamStats((projects.data??[]).map(p=>p.id));return{projects:projects.data??[],teamStats,events:(events.data??[]) as UpcomingEvent[],opportunities:opportunities.data??[],news:news.data??[],leaders:leaders.data??[],sponsors:sponsors.data??[],media:Object.fromEntries((media.data??[]).map(m=>[m.id,{url:m.public_url,alt:m.alt_text}])),studio:siteSettings?.studio}}

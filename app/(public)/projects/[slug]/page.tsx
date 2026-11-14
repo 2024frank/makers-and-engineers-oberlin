@@ -62,7 +62,8 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
     member ? isSavedItem(member.userId,'PROJECT',p.id) : Promise.resolve(false),
     relatedProjects(p),
   ])
-  const cover = media[p.cover_media_id]
+  // A project without a cover has no id to look up, and then nothing is found.
+  const cover = media[p.cover_media_id!]
   const team = stats[p.id]
   const phase = teamPhase(team, { status: String(p.status), recruiting: Boolean(p.recruiting) })
   const applyPath = `/member/applications?project=${p.id}`
@@ -78,7 +79,7 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
     {p.goal&&<><h2>Goal</h2><p>{p.goal}</p></>}
     {p.skills?.length>0&&<><h2>Skills you can contribute</h2><ul className="project-detail-skills" aria-label="Project skills">{p.skills.map((skill:string)=><li key={skill}>{skill}</li>)}</ul></>}
     {timeline.length>0&&<><h2>Timeline</h2><ol className="project-detail-timeline">{timeline.map((step,index)=><li key={index}><small>{step.label}</small><h3>{step.title}</h3><p>{step.body??step.description}</p></li>)}</ol></>}
-    {p.updates?.length>0&&<><h2>Project updates</h2>{p.updates.map((u:{id:string;update_date?:string;title:string;summary:string})=><article className="update" key={u.id}><small>{u.update_date}</small><h3>{u.title}</h3><p>{u.summary}</p></article>)}</>}
+    {p.updates?.length>0&&<><h2>Project updates</h2>{p.updates.map((u)=><article className="update" key={u.id}><small>{u.update_date}</small><h3>{u.title}</h3><p>{u.summary}</p></article>)}</>}
   </div>
   <aside className="detail-aside project-join" aria-labelledby="project-join-heading">
     <h2 id="project-join-heading">{snapshot ? 'Project snapshot' : viewer === 'on-team' ? 'You are on this team' : 'Join this project'}</h2>

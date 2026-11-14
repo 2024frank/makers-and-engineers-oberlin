@@ -1,4 +1,5 @@
 import Link from 'next/link'; import type { z } from 'zod'; import type { projectSpotlightSchema } from '@/lib/page-builder/schemas/engineering'; import type { PageRenderContext } from '@/lib/page-builder/types'
+import type { Tables } from '@/lib/supabase/database'
 // The projects columns the spotlight draws.
-type SpotlightProject={id:string;slug:string;title:string;summary:string}
+type SpotlightProject=Pick<Tables<'projects'>,'id'|'slug'|'title'|'summary'>
 export function ProjectSpotlightSection({section,context}:{section:z.infer<typeof projectSpotlightSchema>;context?:PageRenderContext}){const p=(context?.projects??[]).find(item=>item.id===section.projectId) as SpotlightProject|undefined;return <section className="cms-section cms-section--cardinal"><div className="shell spotlight">{section.eyebrow&&<p className="eyebrow">{section.eyebrow}</p>}<h2>{section.heading||p?.title||'Project spotlight'}</h2>{p?<><p>{p.summary}</p><Link className="button button--light" href={`/projects/${p.slug}`}>Explore project</Link></>:<p>Select a published project in the admin portal.</p>}</div></section>}

@@ -6,14 +6,15 @@ import type { PageSnapshot } from '@/lib/page-builder/types'
 import { assertPublishableMediaIds } from '@/lib/cms/media'
 import { collectPageMediaIds } from '@/lib/media/references'
 
-export async function publishPageSnapshot(snapshotInput: PageSnapshot, actorId: string, restoredFrom?: string | null, useAdmin = false) {
+// `actorId` is null for a scheduled publication with no recorded requester: scheduled_publications.requested_by is nullable.
+export async function publishPageSnapshot(snapshotInput: PageSnapshot, actorId: string | null, restoredFrom?: string | null, useAdmin = false) {
   const snapshot = validatePageForPublish(snapshotInput)
   await assertPublishableMediaIds(collectPageMediaIds(snapshot), useAdmin)
   const supabase = useAdmin ? createSupabaseAdminClient() : await createSupabaseServerClient()
   const { data, error } = await supabase.rpc('publish_page_snapshot', { p_page_id:snapshot.pageId,p_page_snapshot:{ pageId:snapshot.pageId,slug:snapshot.slug,title:snapshot.title,seoTitle:snapshot.seoTitle,seoDescription:snapshot.seoDescription,ogMediaId:snapshot.ogMediaId },p_sections_snapshot:snapshot.sections,p_restored_from:restoredFrom ?? null })
   if (error) throw new Error(`PAGE_PUBLISH_FAILED:${error.message}`)
   if (useAdmin) await createSupabaseAdminClient().from('audit_log').insert({ actor_id:actorId,action:'SCHEDULED_PUBLISH',entity_type:'page',entity_id:snapshot.pageId,after_snapshot:snapshot })
-  return data as string
+  return data
 }
 
 export async function publishPageDraft(pageId: string, actorId: string) {

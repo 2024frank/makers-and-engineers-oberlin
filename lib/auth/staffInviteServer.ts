@@ -1,5 +1,6 @@
 import 'server-only'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
+import type { Json, Tables } from '@/lib/supabase/database'
 import {
   acceptStaffInvite,
   createStaffInvite,
@@ -22,7 +23,9 @@ function sanitizeScopes(scopes: string[]) {
   return [...new Set(scopes.filter((scope) => allowedScopes.includes(scope)))]
 }
 
-function mapInvite(row: Record<string, unknown>): StaffInviteRecord {
+type StaffInviteRow = Pick<Tables<'staff_invites'>, 'id' | 'email' | 'display_name' | 'role' | 'scopes' | 'can_publish' | 'token_hash' | 'status' | 'expires_at' | 'invited_by' | 'created_at'>
+
+function mapInvite(row: StaffInviteRow): StaffInviteRecord {
   return {
     id: String(row.id),
     email: String(row.email),
@@ -64,7 +67,8 @@ function auditWriter(supabase: AdminClient) {
       action: event.action,
       entity_type: event.entityType,
       entity_id: event.entityId,
-      after_snapshot: event.afterSnapshot,
+      // The invite policy hands over a plain object, which is stored as JSON.
+      after_snapshot: event.afterSnapshot as Json,
     })
     if (error) throw new Error(`STAFF_INVITE_AUDIT_FAILED:${error.message}`)
   }
@@ -80,7 +84,7 @@ export async function listStaffInvites() {
   if (error) throw new Error(`STAFF_INVITES_LOAD_FAILED:${error.message}`)
   const now = new Date()
   return (data ?? []).map((row) => {
-    const invite = mapInvite(row as Record<string, unknown>)
+    const invite = mapInvite(row)
     return {
       id: invite.id,
       email: invite.email,
@@ -138,7 +142,7 @@ export async function resendServerStaffInvite(inviteId: string, actorId: string,
     getInvite: async (id) => {
       const { data, error } = await supabase.from('staff_invites').select(inviteColumns).eq('id', id).maybeSingle()
       if (error) throw new Error(`STAFF_INVITE_LOAD_FAILED:${error.message}`)
-      return data ? mapInvite(data as Record<string, unknown>) : null
+      return data ? mapInvite(data) : null
     },
     reissueInvite: async ({ id, expectedTokenHash, tokenHash, expiresAt, status }) => {
       const { data, error } = await supabase.from('staff_invites')
@@ -174,7 +178,7 @@ export async function acceptServerStaffInvite(token: string, currentUser: { id: 
       getInviteByHash: async (tokenHash) => {
         const { data, error } = await supabase.from('staff_invites').select('*').eq('token_hash', tokenHash).maybeSingle()
         if (error) throw new Error(`STAFF_INVITE_LOAD_FAILED:${error.message}`)
-        return data ? mapInvite(data as Record<string, unknown>) : null
+        return data ? mapInvite(data) : null
       },
       activateInvite: async ({ invite, userId }) => {
         const { data, error } = await supabase.rpc('accept_staff_invite', { p_invite_id: invite.id, p_user_id: userId })

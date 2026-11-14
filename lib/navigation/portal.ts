@@ -25,7 +25,6 @@ export function adminPortalGroups(role: AdminRole): PortalNavGroup[] {
       label: 'Projects & club',
       items: [
         { label: 'Projects', href: '/admin/projects', icon: 'projects' },
-        ...(isAdmin ? [{ label: 'Club teams', href: '/admin/teams', icon: 'people' }] : []),
         ...(isAdmin ? [{ label: 'Members', href: '/admin/members', icon: 'people' }] : []),
         { label: 'Events', href: '/admin/events', icon: 'calendar' },
         { label: 'Project updates', href: '/admin/project-updates', icon: 'updates' },

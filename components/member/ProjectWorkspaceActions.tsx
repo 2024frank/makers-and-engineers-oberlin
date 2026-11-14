@@ -18,7 +18,7 @@ const failure = (error: unknown, fallback: string) => error instanceof Error ? e
 export function RosterManager({ projectId, roster }: { projectId: string; roster: ProjectWorkspace['roster'] }) {
   const [busy, setBusy] = useState(''), [error, setError] = useState('')
   async function remove(userId: string, name: string) {
-    if (!confirm(`Remove ${name} from the project team?`)) return
+    if (!confirm(`Remove ${name} from the project team? They will get an email saying they were removed.`)) return
     setBusy(userId); setError('')
     try { await jsonFetch(`/api/member/projects/${projectId}`, put({ action: 'remove-member', userId })); window.location.reload() }
     catch (reason) { setError(failure(reason, 'Could not remove this member.')) }

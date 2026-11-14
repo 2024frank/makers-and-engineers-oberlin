@@ -10,12 +10,12 @@ export function ProjectDeleteForm({ projectId, title, members = 0, onDeleted }: 
   const matches = typed.trim().toLowerCase() === title.trim().toLowerCase()
   async function destroy(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (await remove.run({ action: 'delete', projectId, confirmTitle: typed }, () => 'Project deleted.')) onDeleted()
+    if (await remove.run({ action: 'delete', projectId, confirmTitle: typed }, result => `Project deleted.${result.emailsSent ? ` ${result.emailsSent} team ${result.emailsSent === 1 ? 'member was' : 'members were'} emailed.` : ''}`)) onDeleted()
   }
   return <section className="project-delete" aria-label="Delete project">
     {!confirming ? <div className="pt-actions"><button type="button" className="pt-btn--danger" onClick={() => setConfirming(true)}><Trash2 size={16}/>Delete project</button></div>
       : <form className="pt-form" onSubmit={destroy}>
-        {members > 0 && <p className="portal-form-error" role="alert"><strong>{members} {members === 1 ? 'member is' : 'members are'} on this team right now.</strong> Deleting removes them from the project and they lose its team page, milestones and feed.</p>}
+        {members > 0 && <p className="portal-form-error" role="alert"><strong>{members} {members === 1 ? 'member is' : 'members are'} on this team right now.</strong> Deleting removes them from the project, they lose its team page, milestones and feed, and each of them gets an email that the project was closed.</p>}
         <p className="pt-hint"><strong>This permanently deletes the project, its team roster, applications, milestones, team feed, links and published updates.</strong> It cannot be undone.</p>
         <label>Type <strong>{title}</strong> to confirm<input value={typed} onChange={event => setTyped(event.target.value)} autoComplete="off"/></label>
         <ActionNotice error={remove.error} message={remove.message}/>

@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { sendTransactionalEmail, sendTransactionalEmailBatch } from '@/lib/email/client'
 import { projectApplicationDecisionEmail, projectKickoffEmail, projectTeamWelcomeEmail } from '@/lib/email/templates'
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
+import { emailDeletedProjectTeam, emailRemovedProjectMember } from './removalEmail'
 import type { ProjectInterestDecision, ProjectTeamAction } from './teamAdminInput'
 
 export type ProjectRole = 'LEAD' | 'MEMBER'
@@ -75,8 +76,11 @@ export async function performProjectTeamAction(input: ProjectTeamAction) {
       const emailSent = welcome ? await tryEmail(result.memberEmail, projectTeamWelcomeEmail({ memberName: result.memberName, projectTitle: result.projectTitle, role: result.role, actionUrl: workspaceUrl(result.projectId) })) : false
       return { result, emailSent }
     }
-    case 'remove-member':
-      return { result: await rpc('admin_remove_project_member', { p_project_id: input.projectId, p_user_id: input.userId }) }
+    case 'remove-member': {
+      const result = await rpc('admin_remove_project_member', { p_project_id: input.projectId, p_user_id: input.userId })
+      const emailSent = await emailRemovedProjectMember(input.projectId, input.userId)
+      return { result, emailSent }
+    }
     case 'start': {
       const result = await rpc<{ kickoffId: string; projectId: string; projectTitle: string; restarted: boolean; recipients: { displayName: string; email: string; role: ProjectRole }[] }>('start_project', {
         p_project_id: input.projectId, p_message: input.message, p_meeting_at: input.meetingAt, p_location: input.location,
@@ -96,7 +100,12 @@ export async function performProjectTeamAction(input: ProjectTeamAction) {
       return { result: await rpc('remove_project_team_link', { p_link_id: input.linkId }) }
     case 'archive':
       return { result: await rpc('set_project_archived', { p_project_id: input.projectId, p_archived: input.archived }) }
-    case 'delete':
-      return { result: await rpc('delete_project', { p_project_id: input.projectId, p_confirm_title: input.confirmTitle }) }
+    case 'delete': {
+      // Read the roster first: memberships cascade away with the project.
+      const team = await getAdminProjectTeam(input.projectId).catch(() => null)
+      const result = await rpc<{ projectId: string; title: string; notifiedMembers: number }>('delete_project', { p_project_id: input.projectId, p_confirm_title: input.confirmTitle })
+      const emailsSent = await emailDeletedProjectTeam(result.projectId, result.title, team?.roster ?? [])
+      return { result, emailsSent }
+    }
   }
 }

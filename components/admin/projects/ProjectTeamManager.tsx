@@ -147,8 +147,8 @@ function RosterPanel({ team, members }: { team: Team; members: ActiveMemberChoic
     void action.run({ action: 'set-member', projectId: project.id, userId, role }, () => role === 'LEAD' ? `${name} is now a lead.` : `${name} is now a team member.`)
   }
   function remove(userId: string, name: string) {
-    if (!window.confirm(`Remove ${name} from ${project.title}? They will be notified.`)) return
-    void action.run({ action: 'remove-member', projectId: project.id, userId }, () => `${name} was removed from the team.`)
+    if (!window.confirm(`Remove ${name} from ${project.title}? They will get an email saying they were removed.`)) return
+    void action.run({ action: 'remove-member', projectId: project.id, userId }, result => `${name} was removed from the team.${result.emailSent ? ' They were emailed.' : ' They have an in-app notice, but the email was not sent.'}`)
   }
   async function add(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

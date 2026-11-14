@@ -65,3 +65,29 @@ ${input.summary.trim()}`:''}
 
 See the project and ask to join the team here:
 ${input.actionUrl}${signature}`}}
+
+export function projectMemberRemovedEmail(input: { memberName: string; projectTitle: string; actionUrl: string }): TransactionalEmailMessage {
+  return {
+    subject: `You were removed from ${input.projectTitle}`,
+    text: `${hello(input.memberName)}
+
+You have been removed from the team for the MEO project “${input.projectTitle}”. You no longer have access to its team page, milestones or team feed. Your other teams are unchanged.
+
+If you think this is a mistake, reply to this email and the club officers will take a look.
+
+See your teams: ${input.actionUrl}${signature}`,
+  }
+}
+
+export function projectDeletedEmail(input: { memberName: string; projectTitle: string; actionUrl: string }): TransactionalEmailMessage {
+  return {
+    subject: `${input.projectTitle} has been closed`,
+    text: `${hello(input.memberName)}
+
+The club officers have closed the MEO project “${input.projectTitle}”, so you have been removed from its team. Its team page, milestones and team feed are no longer available. Your other teams are unchanged.
+
+If you have questions, reply to this email.
+
+See your teams: ${input.actionUrl}${signature}`,
+  }
+}

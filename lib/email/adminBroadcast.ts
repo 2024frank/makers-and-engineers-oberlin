@@ -44,7 +44,8 @@ export async function getAdminEmailConsoleData() {
       .limit(100),
     admin
       .from('membership_requests')
-      .select('id,display_name,oberlin_email,status')
+      // Requests keep the address in `email`; only member_profiles has `oberlin_email`.
+      .select('id,display_name,email,status')
       .in('status', ['REQUESTED', 'EMAIL_VERIFIED', 'PENDING_APPROVAL'])
       .order('created_at', { ascending: false })
       .limit(300),
@@ -278,12 +279,13 @@ async function resolveRecipients(
 
     case 'pending_applicants': {
       audienceLabel = 'Pending membership requests'
-      const { data } = await admin
+      const { data, error } = await admin
         .from('membership_requests')
-        .select('display_name,oberlin_email')
+        .select('display_name,email')
         .in('status', ['REQUESTED', 'EMAIL_VERIFIED', 'PENDING_APPROVAL'])
         .limit(500)
-      for (const row of data ?? []) push(row.oberlin_email, row.display_name, null)
+      if (error) throw new Error(`AUDIENCE_LOAD_FAILED:${error.message}`)
+      for (const row of data ?? []) push(row.email, row.display_name, null)
       break
     }
 

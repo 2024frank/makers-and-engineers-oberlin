@@ -3,6 +3,8 @@ import { ToastProvider } from '@/components/ui/Toast'
 import { requireAdmin } from '@/lib/auth/requireRole'
 import { getDashboardSummary } from '@/lib/cms/dashboard'
 
+export const dynamic = 'force-dynamic'
+
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin()
   const summary = await getDashboardSummary(admin.role).catch(() => null)

@@ -2,6 +2,8 @@ import { requireActiveMember } from '@/lib/auth/memberSession'
 import { MemberShell } from '@/components/member/MemberShell'
 import { getMemberDashboardSummary, getUnreadNotificationCount } from '@/lib/members/dashboard'
 
+export const dynamic = 'force-dynamic'
+
 export default async function MemberPortalLayout({ children }: { children: React.ReactNode }) {
   const member = await requireActiveMember()
   const [unread, summary] = await Promise.all([

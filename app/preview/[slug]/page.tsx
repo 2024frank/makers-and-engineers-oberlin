@@ -6,6 +6,7 @@ import '@/app/(public)/professional.css'
 import '@/app/(public)/project-led.css'
 
 export const metadata = { robots: { index: false, follow: false }, title: 'Draft Preview' }
+export const dynamic = 'force-dynamic'
 
 export default async function PreviewPage({ params }: { params: Promise<{ slug: string }> }) {
   await requireAdmin()

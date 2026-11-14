@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
+export const dynamic = 'force-dynamic'
 
 export default async function MemberActivatePage() {
   const supabase = await createSupabaseServerClient()

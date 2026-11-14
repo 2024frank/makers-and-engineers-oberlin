@@ -4,6 +4,7 @@ import type { OfficerAction } from './input'
 import type { OfficerPosition, OfficerApplication, OfficerEmailStatus } from './types'
 
 export async function listOfficerPositions(): Promise<OfficerPosition[]> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return []
   const s = await createSupabaseServerClient()
   const { data, error } = await s.rpc('list_officer_positions')
   if (error) throw new Error('Could not load open positions. Please try again.')

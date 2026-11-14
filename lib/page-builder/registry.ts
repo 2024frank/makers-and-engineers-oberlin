@@ -5,7 +5,7 @@ import { textImageSchema, statisticsSchema, featuresGridSchema, richTextSchema, 
 import { projectGridSchema, projectSpotlightSchema, disciplineGridSchema, projectTimelineSchema } from './schemas/engineering'
 import { leadershipGridSchema, eventListSchema, opportunityListSchema, newsGridSchema, sponsorGridSchema } from './schemas/community'
 import { ctaSchema } from './schemas/cta'
-import { pageSectionSchema, type PageSection, type PageSectionType } from './types'
+import { pageSectionSchema, type PageRenderContext, type PageSection, type PageSectionType } from './types'
 import { HeroSection } from '@/components/page-builder/sections/HeroSection'
 import { TextImageSection } from '@/components/page-builder/sections/TextImageSection'
 import { StatisticsSection } from '@/components/page-builder/sections/StatisticsSection'
@@ -24,7 +24,12 @@ import { NewsGridSection } from '@/components/page-builder/sections/NewsGridSect
 import { SponsorGridSection } from '@/components/page-builder/sections/SponsorGridSection'
 import { CtaSection } from '@/components/page-builder/sections/CtaSection'
 
-export const sectionRegistry: Record<PageSectionType, { schema: ZodTypeAny; component: ComponentType<any>; label: string }> = {
+// What every section component receives. `Type` picks the one section shape that the component draws.
+export type SectionComponentProps<Type extends PageSectionType = PageSectionType> = { section: Extract<PageSection, { type: Type }>; context?: PageRenderContext }
+// Each entry is checked against its own section type, so a component registered under the wrong key fails to compile.
+type SectionRegistry = { [Type in PageSectionType]: { schema: ZodTypeAny; component: ComponentType<SectionComponentProps<Type>>; label: string } }
+
+export const sectionRegistry: SectionRegistry = {
   hero:{schema:heroSchema,component:HeroSection,label:'Hero'}, text_image:{schema:textImageSchema,component:TextImageSection,label:'Text + image'},
   statistics:{schema:statisticsSchema,component:StatisticsSection,label:'Statistics'}, features_grid:{schema:featuresGridSchema,component:FeaturesGridSection,label:'Features grid'},
   rich_text:{schema:richTextSchema,component:RichTextSection,label:'Rich text'}, quote:{schema:quoteSchema,component:QuoteSection,label:'Quote'}, gallery:{schema:gallerySchema,component:GallerySection,label:'Gallery'},
@@ -34,5 +39,9 @@ export const sectionRegistry: Record<PageSectionType, { schema: ZodTypeAny; comp
   opportunity_list:{schema:opportunityListSchema,component:OpportunityListSection,label:'Opportunity list'}, news_grid:{schema:newsGridSchema,component:NewsGridSection,label:'News grid'},
   sponsor_grid:{schema:sponsorGridSchema,component:SponsorGridSection,label:'Sponsor grid'}, cta:{schema:ctaSchema,component:CtaSection,label:'Call to action'}
 }
+
+// The registry is keyed by section type, so the component found for a section always accepts that section.
+// TypeScript cannot follow that link through a union of seventeen components, so it is stated once here.
+export function sectionComponent(section: PageSection): ComponentType<SectionComponentProps> { return sectionRegistry[section.type].component as ComponentType<SectionComponentProps> }
 
 export function validateSection(input: unknown): PageSection { const section=pageSectionSchema.parse(input); if(section.type==='text_image'&&section.imageId&&!section.imageAlt.trim())throw new Error('IMAGE_ALT_REQUIRED'); if(section.type==='hero'&&section.imageId&&!section.imageAlt.trim())throw new Error('IMAGE_ALT_REQUIRED'); return section }

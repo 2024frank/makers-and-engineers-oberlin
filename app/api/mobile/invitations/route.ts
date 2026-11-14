@@ -8,7 +8,7 @@ export async function GET() {
   const member = await getCurrentMember()
   if (!member) return NextResponse.json({ error: 'ACTIVE_MEMBER_REQUIRED' }, { status: 401 })
   try {
-    const [projects, teams] = await Promise.all([listMyTeamInvites(member.userId), listClubInvitations()])
+    const [projects, teams] = await Promise.all([listMyTeamInvites(), listClubInvitations()])
     return NextResponse.json({ projects, teams })
   } catch { return NextResponse.json({ error: 'INVITATIONS_LOAD_FAILED' }, { status: 500 }) }
 }

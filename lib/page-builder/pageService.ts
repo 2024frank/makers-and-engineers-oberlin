@@ -42,5 +42,8 @@ export async function getPublishedPage(pageId: string): Promise<PageSnapshot | n
 }
 
 export async function getDraftPageBySlug(slug:string):Promise<PageSnapshot>{const s=await createSupabaseServerClient();const{data,error}=await s.from('pages').select('id').eq('slug',slug).single();if(error||!data)throw new Error('PAGE_DRAFT_NOT_FOUND');return getDraftPage(data.id)}
-export async function listAdminPages(){const s=await createSupabaseServerClient();const{data,error}=await s.from('pages').select('id,slug,published_version_id,updated_at,page_drafts(title,seo_title,seo_description,updated_at)').order('slug');if(error)throw new Error(`PAGES_LOAD_FAILED:${error.message}`);return data??[]}
+// page_drafts.page_id is that table's primary key, so PostgREST embeds one draft object (or null) per page.
+// The untyped client infers a list instead, which is why the result is cast to this shape.
+export type AdminPageRow={id:string;slug:string;published_version_id:string|null;updated_at:string;page_drafts:{title:string;seo_title:string;seo_description:string;updated_at:string}|null}
+export async function listAdminPages():Promise<AdminPageRow[]>{const s=await createSupabaseServerClient();const{data,error}=await s.from('pages').select('id,slug,published_version_id,updated_at,page_drafts(title,seo_title,seo_description,updated_at)').order('slug');if(error)throw new Error(`PAGES_LOAD_FAILED:${error.message}`);return(data??[]) as unknown as AdminPageRow[]}
 export async function listPageVersions(pageId:string){const s=await createSupabaseServerClient();const{data,error}=await s.from('page_versions').select('id,version_number,published_at,published_by,restored_from').eq('page_id',pageId).order('version_number',{ascending:false});if(error)throw new Error(error.message);return data??[]}

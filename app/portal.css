@@ -2450,3 +2450,287 @@
   gap: 5px;
   color: var(--portal-accent);
 }
+
+/* =========================================================
+   Teams: team browser, project rosters, team workspace,
+   invitations and requests (/admin/teams, /member/teams,
+   /member/invitations, officer email delivery rows).
+   The 0fc1e97 redesign dropped these rules; they are rebuilt
+   here on the current portal tokens.
+   ========================================================= */
+.team-list {
+  display: grid;
+}
+
+.team-list-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px 32px;
+  padding: 20px 22px;
+  background: var(--portal-panel);
+  border: 1px solid var(--portal-line);
+  border-radius: var(--oec-radius-md, 10px);
+  box-shadow: var(--portal-shadow-xs);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.team-list-row + .team-list-row,
+.portal-section > h2 + .team-list-row {
+  margin-top: 12px;
+}
+
+.team-list-row > div {
+  min-width: 0;
+}
+
+.team-list-row :is(h2, h3) {
+  margin: 0 0 6px;
+  font-family: var(--oec-font-display, "Inter Tight", sans-serif);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.team-list-row h2 {
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.team-list-row h3 {
+  font-size: 17px;
+}
+
+.team-list-row :is(h2, h3) a {
+  color: var(--portal-ink);
+  text-decoration: none;
+}
+
+.team-list-row :is(h2, h3) a:hover {
+  color: var(--portal-accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.team-list-row p {
+  margin: 0 0 8px;
+  color: var(--portal-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.team-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+}
+
+.team-people {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+}
+
+.team-people li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--portal-ink);
+}
+
+.team-people li > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.team-people small {
+  display: block;
+  color: var(--portal-muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.team-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 50%;
+  background: var(--portal-accent-soft);
+  color: var(--portal-accent);
+  font-family: var(--oec-font-display, sans-serif);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.team-project-names {
+  font-size: 13.5px;
+}
+
+.team-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 40px;
+}
+
+.team-workspace-grid > div {
+  min-width: 0;
+}
+
+.team-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.team-actions > div {
+  min-width: 0;
+}
+
+:is(.team-actions, .team-form, .team-invite-control) button {
+  max-width: 100%;
+  white-space: normal;
+}
+
+.team-form,
+.portal-form {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+  max-width: 640px;
+  min-width: 0;
+}
+
+:is(.team-form, .team-invite-control) label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+
+:is(.team-form, .team-invite-control) :is(input:not([type="checkbox"]), textarea, select) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--portal-line-strong);
+  border-radius: var(--oec-radius-sm, 6px);
+  background: var(--portal-surface);
+  color: var(--portal-ink);
+  font: inherit;
+}
+
+.team-form button {
+  justify-self: start;
+}
+
+.portal-form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--portal-line);
+}
+
+.portal-form-footer > a {
+  color: var(--portal-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.team-invite-control {
+  margin-top: 16px;
+}
+
+.team-invite-control form {
+  display: grid;
+  gap: 12px;
+}
+
+.team-feedback {
+  padding: 10px 14px;
+  border-radius: var(--oec-radius-sm, 6px);
+  background: var(--portal-good-bg);
+  color: var(--portal-good);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.team-feedback a {
+  color: inherit;
+  font-weight: 600;
+}
+
+:is(.team-invitation, .team-request, .team-project) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--portal-line);
+}
+
+:is(.team-invitation, .team-request, .team-project) h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+:is(.team-invitation, .team-request, .team-project) p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.team-invitation {
+  display: grid;
+  gap: 10px;
+}
+
+.team-member-actions {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--portal-line);
+}
+
+.team-proposal-link {
+  margin-top: 20px;
+}
+
+.team-membership-links {
+  display: grid;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--portal-line);
+  font-size: 13px;
+}
+
+@media (max-width: 800px) {
+  .team-list-row,
+  .team-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .team-workspace-grid {
+    gap: 0;
+  }
+
+  .team-list-row {
+    padding: 16px;
+  }
+}

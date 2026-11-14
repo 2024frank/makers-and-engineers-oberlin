@@ -92,6 +92,8 @@ export type EmailBroadcastHistoryEntry = {
   recipientCount: number
   sentCount: number
   notifiedCount: number
+  /** Members left out of this send because they turned off announcement email. */
+  optedOutCount?: number
   ctaLabel?: string
   hasImage?: boolean
   linkCount?: number

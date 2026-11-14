@@ -3,6 +3,7 @@ import { listMedia } from '@/lib/cms/media'
 import { sendTransactionalEmail, sendTransactionalEmailBatch } from '@/lib/email/client'
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
 import { renderAdminBroadcastEmail } from '@/lib/email/templates'
+import { announcementUnsubscribeUrl } from '@/lib/email/unsubscribe'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import {
   adminBroadcastSchema,
@@ -13,10 +14,49 @@ import {
   type EmailRecipientChoice,
 } from './adminBroadcastInput'
 
-type ResolvedRecipient = {
+/** Someone a broadcast may be sent to, before the opt-out rule is applied. */
+export type BroadcastCandidate = {
   email: string
   name: string
   userId: string | null
+  /** Found through a member profile, so an unsubscribe link can be signed for them. */
+  member: boolean
+  /** The member turned off club announcement email. */
+  optedOut: boolean
+  /** The officer picked this person or typed this address, instead of choosing a group. */
+  explicit: boolean
+}
+
+/**
+ * Members who turned off announcement email are left out of group sends. A person the
+ * officer picked by name, or an address the officer typed, is still delivered.
+ */
+export function applyAnnouncementOptOut(candidates: BroadcastCandidate[]) {
+  const recipients: BroadcastCandidate[] = []
+  const skipped: BroadcastCandidate[] = []
+  for (const candidate of candidates) {
+    if (candidate.optedOut && !candidate.explicit) skipped.push(candidate)
+    else recipients.push(candidate)
+  }
+  return { recipients, skipped }
+}
+
+const MEMBER_COLUMNS = 'user_id,display_name,oberlin_email,announcement_email_opt_out'
+type MemberRow = {
+  user_id: string
+  display_name: string | null
+  oberlin_email: string | null
+  announcement_email_opt_out: boolean | null
+}
+
+// A failed member lookup has to stop the send. Carrying on would drop people silently
+// or lose track of who opted out.
+async function loadMembers(
+  query: PromiseLike<{ data: unknown; error: { message: string } | null }>,
+): Promise<MemberRow[]> {
+  const { data, error } = await query
+  if (error) throw new Error(`AUDIENCE_LOAD_FAILED:${error.message}`)
+  return (data ?? []) as MemberRow[]
 }
 
 function resolveBroadcastUrl(raw: string | undefined | null, origin?: string): string | undefined {
@@ -161,6 +201,7 @@ export async function getAdminEmailConsoleData() {
       recipientCount: Number(snap.recipientCount ?? 0),
       sentCount: Number(snap.sentCount ?? 0),
       notifiedCount: Number(snap.notifiedCount ?? 0),
+      optedOutCount: Number(snap.optedOutCount ?? 0),
       ctaLabel: typeof snap.ctaLabel === 'string' ? snap.ctaLabel : undefined,
       hasImage: Boolean(snap.hasImage),
       linkCount: Number(snap.linkCount ?? 0),
@@ -180,34 +221,71 @@ export async function getAdminEmailConsoleData() {
 async function resolveRecipients(
   input: AdminBroadcastInput,
   sender: { userId: string; email: string; displayName: string },
-): Promise<{ audienceLabel: string; recipients: ResolvedRecipient[] }> {
+): Promise<{ audienceLabel: string; recipients: BroadcastCandidate[]; skipped: BroadcastCandidate[] }> {
+  const admin = createSupabaseAdminClient()
+
   if (input.testOnly) {
+    // A test shows the sender what members get, unsubscribe footer included, when the
+    // sender is a member too.
+    const { data } = await admin
+      .from('member_profiles')
+      .select(MEMBER_COLUMNS)
+      .eq('user_id', sender.userId)
+      .maybeSingle()
+    const own = data as MemberRow | null
     return {
       audienceLabel: `Test email to ${sender.email}`,
-      recipients: [{ email: sender.email.toLowerCase(), name: sender.displayName || 'Officer', userId: sender.userId }],
+      recipients: [
+        {
+          email: sender.email.toLowerCase(),
+          name: sender.displayName || 'Officer',
+          userId: sender.userId,
+          member: Boolean(own),
+          optedOut: own?.announcement_email_opt_out === true,
+          explicit: true,
+        },
+      ],
+      skipped: [],
     }
   }
 
-  const admin = createSupabaseAdminClient()
-  const deduped = new Map<string, ResolvedRecipient>()
-  const push = (email: string | null | undefined, name: string | null | undefined, userId: string | null) => {
-    const clean = email?.trim().toLowerCase()
-    if (!clean || deduped.has(clean)) return
-    deduped.set(clean, { email: clean, name: name?.trim() || 'there', userId })
+  // Picking people or typing addresses is the officer writing to them directly.
+  const explicitAudience = input.audience === 'individuals' || input.audience === 'custom'
+  const deduped = new Map<string, BroadcastCandidate>()
+  const add = (candidate: Omit<BroadcastCandidate, 'email'> & { email: string | null | undefined }) => {
+    const email = candidate.email?.trim().toLowerCase()
+    if (!email) return
+    const existing = deduped.get(email)
+    if (existing) {
+      // Naming someone who is already in the chosen group still counts as writing to them directly.
+      if (candidate.explicit) existing.explicit = true
+      return
+    }
+    deduped.set(email, { ...candidate, email, name: candidate.name.trim() || 'there' })
   }
+  const addMember = (row: MemberRow) =>
+    add({
+      email: row.oberlin_email,
+      name: row.display_name ?? '',
+      userId: row.user_id,
+      member: true,
+      optedOut: row.announcement_email_opt_out === true,
+      explicit: explicitAudience,
+    })
+  const addOther = (email: string | null | undefined, name: string | null | undefined, userId: string | null) =>
+    add({ email, name: name ?? '', userId, member: false, optedOut: false, explicit: explicitAudience })
+  const addAddress = (email: string) =>
+    add({ email, name: 'there', userId: null, member: false, optedOut: false, explicit: true })
 
   let audienceLabel = 'Club members'
 
   switch (input.audience) {
     case 'all_members': {
       audienceLabel = 'Everyone (all active members)'
-      const { data, error } = await admin
-        .from('member_profiles')
-        .select('user_id,display_name,oberlin_email')
-        .eq('status', 'ACTIVE')
-        .limit(1000)
-      if (error) throw new Error(`AUDIENCE_LOAD_FAILED:${error.message}`)
-      for (const row of data ?? []) push(row.oberlin_email, row.display_name, row.user_id)
+      const members = await loadMembers(
+        admin.from('member_profiles').select(MEMBER_COLUMNS).eq('status', 'ACTIVE').limit(1000),
+      )
+      for (const row of members) addMember(row)
       break
     }
 
@@ -220,12 +298,10 @@ async function resolveRecipients(
         .eq('role', 'LEAD')
       const ids = Array.from(new Set((leads ?? []).map(item => item.user_id)))
       if (ids.length) {
-        const { data: profiles } = await admin
-          .from('member_profiles')
-          .select('user_id,display_name,oberlin_email')
-          .in('user_id', ids)
-          .eq('status', 'ACTIVE')
-        for (const row of profiles ?? []) push(row.oberlin_email, row.display_name, row.user_id)
+        const members = await loadMembers(
+          admin.from('member_profiles').select(MEMBER_COLUMNS).in('user_id', ids).eq('status', 'ACTIVE'),
+        )
+        for (const row of members) addMember(row)
       }
       break
     }
@@ -243,12 +319,10 @@ async function resolveRecipients(
       audienceLabel = `Project team: ${project?.title ?? 'Selected project'}`
       const ids = Array.from(new Set((roster ?? []).map(row => row.user_id)))
       if (ids.length) {
-        const { data: profiles } = await admin
-          .from('member_profiles')
-          .select('user_id,display_name,oberlin_email')
-          .in('user_id', ids)
-          .eq('status', 'ACTIVE')
-        for (const row of profiles ?? []) push(row.oberlin_email, row.display_name, row.user_id)
+        const members = await loadMembers(
+          admin.from('member_profiles').select(MEMBER_COLUMNS).in('user_id', ids).eq('status', 'ACTIVE'),
+        )
+        for (const row of members) addMember(row)
       }
       break
     }
@@ -266,12 +340,10 @@ async function resolveRecipients(
       audienceLabel = `Club team: ${team?.name ?? 'Selected team'}`
       const ids = Array.from(new Set((roster ?? []).map(row => row.user_id)))
       if (ids.length) {
-        const { data: profiles } = await admin
-          .from('member_profiles')
-          .select('user_id,display_name,oberlin_email')
-          .in('user_id', ids)
-          .eq('status', 'ACTIVE')
-        for (const row of profiles ?? []) push(row.oberlin_email, row.display_name, row.user_id)
+        const members = await loadMembers(
+          admin.from('member_profiles').select(MEMBER_COLUMNS).in('user_id', ids).eq('status', 'ACTIVE'),
+        )
+        for (const row of members) addMember(row)
       }
       break
     }
@@ -279,12 +351,14 @@ async function resolveRecipients(
     case 'discipline': {
       if (!input.discipline) throw new Error('DISCIPLINE_REQUIRED')
       audienceLabel = `Track: ${input.discipline}`
-      const { data: profiles } = await admin
-        .from('member_profiles')
-        .select('user_id,display_name,oberlin_email,disciplines')
-        .eq('status', 'ACTIVE')
-        .contains('disciplines', [input.discipline])
-      for (const row of profiles ?? []) push(row.oberlin_email, row.display_name, row.user_id)
+      const members = await loadMembers(
+        admin
+          .from('member_profiles')
+          .select(MEMBER_COLUMNS)
+          .eq('status', 'ACTIVE')
+          .contains('disciplines', [input.discipline]),
+      )
+      for (const row of members) addMember(row)
       break
     }
 
@@ -294,7 +368,7 @@ async function resolveRecipients(
         .from('admin_users')
         .select('user_id,display_name,email')
         .eq('active', true)
-      for (const row of data ?? []) push(row.email, row.display_name, row.user_id)
+      for (const row of data ?? []) addOther(row.email, row.display_name, row.user_id)
       break
     }
 
@@ -305,22 +379,19 @@ async function resolveRecipients(
         .select('display_name,oberlin_email')
         .in('status', ['REQUESTED', 'EMAIL_VERIFIED', 'PENDING_APPROVAL'])
         .limit(500)
-      for (const row of data ?? []) push(row.oberlin_email, row.display_name, null)
+      for (const row of data ?? []) addOther(row.oberlin_email, row.display_name, null)
       break
     }
 
     case 'individuals': {
       const ids = Array.from(new Set(input.recipientUserIds))
       if (!ids.length) throw new Error('SELECT_AT_LEAST_ONE_RECIPIENT')
-      const [{ data: members }, { data: officers }] = await Promise.all([
-        admin
-          .from('member_profiles')
-          .select('user_id,display_name,oberlin_email')
-          .in('user_id', ids),
+      const [members, { data: officers }] = await Promise.all([
+        loadMembers(admin.from('member_profiles').select(MEMBER_COLUMNS).in('user_id', ids)),
         admin.from('admin_users').select('user_id,display_name,email').in('user_id', ids),
       ])
-      for (const row of members ?? []) push(row.oberlin_email, row.display_name, row.user_id)
-      for (const row of officers ?? []) push(row.email, row.display_name, row.user_id)
+      for (const row of members) addMember(row)
+      for (const row of officers ?? []) addOther(row.email, row.display_name, row.user_id)
       audienceLabel =
         deduped.size === 1
           ? `Direct: ${Array.from(deduped.values())[0].name}`
@@ -331,7 +402,7 @@ async function resolveRecipients(
     case 'custom': {
       const emails = parseCustomEmailList(input.customEmails)
       if (!emails.length) throw new Error('ENTER_AT_LEAST_ONE_EMAIL')
-      for (const email of emails) push(email, 'there', null)
+      for (const email of emails) addAddress(email)
       audienceLabel = emails.length === 1 ? `Direct: ${emails[0]}` : `${emails.length} custom addresses`
       break
     }
@@ -339,13 +410,15 @@ async function resolveRecipients(
 
   // Allow combining any group or selection with extra comma-separated addresses.
   if (input.audience !== 'custom' && input.customEmails.trim()) {
-    for (const email of parseCustomEmailList(input.customEmails)) {
-      push(email, 'there', null)
-    }
+    for (const email of parseCustomEmailList(input.customEmails)) addAddress(email)
   }
 
   if (deduped.size === 0) throw new Error('NO_RECIPIENTS_FOUND')
-  return { audienceLabel, recipients: Array.from(deduped.values()) }
+  const { recipients, skipped } = applyAnnouncementOptOut(Array.from(deduped.values()))
+  // With nobody left to email, the send still goes ahead if it will post the portal
+  // notice, because turning off the email does not turn off the notice.
+  if (recipients.length === 0 && !input.alsoNotifyPortal) throw new Error('ALL_RECIPIENTS_OPTED_OUT')
+  return { audienceLabel, recipients, skipped }
 }
 
 /** Validate, render, send, optionally notify in-portal, and audit an admin rich email broadcast. */
@@ -355,7 +428,7 @@ export async function sendAdminBroadcast(
   origin?: string,
 ) {
   const input = adminBroadcastSchema.parse(rawInput)
-  const { audienceLabel, recipients } = await resolveRecipients(input, adminActor)
+  const { audienceLabel, recipients, skipped } = await resolveRecipients(input, adminActor)
 
   const resolvedImageUrl = resolveBroadcastUrl(input.imageUrl, origin)
   const resolvedCtaUrl = resolveBroadcastUrl(input.ctaUrl, origin)
@@ -366,9 +439,9 @@ export async function sendAdminBroadcast(
     }))
     .filter((item): item is { label: string; url: string } => Boolean(item.label && item.url))
 
-  const buildMessageFor = (recipientName: string) =>
+  const buildMessageFor = (recipient: BroadcastCandidate) =>
     renderAdminBroadcastEmail({
-      recipientName,
+      recipientName: recipient.name,
       subject: input.subject,
       eyebrow: input.eyebrow || undefined,
       body: input.body,
@@ -378,21 +451,24 @@ export async function sendAdminBroadcast(
       ctaUrl: resolvedCtaUrl,
       links: resolvedLinks,
       replyTo: input.replyTo || undefined,
+      // Only a member who still gets announcement email has something to unsubscribe from.
+      unsubscribeUrl:
+        recipient.member && !recipient.optedOut ? announcementUnsubscribeUrl(recipient.userId, origin) : null,
     })
 
   let sentCount = 0
   if (recipients.length === 1) {
     const ok = await sendTransactionalEmail({
       to: recipients[0].email,
-      message: buildMessageFor(recipients[0].name),
+      message: buildMessageFor(recipients[0]),
       required: true,
     })
     sentCount = ok ? 1 : 0
-  } else {
+  } else if (recipients.length > 1) {
     sentCount = await sendTransactionalEmailBatch({
       messages: recipients.map(recipient => ({
         to: recipient.email,
-        message: buildMessageFor(recipient.name),
+        message: buildMessageFor(recipient),
       })),
       required: true,
     })
@@ -401,8 +477,9 @@ export async function sendAdminBroadcast(
   let notifiedCount = 0
   const admin = createSupabaseAdminClient()
   if (!input.testOnly && input.alsoNotifyPortal) {
+    // Turning off announcement email does not hide the announcement in the portal.
     const memberUserIds = Array.from(
-      new Set(recipients.map(r => r.userId).filter((id): id is string => Boolean(id))),
+      new Set([...recipients, ...skipped].map(r => r.userId).filter((id): id is string => Boolean(id))),
     )
     if (memberUserIds.length) {
       const actionUrl = input.ctaUrl?.trim().startsWith('/')
@@ -421,6 +498,8 @@ export async function sendAdminBroadcast(
       if (!notifyError) notifiedCount = memberUserIds.length
     }
   }
+  // Everyone had turned off the email, so the portal notice was the whole send.
+  if (recipients.length === 0 && notifiedCount === 0) throw new Error('PORTAL_NOTIFICATION_FAILED')
 
   if (!input.testOnly) {
     await admin.from('audit_log').insert({
@@ -434,6 +513,7 @@ export async function sendAdminBroadcast(
         recipientCount: recipients.length,
         sentCount,
         notifiedCount,
+        optedOutCount: skipped.length,
         ctaLabel: input.ctaLabel || undefined,
         hasImage: Boolean(resolvedImageUrl),
         linkCount: resolvedLinks.length,
@@ -450,5 +530,6 @@ export async function sendAdminBroadcast(
     recipientCount: recipients.length,
     sentCount,
     notifiedCount,
+    optedOutCount: skipped.length,
   }
 }

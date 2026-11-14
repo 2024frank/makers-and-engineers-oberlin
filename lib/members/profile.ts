@@ -18,6 +18,8 @@ export type MemberProfileSettings = {
   directoryVisible: boolean
   visibleFields: string[]
   shareContact: boolean
+  /** Whether the member gets club announcement email. Null when the setting could not be read. */
+  announcementEmails: boolean | null
 }
 
 const compactList = (value: unknown) => Array.from(new Set((Array.isArray(value) ? value : []).map((item) => String(item).trim()).filter(Boolean))).slice(0, 30)
@@ -34,9 +36,12 @@ const cleanUrl = (value: unknown) => {
 
 export async function getMemberProfileSettings(userId: string): Promise<MemberProfileSettings> {
   const supabase = await createSupabaseServerClient()
-  const [{ data: profile, error: profileError }, { data: privacy, error: privacyError }] = await Promise.all([
+  const [{ data: profile, error: profileError }, { data: privacy, error: privacyError }, { data: email, error: emailError }] = await Promise.all([
     supabase.from('member_profiles').select('user_id,oberlin_email,display_name,class_year,major,disciplines,skills,project_interests,availability,portfolio_url,github_url,linkedin_url').eq('user_id', userId).single(),
     supabase.from('member_privacy_settings').select('directory_visible,visible_fields,share_contact').eq('user_id', userId).single(),
+    // Read on its own so the profile still loads if this setting cannot be read. The form
+    // then leaves the setting out instead of showing a guess that a save would write back.
+    supabase.from('member_profiles').select('announcement_email_opt_out').eq('user_id', userId).maybeSingle(),
   ])
   if (profileError || !profile) throw new Error('MEMBER_PROFILE_NOT_FOUND')
   if (privacyError || !privacy) throw new Error('MEMBER_PRIVACY_NOT_FOUND')
@@ -56,6 +61,7 @@ export async function getMemberProfileSettings(userId: string): Promise<MemberPr
     directoryVisible: Boolean(privacy.directory_visible),
     visibleFields: privacy.visible_fields ?? [],
     shareContact: Boolean(privacy.share_contact),
+    announcementEmails: emailError || !email ? null : email.announcement_email_opt_out !== true,
   }
 }
 
@@ -86,4 +92,10 @@ export async function updateMemberProfile(input: Record<string, unknown>, userId
     share_contact: Boolean(input.shareContact),
   }).eq('user_id', userId)
   if (privacyError) throw new Error(`MEMBER_PRIVACY_UPDATE_FAILED:${privacyError.message}`)
+  // The form sends this only when the member changed it. A profile that was opened
+  // earlier, or the phone app, must not undo an unsubscribe made from an email link.
+  if (typeof input.announcementEmails === 'boolean') {
+    const { error: emailError } = await supabase.rpc('set_my_announcement_email_opt_out', { p_opt_out: !input.announcementEmails })
+    if (emailError) throw new Error(`MEMBER_EMAIL_PREFERENCE_UPDATE_FAILED:${emailError.message}`)
+  }
 }

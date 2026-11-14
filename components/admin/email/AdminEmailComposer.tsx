@@ -35,6 +35,13 @@ const AUDIENCE_TABS: Array<{ id: BroadcastAudienceMode; label: string; hint: str
   { id: 'custom', label: 'Custom email', hint: 'Any external or @oberlin.edu address' },
 ]
 
+const SEND_ERRORS: Record<string, string> = {
+  ALL_RECIPIENTS_OPTED_OUT:
+    'Everyone in this audience has turned off announcement email. Use Pick people or add an address to write to someone directly.',
+  PORTAL_NOTIFICATION_FAILED:
+    'Everyone in this audience has turned off announcement email, and the portal notification could not be posted. Nothing was sent.',
+}
+
 export function AdminEmailComposer({
   senderEmail,
   recipients,
@@ -179,12 +186,15 @@ export function AdminEmailComposer({
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) {
-        throw new Error(result.error ?? 'Email send failed.')
+        throw new Error(SEND_ERRORS[result.error] ?? result.error ?? 'Email send failed.')
       }
 
+      const skipped = Number(result.optedOutCount ?? 0)
       const msg = testOnly
         ? `Test email sent to ${senderEmail}.`
-        : `Sent to ${result.sentCount} of ${result.recipientCount} recipients${result.notifiedCount ? ` (+${result.notifiedCount} portal notifications)` : ''}.`
+        : result.recipientCount === 0
+          ? `No email was sent, because everyone in this audience turned off announcement email. Posted ${result.notifiedCount} portal notification${result.notifiedCount === 1 ? '' : 's'}.`
+          : `Sent to ${result.sentCount} of ${result.recipientCount} recipients${result.notifiedCount ? ` (+${result.notifiedCount} portal notifications)` : ''}.${skipped ? ` Skipped ${skipped} member${skipped === 1 ? '' : 's'} who turned off announcement email.` : ''}`
       setStatusMessage(msg)
       toast(msg)
 
@@ -225,6 +235,10 @@ export function AdminEmailComposer({
             </button>
           ))}
         </div>
+        <p className="pt-hint">
+          Group sends skip members who turned off announcement email. People you pick by name or add by address
+          always get the message.
+        </p>
 
         {audience === 'project_team' && (
           <label>
@@ -586,6 +600,7 @@ export function AdminEmailComposer({
                   <strong>{item.subject}</strong>
                   <small>
                     {item.audienceLabel} · {item.sentCount}/{item.recipientCount} delivered ·{' '}
+                    {item.optedOutCount ? `${item.optedOutCount} opted out · ` : ''}
                     {formatPortalDate(item.createdAt)}
                   </small>
                 </li>

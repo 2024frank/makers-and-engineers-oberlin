@@ -51,6 +51,18 @@ Member links target the public website. Older member links on the officer host r
 
 The member directory is visible only to approved active members and authorized staff. Members control directory participation and field-level visibility. Oberlin email remains hidden by default. Hidden fields are also excluded from filters/search matching so private values cannot be inferred through search side channels.
 
+## Announcement email and unsubscribing
+
+Three kinds of email are club announcements: a message an officer sends to a member group from **Email members**, the notice when a project is first published, and the notice for a new officer opening. Each one ends with an unsubscribe link, and mail apps such as Gmail show their own unsubscribe button for it.
+
+- A member who unsubscribes stops getting announcement email. Portal notifications are unchanged. Account email (verification, invitations, sign-in and password links, decisions on applications and proposals, team invitations, project kickoff) is always sent.
+- Group sends skip members who unsubscribed. The send result and **Recent sends** show how many were skipped. If everyone in the group unsubscribed, no email goes out; the portal notification is still posted when that box is ticked, and otherwise the send stops with a message.
+- To write to one of those members anyway, use **Pick people** or add their address. Those messages are always delivered.
+- The link in an email can only turn announcement email off. A member turns it back on under **My profile > Email**.
+- The **Officers** and **Applicants** audiences and typed addresses are not member lists, so those messages carry no unsubscribe link and are not affected by a member's setting.
+
+Unsubscribe links are signed with `SUPABASE_SERVICE_ROLE_KEY`. Rotating that key makes the links in mail that was already sent stop working; members can still change the setting from their profile. Migration `049_announcement_email_opt_out.sql` must be applied before deploying this workflow.
+
 ## Projects and teams
 
 - Members can save projects, opportunities, and resources.

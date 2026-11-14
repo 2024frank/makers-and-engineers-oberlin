@@ -3,8 +3,12 @@ import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { sendTransactionalEmailBatch } from '@/lib/email/client'
 import { newProjectEmail } from '@/lib/email/templates'
 import { memberSiteOrigin } from '@/lib/email/siteOrigin'
+import { announcementUnsubscribeUrl } from '@/lib/email/unsubscribe'
 
-type Announcement = { announced: false } | { announced: true; projectId: string; slug: string; title: string; summary: string; recipients: { email: string; displayName: string }[] }
+// The database function leaves out members who turned off announcement email. userId is
+// the member each email is for; a database that has not been migrated yet leaves it out,
+// and that email then goes out without an unsubscribe link, as before.
+type Announcement = { announced: false } | { announced: true; projectId: string; slug: string; title: string; summary: string; recipients: { email: string; displayName: string; userId?: string | null }[] }
 
 // Tells every active member about a project the first time it is published: a portal
 // notice (added by the database function) and an email. Later republishes do nothing.
@@ -17,7 +21,7 @@ export async function announcePublishedProject(projectId: string) {
   const actionUrl = `${memberSiteOrigin()}/projects/${result.slug}`
   const emailsSent = await sendTransactionalEmailBatch({
     idempotencyKey: `project-announcement/${result.projectId}`,
-    messages: result.recipients.filter(person => person.email).map(person => ({ to: person.email, message: newProjectEmail({ memberName: person.displayName, projectTitle: result.title, summary: result.summary, actionUrl }) })),
+    messages: result.recipients.filter(person => person.email).map(person => ({ to: person.email, message: newProjectEmail({ memberName: person.displayName, projectTitle: result.title, summary: result.summary, actionUrl, unsubscribeUrl: announcementUnsubscribeUrl(person.userId) }) })),
   })
   await admin.from('project_announcements').update({ emails_sent: emailsSent }).eq('project_id', result.projectId)
   return { announced: true, emailsSent }

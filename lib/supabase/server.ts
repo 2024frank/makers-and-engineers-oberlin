@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import { cookies, headers } from 'next/headers'
+import { createFreshTokenFetch } from './freshTokenFetch'
+
+const freshTokenFetch = createFreshTokenFetch()
 
 export async function createSupabaseServerClient() {
   // Mark server-client routes as dynamic before checking runtime env config so builds without Supabase env vars do not fail static prerendering.
@@ -11,7 +14,7 @@ export async function createSupabaseServerClient() {
   // The phone app has no cookies. It sends the member's access token as a bearer token.
   const bearer = /^Bearer\s+(\S+)$/i.exec(requestHeaders.get('authorization') ?? '')?.[1]
   if (bearer) {
-    const client = createClient(url, anonKey, { global: { headers: { Authorization: `Bearer ${bearer}` } }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
+    const client = createClient(url, anonKey, { global: { headers: { Authorization: `Bearer ${bearer}` }, fetch: freshTokenFetch }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } })
     const getUser = client.auth.getUser.bind(client.auth)
     client.auth.getUser = (jwt?: string) => getUser(jwt ?? bearer)
     return client as unknown as ReturnType<typeof cookieClient>
@@ -21,6 +24,7 @@ export async function createSupabaseServerClient() {
 
 function cookieClient(url: string, anonKey: string, cookieStore: Awaited<ReturnType<typeof cookies>>) {
   return createServerClient(url, anonKey, {
+    global: { fetch: freshTokenFetch },
     cookies: {
       getAll() { return cookieStore.getAll() },
       setAll(items) {

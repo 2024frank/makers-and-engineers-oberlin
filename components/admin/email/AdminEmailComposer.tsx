@@ -10,6 +10,7 @@ import {
   type EmailGroupChoice,
   type EmailRecipientChoice,
 } from '@/lib/email/adminBroadcastInput'
+import { describeSendFailure } from '@/lib/email/sendFailure'
 import { useToast } from '@/components/ui/Toast'
 import { formatPortalDate } from '@/lib/format/portalDate'
 
@@ -179,7 +180,7 @@ export function AdminEmailComposer({
       })
       const result = await response.json().catch(() => ({}))
       if (!response.ok) {
-        throw new Error(result.error ?? 'Email send failed.')
+        throw new Error(describeSendFailure(response, result))
       }
 
       const msg = testOnly

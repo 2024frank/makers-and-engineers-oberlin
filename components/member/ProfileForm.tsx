@@ -14,21 +14,27 @@ const split = (value: FormDataEntryValue | null) => String(value ?? '').split(',
 export function ProfileForm({ initial }: { initial: MemberProfileSettings }) {
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  // The announcement setting as last saved, so only a change the member made is sent.
+  const [savedAnnouncements, setSavedAnnouncements] = useState(initial.announcementEmails)
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setMessage('')
     const form = new FormData(event.currentTarget)
     const visibleFields = privacyFields.filter(([key]) => form.get(`visible:${key}`) === 'on').map(([key]) => key)
+    const announcementEmails = form.get('announcementEmails') === 'on'
+    const announcementsChanged = savedAnnouncements !== null && announcementEmails !== savedAnnouncements
     const payload = {
       displayName: form.get('displayName'), classYear: form.get('classYear'), major: form.get('major'),
       disciplines: split(form.get('disciplines')), skills: split(form.get('skills')), projectInterests: split(form.get('projectInterests')),
       availability: form.get('availability'), portfolioUrl: form.get('portfolioUrl'), githubUrl: form.get('githubUrl'), linkedinUrl: form.get('linkedinUrl'),
       directoryVisible: form.get('directoryVisible') === 'on', shareContact: form.get('shareContact') === 'on', visibleFields,
+      ...(announcementsChanged ? { announcementEmails } : {}),
     }
     try {
       const response = await fetch('/api/member/profile', { method:'PUT', headers:{'content-type':'application/json'}, body:JSON.stringify(payload) })
       const body = await response.json()
       if (!response.ok) throw new Error(body.error ?? 'Profile update failed.')
-      setMessage('Profile and directory privacy saved.')
+      if (announcementsChanged) setSavedAnnouncements(announcementEmails)
+      setMessage(`Profile and directory privacy saved.${announcementsChanged ? ` Club announcement email is now ${announcementEmails ? 'on' : 'off'}.` : ''}`)
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Profile update failed.') }
     finally { setBusy(false) }
   }
@@ -48,6 +54,9 @@ export function ProfileForm({ initial }: { initial: MemberProfileSettings }) {
       <div className="member-privacy-grid">{privacyFields.map(([key,label])=><label key={key}><input name={`visible:${key}`} type="checkbox" defaultChecked={initial.visibleFields.includes(key)}/><span>{label}</span></label>)}</div>
       <label className="member-toggle member-toggle--contact"><input name="shareContact" type="checkbox" defaultChecked={initial.shareContact}/><span>Allow approved members to see my Oberlin email</span></label>
     </section>
+    {initial.announcementEmails !== null && <section className="content-card" id="email"><h2>Email</h2><label className="member-toggle"><input name="announcementEmails" type="checkbox" defaultChecked={initial.announcementEmails}/><span>Email me club announcements</span></label>
+      <p>Announcements are messages officers send to members, new project notices, and officer opening notices. With this off you can still read them in the portal, and you still get email about your own account, such as sign-in links and decisions on your applications.</p>
+    </section>}
     <div className="member-profile-actions"><button className="button--cardinal" disabled={busy}>{busy?'Saving…':'Save profile'}</button>{message&&<p role="status">{message}</p>}</div>
   </form>
 }

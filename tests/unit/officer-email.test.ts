@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { afterEach, expect, it, vi } from 'vitest'
 import { deliverOfficerEmails } from '@/lib/leadership/emailDelivery'
+import { verifyUnsubscribeToken } from '@/lib/email/unsubscribe'
 const job={id:'mail-1',claimToken:'claim-1',recipient:'test@oberlin.edu',displayName:'Test',positionId:'role-1',roleTitle:'Secretary',term:'Fall',bio:'Keep meeting records.',closesAt:null}
 afterEach(()=>{vi.unstubAllEnvs()})
 function fixture(status=200) {
@@ -22,6 +23,26 @@ it.each([[429,'FAILED'],[500,'UNCERTAIN'],[409,'UNCERTAIN']])('handles HTTP %s w
 it('leaves timeouts uncertain so they cannot later cause an unsafe resend',async()=>{
   const deps=fixture();deps.send.mockRejectedValue(new Error('timeout'));await deliverOfficerEmails(deps)
   expect(deps.rpc).toHaveBeenCalledWith('finish_officer_email',expect.objectContaining({p_status:'UNCERTAIN'}))
+})
+it('gives the member their own unsubscribe link and one-click headers',async()=>{
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','test-only-signing-secret-that-is-longer-than-32-characters');vi.stubEnv('NEXT_PUBLIC_SITE_URL','')
+  const member='11111111-1111-4111-8111-111111111111'
+  const deps=fixture();deps.rpc.mockImplementationOnce(async()=>({data:[{...job,userId:member}],error:null}))
+  await deliverOfficerEmails(deps)
+  const payload=JSON.parse(String(deps.send.mock.calls[0]?.[1]?.body))
+  const link=String(payload.headers['List-Unsubscribe']).slice(1,-1)
+  expect(link.startsWith('https://www.makeoberlin.site/unsubscribe?token=')).toBe(true)
+  expect(verifyUnsubscribeToken(new URL(link).searchParams.get('token'))).toBe(member)
+  expect(payload.headers['List-Unsubscribe-Post']).toBe('List-Unsubscribe=One-Click')
+  expect(String(payload.text).endsWith(`Unsubscribe from club announcement email: ${link}`)).toBe(true)
+  expect(payload).toMatchObject({to:['test@oberlin.edu'],subject:'MEO is looking for a Secretary'})
+})
+// Before migration 049 the claim returns no member id.
+it('still sends from a database that has not been migrated, without an unsubscribe link',async()=>{
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','test-only-signing-secret-that-is-longer-than-32-characters')
+  const deps=fixture();expect(await deliverOfficerEmails(deps)).toEqual({processed:1,configured:true})
+  const payload=JSON.parse(String(deps.send.mock.calls[0]?.[1]?.body))
+  expect(payload).not.toHaveProperty('headers');expect(payload.text).not.toMatch(/unsubscribe/i)
 })
 it('does not claim mail when configuration is missing',async()=>{
   const deps=fixture();vi.stubEnv('RESEND_API_KEY','');expect(await deliverOfficerEmails(deps)).toEqual({processed:0,configured:false})

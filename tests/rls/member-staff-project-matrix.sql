@@ -13,6 +13,13 @@ begin
   if exists(select 1 from pg_policies where schemaname='public' and tablename='member_profiles' and cmd='UPDATE') then
     raise exception 'member_profiles must not expose direct UPDATE policy';
   end if;
+  if not exists(select 1 from information_schema.columns where table_schema='public' and table_name='member_profiles' and column_name='announcement_email_opt_out') then
+    raise exception 'announcement email opt-out column missing';
+  end if;
+  if has_function_privilege('anon','public.set_member_announcement_email_opt_out(uuid,boolean,text)','execute')
+    or has_function_privilege('authenticated','public.set_member_announcement_email_opt_out(uuid,boolean,text)','execute') then
+    raise exception 'unsubscribe-link opt-out function must be service-role only';
+  end if;
   if not exists(select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='search_member_directory') then
     raise exception 'privacy-safe member directory function missing';
   end if;

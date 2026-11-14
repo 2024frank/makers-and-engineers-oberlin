@@ -16,6 +16,7 @@ function resendConfig(required: boolean) {
 }
 
 function buildPayload(from: string, to: string, message: TransactionalEmailMessage) {
+  const headers = message.headers && Object.keys(message.headers).length > 0 ? message.headers : null
   return {
     from,
     reply_to: message.replyTo?.trim() || clubReplyTo(),
@@ -23,6 +24,8 @@ function buildPayload(from: string, to: string, message: TransactionalEmailMessa
     subject: message.subject,
     text: message.text,
     ...(message.html ? { html: message.html } : {}),
+    // Resend adds these to the outgoing message, for example List-Unsubscribe.
+    ...(headers ? { headers } : {}),
   }
 }
 

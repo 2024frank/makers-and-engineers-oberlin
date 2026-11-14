@@ -3,6 +3,8 @@ export type TransactionalEmailMessage = {
   text: string
   html?: string
   replyTo?: string
+  /** Extra message headers, sent to the mail provider as given. */
+  headers?: Record<string, string>
 }
 
 export type AdminBroadcastLink = {
@@ -21,6 +23,8 @@ export type AdminBroadcastEmailInput = {
   ctaUrl?: string
   links?: AdminBroadcastLink[]
   replyTo?: string
+  /** This recipient's unsubscribe link. Leave empty for mail that is not an announcement to a member. */
+  unsubscribeUrl?: string | null
 }
 
 function escapeHtml(text: string): string {
@@ -39,6 +43,29 @@ function safeEmailHttpUrl(value?: string | null): string | null {
     return ['http:', 'https:'].includes(parsed.protocol) ? parsed.toString() : null
   } catch {
     return null
+  }
+}
+
+const UNSUBSCRIBE_REASON = 'You are getting this email because you are a member of Makers and Engineers @Oberlin.'
+const UNSUBSCRIBE_LABEL = 'Unsubscribe from club announcement email'
+
+/** Headers that let a mail app offer its own unsubscribe button for this link (RFC 8058 one-click). */
+export function unsubscribeHeaders(unsubscribeUrl: string): Record<string, string> {
+  return { 'List-Unsubscribe': `<${unsubscribeUrl}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' }
+}
+
+function unsubscribeTextFooter(unsubscribeUrl: string): string {
+  return `${UNSUBSCRIBE_REASON}\n${UNSUBSCRIBE_LABEL}: ${unsubscribeUrl}`
+}
+
+/** Marks a plain-text message as announcement mail: a visible unsubscribe line plus the one-click headers. */
+export function withUnsubscribe(message: TransactionalEmailMessage, unsubscribeUrl?: string | null): TransactionalEmailMessage {
+  const url = safeEmailHttpUrl(unsubscribeUrl)
+  if (!url) return message
+  return {
+    ...message,
+    text: `${message.text}\n\n${unsubscribeTextFooter(url)}`,
+    headers: { ...message.headers, ...unsubscribeHeaders(url) },
   }
 }
 
@@ -64,6 +91,7 @@ export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): Tran
   const imageUrl = safeEmailHttpUrl(input.imageUrl)
   const ctaUrl = safeEmailHttpUrl(input.ctaUrl)
   const ctaLabel = input.ctaLabel?.trim()
+  const unsubscribeUrl = safeEmailHttpUrl(input.unsubscribeUrl)
   const safeLinks = (input.links ?? [])
     .map(item => ({ label: item.label.trim(), url: safeEmailHttpUrl(item.url) }))
     .filter((item): item is { label: string; url: string } => Boolean(item.label && item.url))
@@ -75,6 +103,7 @@ export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): Tran
     textParts.push('', 'Links:', ...safeLinks.map(link => `- ${link.label}: ${link.url}`))
   }
   textParts.push('', 'Makers and Engineers @Oberlin')
+  if (unsubscribeUrl) textParts.push('', unsubscribeTextFooter(unsubscribeUrl))
 
   const eyebrow = input.eyebrow?.trim() || 'Projects for Makers and Engineers @Oberlin'
   const imageBlock = imageUrl
@@ -86,6 +115,9 @@ export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): Tran
       : ''
   const linksBlock = safeLinks.length
     ? `<div style="margin-top:22px;padding-top:16px;border-top:1px solid #ebe9e3;"><p style="margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#666a67;">Shared links</p><ul style="margin:0;padding-left:18px;">${safeLinks.map(link => `<li style="margin:0 0 6px;font-size:14px;"><a href="${escapeHtml(link.url)}" style="color:#a6192e;font-weight:600;text-decoration:underline;">${escapeHtml(link.label)}</a></li>`).join('')}</ul></div>`
+    : ''
+  const unsubscribeBlock = unsubscribeUrl
+    ? `<p style="margin:8px 0 0;">${escapeHtml(UNSUBSCRIBE_REASON)} <a href="${escapeHtml(unsubscribeUrl)}" style="color:#666a67;text-decoration:underline;">${escapeHtml(UNSUBSCRIBE_LABEL)}</a></p>`
     : ''
 
   const html = `<!doctype html>
@@ -104,7 +136,7 @@ export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): Tran
       ${linksBlock}
     </div>
     <div style="padding:16px 26px;background:#fafaf8;border-top:1px solid #ebe9e3;font-size:12px;color:#666a67;">
-      Projects for Makers and Engineers @Oberlin · Oberlin College
+      Projects for Makers and Engineers @Oberlin · Oberlin College${unsubscribeBlock}
     </div>
   </div>
 </body>
@@ -115,6 +147,7 @@ export function renderAdminBroadcastEmail(input: AdminBroadcastEmailInput): Tran
     text: textParts.join('\n'),
     html,
     replyTo: input.replyTo?.trim() || undefined,
+    ...(unsubscribeUrl ? { headers: unsubscribeHeaders(unsubscribeUrl) } : {}),
   }
 }
 
@@ -154,11 +187,11 @@ Use this secure link to choose a new password for your active Makers and Enginee
 ${input.resetUrl}
 
 If you did not request a password reset, you can ignore this email.${signature}`}}
-export function newProjectEmail(input:{memberName:string;projectTitle:string;summary?:string;actionUrl:string}):TransactionalEmailMessage{return{subject:`New MEO project: ${input.projectTitle}`,text:`${hello(input.memberName)}
+export function newProjectEmail(input:{memberName:string;projectTitle:string;summary?:string;actionUrl:string;unsubscribeUrl?:string|null}):TransactionalEmailMessage{return withUnsubscribe({subject:`New MEO project: ${input.projectTitle}`,text:`${hello(input.memberName)}
 
 A new project is on the MEO website: “${input.projectTitle}”.${input.summary?.trim()?`
 
 ${input.summary.trim()}`:''}
 
 See the project and ask to join the team here:
-${input.actionUrl}${signature}`}}
+${input.actionUrl}${signature}`},input.unsubscribeUrl)}

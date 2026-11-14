@@ -1,6 +1,9 @@
+import { announcementUnsubscribeUrl } from '@/lib/email/unsubscribe'
 import { officerOpeningEmail } from './emailTemplate'
 
-type EmailJob = { id: string; claimToken: string; recipient: string; displayName: string; positionId: string; roleTitle: string; term: string; bio: string; closesAt: string | null }
+// userId is the member the email is for. A database that has not been migrated yet
+// leaves it out, and the email then goes out without an unsubscribe link, as before.
+type EmailJob = { id: string; claimToken: string; recipient: string; displayName: string; positionId: string; roleTitle: string; term: string; bio: string; closesAt: string | null; userId?: string | null }
 type Dependencies = {
   rpc: (name: string, params?: Record<string, unknown>) => PromiseLike<{ data: unknown; error: unknown }>
   send?: typeof fetch
@@ -22,7 +25,7 @@ export async function deliverOfficerEmails({ rpc, send = fetch, wait = ms => new
       const response = await send('https://api.resend.com/emails', {
         method: 'POST', signal: AbortSignal.timeout(8000),
         headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json', 'Idempotency-Key': `officer-opening/${job.id}` },
-        body: JSON.stringify({ from, reply_to: process.env.RESEND_REPLY_TO?.trim() || 'makers.engineers@oberlin.edu', to: [job.recipient], ...officerOpeningEmail(job) }),
+        body: JSON.stringify({ from, reply_to: process.env.RESEND_REPLY_TO?.trim() || 'makers.engineers@oberlin.edu', to: [job.recipient], ...officerOpeningEmail({ ...job, unsubscribeUrl: announcementUnsubscribeUrl(job.userId) }) }),
       })
       status = response.ok ? 'SENT' : response.status >= 400 && response.status < 500 && response.status !== 409 && response.status !== 408 ? 'FAILED' : 'UNCERTAIN'
       if (!response.ok) error = `EMAIL_HTTP_${response.status}`

@@ -12,8 +12,8 @@ describe('new event announcements', () => {
     expect(sql).toMatch(/insert into public\.member_notifications[\s\S]*'NEW_EVENT'[\s\S]*from public\.member_profiles where status='ACTIVE'/)
   })
 
-  it('treats events that already started as announced and leaves upcoming ones to go out', () => {
-    expect(sql).toMatch(/insert into public\.event_announcements\(event_id\)\nselect id from public\.events where publication_state='published' and start_at is not null and start_at<=now\(\)/)
+  it('treats events already on the website as announced, except upcoming ones', () => {
+    expect(sql).toContain("insert into public.event_announcements(event_id)\nselect id from public.events where publication_state='published' and (start_at is null or start_at<=now())")
   })
 
   it('keeps the function server-only', () => {

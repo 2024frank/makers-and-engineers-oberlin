@@ -4,9 +4,9 @@
 --   edits never re-notifies.
 -- * Only upcoming events are announced (no start time, or a start time still
 --   ahead), so publishing a past event as a record sends nothing.
--- * Published events that have already started when this runs are treated as
---   announced. Upcoming ones are left unannounced, so they go out the next time
---   an officer publishes them.
+-- * Every event already on the website when this runs is treated as announced,
+--   except upcoming ones with a start time still ahead; those go out the next
+--   time an officer publishes them.
 -- * The function adds the in-app notice and returns the email recipients; the
 --   server sends the emails and records how many were accepted.
 
@@ -19,7 +19,7 @@ create table if not exists public.event_announcements (
 alter table public.event_announcements enable row level security;
 
 insert into public.event_announcements(event_id)
-select id from public.events where publication_state='published' and start_at is not null and start_at<=now()
+select id from public.events where publication_state='published' and (start_at is null or start_at<=now())
 on conflict do nothing;
 
 create or replace function public.announce_published_event(p_event_id uuid)

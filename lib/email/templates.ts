@@ -66,6 +66,36 @@ ${input.summary.trim()}`:''}
 See the project and ask to join the team here:
 ${input.actionUrl}${signature}`}}
 
+const EVENT_TIME_ZONE = 'America/New_York'
+const eventDay = (date: Date) => new Intl.DateTimeFormat('en-US', { timeZone: EVENT_TIME_ZONE, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
+const eventTime = (date: Date) => new Intl.DateTimeFormat('en-US', { timeZone: EVENT_TIME_ZONE, hour: 'numeric', minute: '2-digit' }).format(date)
+const validDate = (value?: string | null) => { if (!value) return null; const date = new Date(value); return Number.isNaN(date.getTime()) ? null : date }
+
+/** "Monday, November 30, 2026, 6:00 PM to 7:00 PM" in Oberlin time; empty when the event has no start. */
+export function formatEventWhen(startAt?: string | null, endAt?: string | null) {
+  const start = validDate(startAt)
+  if (!start) return ''
+  const end = validDate(endAt)
+  if (end && end > start && eventDay(end) === eventDay(start)) return `${eventDay(start)}, ${eventTime(start)} to ${eventTime(end)}`
+  return `${eventDay(start)} at ${eventTime(start)}`
+}
+
+export function newEventEmail(input: { memberName: string; eventTitle: string; startAt?: string | null; endAt?: string | null; location?: string; summary?: string; accessDetails?: string; actionUrl: string }): TransactionalEmailMessage {
+  const start = validDate(input.startAt)
+  const shortDate = start ? new Intl.DateTimeFormat('en-US', { timeZone: EVENT_TIME_ZONE, weekday: 'short', month: 'short', day: 'numeric' }).format(start) : ''
+  const when = formatEventWhen(input.startAt, input.endAt)
+  const details = [when ? `When: ${when}` : '', input.location?.trim() ? `Where: ${input.location.trim()}` : ''].filter(Boolean).join('\n')
+  const paragraphs = [
+    hello(input.memberName),
+    `You're invited to “${input.eventTitle}”.`,
+    details,
+    input.summary?.trim() ?? '',
+    input.accessDetails?.trim() ?? '',
+    `See the details here:\n${input.actionUrl}`,
+  ].filter(Boolean)
+  return { subject: `MEO event: ${input.eventTitle}${shortDate ? ` (${shortDate})` : ''}`, text: `${paragraphs.join('\n\n')}${signature}` }
+}
+
 export function projectMemberRemovedEmail(input: { memberName: string; projectTitle: string; actionUrl: string }): TransactionalEmailMessage {
   return {
     subject: `You were removed from ${input.projectTitle}`,
